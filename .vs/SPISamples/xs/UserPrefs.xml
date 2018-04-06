@@ -1,15 +1,15 @@
-﻿<Properties StartupConfiguration="{97E0041F-9050-4314-A619-1187B145B05D}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="AcmePosCs/packages.config">
+﻿<Properties StartupConfiguration="{4FCAB0D7-0E2C-41FE-92CD-A1223390A70A}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="AcmePosWF/FrmActions.cs">
     <Files>
-      <File FileName="AcmePosCs/Program.cs" Line="32" Column="92" />
-      <File FileName="README.md" Line="18" Column="1" />
-      <File FileName="AcmePosCs/packages.config" Line="6" Column="85" />
+      <File FileName="AcmePosCs/Program.cs" Line="349" Column="1" />
+      <File FileName="AcmePosWF/FrmActions.cs" Line="1" Column="7" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.ItemProperties.AcmePosWF PreferredExecutionTarget="MonoDevelop.Default" />
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MultiItemStartupConfigurations />
   <MonoDevelop.Ide.ItemProperties.AcmePosCs PreferredExecutionTarget="MonoDevelop.Default" />
