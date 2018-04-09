@@ -14,6 +14,8 @@ namespace AcmePosWF
         private Secrets _spiSecrets;
         private string _eftposAddress;
 
+        private readonly log4net.ILog log = log4net.LogManager.GetLogger("spi");
+
         public FrmMain()
         {
             InitializeComponent();
@@ -393,7 +395,7 @@ namespace AcmePosWF
 
         private void LoadPersistedState()
         {
-            _posId = "DELPHIPOS";
+            _posId = "CSUIPOS";
             _eftposAddress = "emulator-prod.herokuapp.com";
             // _eftposAddress = "10.161.106.54";
 
