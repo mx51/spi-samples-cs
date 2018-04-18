@@ -27,8 +27,8 @@ namespace KebabPos
         }
 
         private Spi _spi;
-        private string _posId = "";
-        private string _eftposAddress = "";
+        private string _posId = "KEBABPOS1";
+        private string _eftposAddress = "192.168.1.1";
         private Secrets _spiSecrets = null;
 
         private string _version = Assembly.GetEntryAssembly().GetName().Version.ToString();

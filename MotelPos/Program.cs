@@ -21,8 +21,8 @@ namespace MotelPos
 
         private Spi _spi;
         private SpiPreauth _spiPreauth;
-        private string _posId = "";
-        private string _eftposAddress = "";
+        private string _posId = "MOTELPOS1";
+        private string _eftposAddress = "192.168.1.6";
         private Secrets _spiSecrets = null;
         private string _version = Assembly.GetEntryAssembly().GetName().Version.ToString();
 

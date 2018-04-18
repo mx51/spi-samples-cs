@@ -47,8 +47,8 @@ namespace TablePos
 
         private Spi _spi;
         private SpiPayAtTable _pat;
-        private string _posId = "";
-        private string _eftposAddress = "";
+        private string _posId = "TABLEPOS1";
+        private string _eftposAddress = "192.168.1.9";
         private Secrets _spiSecrets = null;
 
         private void Start()
