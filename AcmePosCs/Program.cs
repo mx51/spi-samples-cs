@@ -4,6 +4,8 @@ using SPIClient;
 namespace AcmePosCs
 {
     /// <summary>
+    /// NOTE: THIS PROJECT USES THE 2.0.x of the SPI Client Library
+    ///  
     /// This is your POS. To integrate with SPI, you need to instantiate a Spi object
     /// and interact with it.
     /// 
@@ -17,6 +19,7 @@ namespace AcmePosCs
     {
         private static void Main(string[] args)
         {
+            log.Info("Starting AcmePos...");
             var myPos = new AcmePos();
             myPos.Start();
         }

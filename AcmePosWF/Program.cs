@@ -9,6 +9,7 @@ namespace AcmePosWF
     static class Program
     {
         /// <summary>
+        /// NOTE: THIS PROJECT USES THE 2.0.x of the SPI Client Library
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
