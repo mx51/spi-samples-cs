@@ -353,24 +353,26 @@ namespace KebabPos
             if (txState.Response != null)
             {
                 var gltResponse = new GetLastTransactionResponse(txState.Response);
-                var success = _spi.GltMatch(gltResponse, _lastCmd[1]);
 
-                if (success == Message.SuccessState.Unknown)
-                {
-                    Console.WriteLine("# Did not retrieve Expected Transaction.");
+                if (_lastCmd.Length > 1) {
+                    // User specified that he intended to retrieve a specific tx by pos_ref_id
+                    // This is how you can use a handy function to match it.
+                    var success = _spi.GltMatch(gltResponse, _lastCmd[1]);
+                    if (success == Message.SuccessState.Unknown)
+                    {
+                        Console.WriteLine("# Did not retrieve Expected Transaction. Here is what we got:");
+                    } else {
+                        Console.WriteLine("# Tx Matched Expected Purchase Request.");
+                    }
                 }
-                else
-                {
-                    Console.WriteLine("# Tx Matched Expected Purchase Request.");
-                    Console.WriteLine("# Result: {0}", success);
-                    var purchaseResponse = new PurchaseResponse(txState.Response);
-                    Console.WriteLine("# Scheme: {0}", purchaseResponse.SchemeName);
-                    Console.WriteLine("# Response: {0}", purchaseResponse.GetResponseText());
-                    Console.WriteLine("# RRN: {0}", purchaseResponse.GetRRN());
-                    Console.WriteLine("# Error: {0}", txState.Response.GetError());
-                    Console.WriteLine("# Customer Receipt:");
-                    Console.WriteLine(purchaseResponse.GetCustomerReceipt().TrimEnd());
-                }
+
+                var purchaseResponse = new PurchaseResponse(txState.Response);
+                Console.WriteLine("# Scheme: {0}", purchaseResponse.SchemeName);
+                Console.WriteLine("# Response: {0}", purchaseResponse.GetResponseText());
+                Console.WriteLine("# RRN: {0}", purchaseResponse.GetRRN());
+                Console.WriteLine("# Error: {0}", txState.Response.GetError());
+                Console.WriteLine("# Customer Receipt:");
+                Console.WriteLine(purchaseResponse.GetCustomerReceipt().TrimEnd());
             }
             else
             {
@@ -590,8 +592,9 @@ namespace KebabPos
 
         private bool ProcessInput(string[] spInput)
         {
-            switch (spInput[0])
+            switch (spInput[0].ToLower())
             {
+                case "purchase":
                 case "kebab":
                     var tipAmount = 0;
                     if (spInput.Length > 2) int.TryParse(spInput[2], out tipAmount);
@@ -605,6 +608,7 @@ namespace KebabPos
                         Console.WriteLine($"# Could not initiate purchase: {pres.Message}. Please Retry.");
                     }
                     break;
+                case "refund":
                 case "yuck":
                     var yuckres = _spi.InitiateRefundTx("yuck-" + DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss"), int.Parse(spInput[1]));
                     if (!yuckres.Initiated)
@@ -659,7 +663,10 @@ namespace KebabPos
                     break;
 
                 case "pair":
-                    _spi.Pair();
+                    if (!_spi.Pair())
+                    {
+                        Console.WriteLine($"## -> Could not Start Pairing. Check Settings.");
+                    }
                     break;
                 case "pair_cancel":
                     _spi.PairingCancel();

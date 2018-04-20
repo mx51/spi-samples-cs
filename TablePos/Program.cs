@@ -438,7 +438,7 @@ namespace TablePos
             {
                 var input = Console.ReadLine();
                 var spInput = input.Split(':');
-                switch (spInput[0])
+                switch (spInput[0].ToLower())
                 {
                     case "open":
                         openTable(spInput[1]); Console.Write("> ");
@@ -466,6 +466,7 @@ namespace TablePos
                             Console.WriteLine($"# Could not initiate purchase: {pres.Message}. Please Retry.");
                         }
                         break;
+                    case "refund":
                     case "yuck":
                         var yuckres = _spi.InitiateRefundTx("yuck-" + DateTime.Now.ToString("o"), 1000);
                         if (!yuckres.Initiated)

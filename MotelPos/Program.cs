@@ -309,7 +309,7 @@ namespace MotelPos
                 var spInput = input.Split(':');
                 string preauthId;
                 InitiateTxResult initRes;
-                switch (spInput[0])
+                switch (spInput[0].ToLower())
                 {
                     case "acct_verify":
                         { }
@@ -417,7 +417,6 @@ namespace MotelPos
                         var gltres = _spi.InitiateGetLastTx();
                         Console.WriteLine(gltres.Initiated ? "# GLT Initiated. Will be updated with Progress." : $"# Could not initiate GLT: {gltres.Message}. Please Retry.");
                         break;
-
 
                     case "tx_sign_accept":
                         _spi.AcceptSignature(true);
