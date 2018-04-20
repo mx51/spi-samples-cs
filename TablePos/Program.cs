@@ -505,7 +505,8 @@ namespace TablePos
                         break;
 
                     case "pair":
-                        _spi.Pair();
+                        var pairingInited = _spi.Pair();
+                        if (!pairingInited) Console.WriteLine($"## -> Could not Start Pairing. Check Settings.");
                         break;
                     case "pair_cancel":
                         _spi.PairingCancel();

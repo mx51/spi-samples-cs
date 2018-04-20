@@ -663,10 +663,8 @@ namespace KebabPos
                     break;
 
                 case "pair":
-                    if (!_spi.Pair())
-                    {
-                        Console.WriteLine($"## -> Could not Start Pairing. Check Settings.");
-                    }
+                    var pairingInited = _spi.Pair();
+                    if (!pairingInited) Console.WriteLine($"## -> Could not Start Pairing. Check Settings.");
                     break;
                 case "pair_cancel":
                     _spi.PairingCancel();
