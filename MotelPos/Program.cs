@@ -306,7 +306,26 @@ namespace MotelPos
             while (!bye)
             {
                 var input = Console.ReadLine();
+                if (string.IsNullOrEmpty(input)) { Console.Write("> "); continue; }
                 var spInput = input.Split(':');
+                try
+                {
+                    bye = ProcessInput(spInput);
+                }
+                catch (SystemException e)
+                {
+                    Console.WriteLine("Could Not Process Input. " + e.Message);
+                    Console.WriteLine("Try Again.");
+                    Console.Write("> ");
+                }
+            }
+            Console.WriteLine("# BaBye!");
+            if (_spiSecrets != null)
+                Console.WriteLine($"{_posId}:{_eftposAddress}:{_spiSecrets.EncKey}:{_spiSecrets.HmacKey}");
+        }
+        
+        private bool ProcessInput(string[] spInput)
+        {   
                 string preauthId;
                 InitiateTxResult initRes;
                 switch (spInput[0].ToLower())
@@ -458,8 +477,7 @@ namespace MotelPos
                         PrintStatusAndActions();
                         break;
                     case "bye":
-                        bye = true;
-                        break;
+                        return true;
                     case "":
                         Console.Write("> ");
                         break;
@@ -468,10 +486,7 @@ namespace MotelPos
                         Console.WriteLine("# I don't understand. Sorry.");
                         break;
                 }
-            }
-            Console.WriteLine("# BaBye!");
-            if (_spiSecrets != null)
-                Console.WriteLine($"{_posId}:{_eftposAddress}:{_spiSecrets.EncKey}:{_spiSecrets.HmacKey}");
+            return false;
         }
 
         private void LoadPersistedState()

@@ -230,13 +230,14 @@ namespace KebabPos
             switch (txState.Success)
             {
                 case Message.SuccessState.Success:
-                    Console.WriteLine($"# REFUND GIVEN - OH WELL!");
+                    Console.WriteLine($"# REFUND GIVEN- OH WELL!");
                     refundResponse = new RefundResponse(txState.Response);
                     Console.WriteLine("# Response: {0}", refundResponse.GetResponseText());
                     Console.WriteLine("# RRN: {0}", refundResponse.GetRRN());
                     Console.WriteLine("# Scheme: {0}", refundResponse.SchemeName);
                     Console.WriteLine("# Customer Receipt:");
                     Console.WriteLine(!refundResponse.WasCustomerReceiptPrinted() ? refundResponse.GetCustomerReceipt().TrimEnd() : "# PRINTED FROM EFTPOS");
+                    Console.WriteLine("# REFUNDED AMOUNT: {0}", refundResponse.GetRefundAmount());
                     break;
                 case Message.SuccessState.Failed:
                     Console.WriteLine($"# REFUND FAILED!");
@@ -578,10 +579,10 @@ namespace KebabPos
                 {
                     bye = ProcessInput(spInput);
                 }
-                catch (FormatException e)
+                catch (SystemException e)
                 {
-                    Console.WriteLine("Could Not Process Input: " + e.ToString());
-                    Console.WriteLine("Try Again");
+                    Console.WriteLine("Could Not Process Input. " + e.Message);
+                    Console.WriteLine("Try Again.");
                     Console.Write("> ");
                 }
             }
