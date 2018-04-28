@@ -603,7 +603,9 @@ namespace KebabPos
                     if (spInput.Length > 3) int.TryParse(spInput[3], out cashoutAmount);
                     var promptForCashout = false;
                     if (spInput.Length > 4) bool.TryParse(spInput[4], out promptForCashout);
-                    var pres = _spi.InitiatePurchaseTxV2("kebab-" + DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss"), int.Parse(spInput[1]), tipAmount, cashoutAmount, promptForCashout);
+                    // posRefId is what you would usually use to identify the order in your own system.
+                    var posRefId = "kebab-" + DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss"); 
+                    var pres = _spi.InitiatePurchaseTxV2(posRefId, int.Parse(spInput[1]), tipAmount, cashoutAmount, promptForCashout);
                     if (!pres.Initiated)
                     {
                         Console.WriteLine($"# Could not initiate purchase: {pres.Message}. Please Retry.");
