@@ -543,10 +543,17 @@ namespace KebabPos
                     Console.WriteLine("# [tx_auth_code:123456] - Submit Phone For Auth Code");
                 }
 
-                if (!txState.Finished && !txState.AttemptingToCancel)
-                    Console.WriteLine("# [tx_cancel] - Attempt to Cancel Tx");
+                if (txState.Finished && txState.Success == Message.SuccessState.Unknown)
+                {
+                    Console.WriteLine("# [ok_retry] - Attempt to Retry Tx");
+                    Console.WriteLine("# [ok_override_paid] - Override As Paid Tx");
+                    Console.WriteLine("# [ok_cancel] - Order As Cancelled Tx");
+                }
 
-                if (txState.Finished)
+                if (!txState.Finished && !txState.AttemptingToCancel)
+                    Console.WriteLine("# [tx_cancel] - Attempt to Cancel Tx");                
+                
+                if (txState.Finished && txState.Success != Message.SuccessState.Unknown)
                     Console.WriteLine("# [ok] - acknowledge final");
             }
 
@@ -597,41 +604,21 @@ namespace KebabPos
             {
                 case "purchase":
                 case "kebab":
-                    var tipAmount = 0;
-                    if (spInput.Length > 2) int.TryParse(spInput[2], out tipAmount);
-                    var cashoutAmount = 0;
-                    if (spInput.Length > 3) int.TryParse(spInput[3], out cashoutAmount);
-                    var promptForCashout = false;
-                    if (spInput.Length > 4) bool.TryParse(spInput[4], out promptForCashout);
-                    // posRefId is what you would usually use to identify the order in your own system.
-                    var posRefId = "kebab-" + DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss"); 
-                    var pres = _spi.InitiatePurchaseTxV2(posRefId, int.Parse(spInput[1]), tipAmount, cashoutAmount, promptForCashout);
-                    if (!pres.Initiated)
-                    {
-                        Console.WriteLine($"# Could not initiate purchase: {pres.Message}. Please Retry.");
-                    }
+                    _retryCmd = spInput;
+                    DoPurchase();
                     break;
                 case "refund":
                 case "yuck":
-                    var yuckres = _spi.InitiateRefundTx("yuck-" + DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss"), int.Parse(spInput[1]));
-                    if (!yuckres.Initiated)
-                    {
-                        Console.WriteLine($"# Could not initiate refund: {yuckres.Message}. Please Retry.");
-                    }
+                    _retryCmd = spInput;
+                    DoRefund();
                     break;
                 case "cashout":
-                    var coRes = _spi.InitiateCashoutOnlyTx("launder-" + DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss"), int.Parse(spInput[1]));
-                    if (!coRes.Initiated)
-                    {
-                        Console.WriteLine($"# Could not initiate cashout: {coRes.Message}. Please Retry.");
-                    }
+                    _retryCmd = spInput;
+                    DoCashout();                    
                     break;
                 case "13kebab":
-                    var motoRed = _spi.InitiateMotoPurchaseTx("kebab-" + DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss"), int.Parse(spInput[1]));
-                    if (!motoRed.Initiated)
-                    {
-                        Console.WriteLine($"# Could not initiate moto purchase: {motoRed.Message}. Please Retry.");
-                    }
+                    _retryCmd = spInput;
+                    DoMoto();                    
                     break;
 
                 case "pos_id":
@@ -745,6 +732,40 @@ namespace KebabPos
                     Console.Clear();
                     PrintStatusAndActions();
                     break;
+                case "ok_retry":
+                    Console.Clear();
+                    _spi.AckFlowEndedAndBackToIdle();
+                    Console.WriteLine($"# Order Cancelled");
+                    if (_spi.CurrentTxFlowState.Type == TransactionType.Purchase)
+                    {
+                        DoPurchase();
+                    }
+                    else if (_spi.CurrentTxFlowState.Type == TransactionType.Refund)
+                    {
+                        DoRefund();
+                    }
+                    else if (_spi.CurrentTxFlowState.Type == TransactionType.CashoutOnly)
+                    {
+                        DoCashout();
+                    }
+                    else if(_spi.CurrentTxFlowState.Type == TransactionType.MOTO)
+                    {
+                        DoMoto();
+                    }
+                    PrintStatusAndActions();
+                    break;
+                case "ok_override_paid":
+                    Console.Clear();
+                    _spi.AckFlowEndedAndBackToIdle();
+                    Console.WriteLine($"# Order Paid");
+                    PrintStatusAndActions();
+                    break;
+                case "ok_cancel":
+                    Console.Clear();
+                    _spi.AckFlowEndedAndBackToIdle();
+                    Console.WriteLine($"# Order Cancelled");
+                    PrintStatusAndActions();
+                    break;
                 case "bye":
                     return true;
                 case "":
@@ -757,6 +778,51 @@ namespace KebabPos
                     break;
             }
             return false;
+        }
+
+        private void DoMoto()
+        {
+            var motoRed = _spi.InitiateMotoPurchaseTx("kebab-" + DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss"), int.Parse(_retryCmd[1]));
+            if (!motoRed.Initiated)
+            {
+                Console.WriteLine($"# Could not initiate moto purchase: {motoRed.Message}. Please Retry.");
+            }
+        }
+
+        private void DoCashout()
+        {
+            var coRes = _spi.InitiateCashoutOnlyTx("launder-" + DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss"), int.Parse(_retryCmd[1]));
+            if (!coRes.Initiated)
+            {
+                Console.WriteLine($"# Could not initiate cashout: {coRes.Message}. Please Retry.");
+            }
+        }
+
+        private void DoRefund()
+        {
+            var yuckres = _spi.InitiateRefundTx("yuck-" + DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss"), int.Parse(_retryCmd[1]));
+            if (!yuckres.Initiated)
+            {
+                Console.WriteLine($"# Could not initiate refund: {yuckres.Message}. Please Retry.");
+            }
+        }
+
+        private void DoPurchase()
+        {
+            var tipAmount = 0;
+            if (_retryCmd.Length > 2) int.TryParse(_retryCmd[2], out tipAmount);
+            var cashoutAmount = 0;
+            if (_retryCmd.Length > 3) int.TryParse(_retryCmd[3], out cashoutAmount);
+            var promptForCashout = false;
+            if (_retryCmd.Length > 4) bool.TryParse(_retryCmd[4], out promptForCashout);
+            // posRefId is what you would usually use to identify the order in your own system.
+            var posRefId = "kebab-" + DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss");
+
+            var pres = _spi.InitiatePurchaseTxV2(posRefId, int.Parse(_retryCmd[1]), tipAmount, cashoutAmount, promptForCashout);
+            if (!pres.Initiated)
+            {
+                Console.WriteLine($"# Could not initiate purchase: {pres.Message}. Please Retry.");
+            }            
         }
 
         private void LoadPersistedState()
@@ -773,6 +839,7 @@ namespace KebabPos
             _spiSecrets = new Secrets(argSplit[2], argSplit[3]);
         }
 
+        private string[] _retryCmd = { };        
         private string[] _lastCmd = { };
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger("spi");
     }
