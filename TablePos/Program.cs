@@ -600,6 +600,8 @@ namespace TablePos
                 return;
             }
 
+            tableId = tableId.Trim();
+
             if (tableToBillMapping.ContainsKey(tableId))
             {
                 Console.WriteLine($"Table Already Open: {billsStore[tableToBillMapping[tableId]]}");
@@ -614,6 +616,7 @@ namespace TablePos
 
         private void addToTable(string tableId, int amountCents)
         {
+            tableId = tableId.Trim();
             if (!tableToBillMapping.ContainsKey(tableId))
             {
                 Console.WriteLine($"Table not Open.");
@@ -627,6 +630,7 @@ namespace TablePos
 
         private void closeTable(string tableId)
         {
+            tableId = tableId.Trim();
             if (!tableToBillMapping.ContainsKey(tableId))
             {
                 Console.WriteLine($"Table not Open.");
@@ -645,6 +649,7 @@ namespace TablePos
 
         private void printTable(string tableId)
         {
+            tableId = tableId.Trim();
             if (!tableToBillMapping.ContainsKey(tableId))
             {
                 Console.WriteLine($"Table not Open.");
@@ -662,6 +667,7 @@ namespace TablePos
 
         private void printBill(string billId)
         {
+            billId = billId.Trim();
             if (!billsStore.ContainsKey(billId))
             {
                 Console.WriteLine($"Bill Not Found.");
