@@ -198,12 +198,12 @@ namespace KebabPos
 
                     break;
                 case Message.SuccessState.Failed:
-                    Console.WriteLine($"# WE DID NOT GET PAID :(");
-                    Console.WriteLine("# Error: {0}", txState.Response.GetError());
-                    Console.WriteLine("# Error Detail: {0}", txState.Response.GetErrorDetail());
+                    Console.WriteLine($"# WE DID NOT GET PAID :(");                    
                     if (txState.Response != null)
                     {
                         purchaseResponse = new PurchaseResponse(txState.Response);
+                        Console.WriteLine("# Error: {0}", txState.Response.GetError());
+                        Console.WriteLine("# Error Detail: {0}", txState.Response.GetErrorDetail());
                         Console.WriteLine("# Response: {0}", purchaseResponse.GetResponseText());
                         Console.WriteLine("# RRN: {0}", purchaseResponse.GetRRN());
                         Console.WriteLine("# Scheme: {0}", purchaseResponse.SchemeName);
@@ -240,12 +240,12 @@ namespace KebabPos
                     Console.WriteLine("# REFUNDED AMOUNT: {0}", refundResponse.GetRefundAmount());
                     break;
                 case Message.SuccessState.Failed:
-                    Console.WriteLine($"# REFUND FAILED!");
-                    Console.WriteLine("# Error: {0}", txState.Response.GetError());
-                    Console.WriteLine("# Error Detail: {0}", txState.Response.GetErrorDetail());
+                    Console.WriteLine($"# REFUND FAILED!");                    
                     if (txState.Response != null)
                     {
                         refundResponse = new RefundResponse(txState.Response);
+                        Console.WriteLine("# Error: {0}", txState.Response.GetError());
+                        Console.WriteLine("# Error Detail: {0}", txState.Response.GetErrorDetail());
                         Console.WriteLine("# Response: {0}", refundResponse.GetResponseText());
                         Console.WriteLine("# RRN: {0}", refundResponse.GetRRN());
                         Console.WriteLine("# Scheme: {0}", refundResponse.SchemeName);
@@ -281,12 +281,12 @@ namespace KebabPos
                     Console.WriteLine("# BANKED CASH AMOUNT: {0}", cashoutResponse.GetBankCashAmount());
                     break;
                 case Message.SuccessState.Failed:
-                    Console.WriteLine($"# CASHOUT FAILED!");
-                    Console.WriteLine("# Error: {0}", txState.Response.GetError());
-                    Console.WriteLine("# Error Detail: {0}", txState.Response.GetErrorDetail());
+                    Console.WriteLine($"# CASHOUT FAILED!");                    
                     if (txState.Response != null)
                     {
                         cashoutResponse = new CashoutOnlyResponse(txState.Response);
+                        Console.WriteLine("# Error: {0}", txState.Response.GetError());
+                        Console.WriteLine("# Error Detail: {0}", txState.Response.GetErrorDetail());                        
                         Console.WriteLine("# Response: {0}", cashoutResponse.GetResponseText());
                         Console.WriteLine("# RRN: {0}", cashoutResponse.GetRRN());
                         Console.WriteLine("# Scheme: {0}", cashoutResponse.SchemeName);
@@ -326,12 +326,12 @@ namespace KebabPos
                     break;
                 case Message.SuccessState.Failed:
                     Console.WriteLine($"# WE DID NOT GET MOTO-PAID :(");
-                    Console.WriteLine("# Error: {0}", txState.Response.GetError());
-                    Console.WriteLine("# Error Detail: {0}", txState.Response.GetErrorDetail());
                     if (txState.Response != null)
                     {
                         motoResponse = new MotoPurchaseResponse(txState.Response);
                         purchaseResponse = motoResponse.PurchaseResponse;
+                        Console.WriteLine("# Error: {0}", txState.Response.GetError());
+                        Console.WriteLine("# Error Detail: {0}", txState.Response.GetErrorDetail());                        
                         Console.WriteLine("# Response: {0}", purchaseResponse.GetResponseText());
                         Console.WriteLine("# RRN: {0}", purchaseResponse.GetRRN());
                         Console.WriteLine("# Scheme: {0}", purchaseResponse.SchemeName);
@@ -503,11 +503,12 @@ namespace KebabPos
             if (_spi.CurrentStatus == SpiStatus.Unpaired && _spi.CurrentFlow == SpiFlow.Idle)
             {
                 Console.WriteLine("# [pos_id:CITYKEBAB1] - Set the POS ID");
-            }
+            }            
 
             if (_spi.CurrentStatus == SpiStatus.Unpaired || _spi.CurrentStatus == SpiStatus.PairedConnecting)
             {
-                Console.WriteLine("# [eftpos_address:10.161.104.104] - Set the EFTPOS ADDRESS");
+                if (!IsUnknownStatus())
+                    Console.WriteLine("# [eftpos_address:10.161.104.104] - Set the EFTPOS ADDRESS");                
             }
 
             if (_spi.CurrentStatus == SpiStatus.Unpaired && _spi.CurrentFlow == SpiFlow.Idle)
@@ -543,7 +544,7 @@ namespace KebabPos
                     Console.WriteLine("# [tx_auth_code:123456] - Submit Phone For Auth Code");
                 }
 
-                if (txState.Finished && txState.Success == Message.SuccessState.Unknown)
+                if (IsUnknownStatus())
                 {
                     Console.WriteLine("# [ok_retry] - Attempt to Retry Tx");
                     Console.WriteLine("# [ok_override_paid] - Override As Paid Tx");
@@ -557,9 +558,21 @@ namespace KebabPos
                     Console.WriteLine("# [ok] - acknowledge final");
             }
 
-            Console.WriteLine("# [status] - reprint buttons/status");
-            Console.WriteLine("# [bye] - exit");
+            if (!IsUnknownStatus())
+            {
+                Console.WriteLine("# [status] - reprint buttons/status");
+                Console.WriteLine("# [bye] - exit");
+            }
+
             Console.WriteLine();
+        }
+
+        private bool IsUnknownStatus()
+        {
+            if (_spi.CurrentFlow == SpiFlow.Transaction)
+                if (_spi.CurrentTxFlowState.Finished && _spi.CurrentTxFlowState.Success == Message.SuccessState.Unknown)
+                    return true;
+            return false;
         }
 
         private void PrintPairingStatus()
