@@ -401,8 +401,8 @@ namespace KebabPos
                         Console.WriteLine("# Terminal Id: " + settleResponse.GetTerminalId());
                         Console.WriteLine("# Total TX Count: " + settleResponse.GetTotalCount());
                         Console.WriteLine($"# Total TX Value: {settleResponse.GetTotalValue() / 100.0}");
-                        Console.WriteLine("# By Aquirer TX Count: " + settleResponse.GetSettleByAquirerCount());
-                        Console.WriteLine($"# By Aquirer TX Value: {settleResponse.GetSettleByAquirerValue() / 100.0}");
+                        Console.WriteLine("# By Aquirer TX Count: " + settleResponse.GetSettleByAcquirerCount());
+                        Console.WriteLine($"# By Aquirer TX Value: {settleResponse.GetSettleByAcquirerValue() / 100.0}");
                         Console.WriteLine("# SCHEME SETTLEMENTS:");
                         var schemes = settleResponse.GetSchemeSettlementEntries();
                         foreach (var s in schemes)
@@ -450,8 +450,8 @@ namespace KebabPos
                         Console.WriteLine("# Terminal Id: " + settleResponse.GetTerminalId());
                         Console.WriteLine("# Total TX Count: " + settleResponse.GetTotalCount());
                         Console.WriteLine($"# Total TX Value: {settleResponse.GetTotalValue() / 100.0}");
-                        Console.WriteLine("# By Aquirer TX Count: " + settleResponse.GetSettleByAquirerCount());
-                        Console.WriteLine($"# By Aquirere TX Value: {settleResponse.GetSettleByAquirerValue() / 100.0}");
+                        Console.WriteLine("# By Aquirer TX Count: " + settleResponse.GetSettleByAcquirerCount());
+                        Console.WriteLine($"# By Aquirere TX Value: {settleResponse.GetSettleByAcquirerValue() / 100.0}");
                         Console.WriteLine("# SCHEME SETTLEMENTS:");
                         var schemes = settleResponse.GetSchemeSettlementEntries();
                         foreach (var s in schemes)
