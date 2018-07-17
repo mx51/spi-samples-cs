@@ -440,19 +440,24 @@ namespace TablePos
                 var spInput = input.Split(':');
                 switch (spInput[0].ToLower())
                 {
-                    case "open":
+                    case "open":                        
+                        if (!CheckInput(spInput, 1)) { break; };
                         openTable(spInput[1]); Console.Write("> ");
                         break;
                     case "close":
+                        if (!CheckInput(spInput, 1)) { break; };
                         closeTable(spInput[1]); Console.Write("> ");
                         break;
                     case "add":
+                        if (!CheckInput(spInput, 1)) { break; };
                         addToTable(spInput[1], int.Parse(spInput[2])); Console.Write("> ");
                         break;
                     case "table":
+                        if (!CheckInput(spInput, 1)) { break; };
                         printTable(spInput[1]); Console.Write("> ");
                         break;
                     case "bill":
+                        if (!CheckInput(spInput, 1)) { break; };
                         printBill(spInput[1]); Console.Write("> ");
                         break;
                     case "tables":
@@ -460,6 +465,7 @@ namespace TablePos
                         break;
 
                     case "purchase":
+                        if (!CheckInput(spInput, 1)) { break; };
                         var pres = _spi.InitiatePurchaseTxV2("purchase-" + DateTime.Now.ToString("o"), int.Parse(spInput[1]), 0, 0, false);
                         if (!pres.Initiated)
                         {
@@ -477,6 +483,7 @@ namespace TablePos
 
                     case "pos_id":
                         Console.Clear();
+                        if (!CheckInput(spInput, 1)) { break; };
                         if (_spi.SetPosId(spInput[1]))
                         {
                             _posId = spInput[1];
@@ -491,6 +498,7 @@ namespace TablePos
                         break;
                     case "eftpos_address":
                         Console.Clear();
+                        if (!CheckInput(spInput, 1)) { break; };
                         if (_spi.SetEftposAddress(spInput[1]))
                         {
                             _eftposAddress = spInput[1];
@@ -566,12 +574,34 @@ namespace TablePos
                 Console.WriteLine($"{_posId}:{_eftposAddress}:{_spiSecrets.EncKey}:{_spiSecrets.HmacKey}");
         }
 
+        private bool CheckInput(string[] input, int paramCount)
+        {
+            if (input.Length <= paramCount)
+            {
+                Console.WriteLine("# I don't understand. Sorry.");
+                Console.Write("> ");
+                return false;
+            }
+
+            return true;
+        }
+
         #endregion
 
         #region My Pos Functions
 
         private void openTable(string tableId)
         {
+            int tableIdInt;
+            int.TryParse(tableId, out tableIdInt);
+            if (tableIdInt <= 0)
+            {
+                Console.WriteLine("Incorrect Table Id!");
+                return;
+            }
+
+            tableId = tableId.Trim();
+
             if (tableToBillMapping.ContainsKey(tableId))
             {
                 Console.WriteLine($"Table Already Open: {billsStore[tableToBillMapping[tableId]]}");
@@ -586,6 +616,7 @@ namespace TablePos
 
         private void addToTable(string tableId, int amountCents)
         {
+            tableId = tableId.Trim();
             if (!tableToBillMapping.ContainsKey(tableId))
             {
                 Console.WriteLine($"Table not Open.");
@@ -599,6 +630,7 @@ namespace TablePos
 
         private void closeTable(string tableId)
         {
+            tableId = tableId.Trim();
             if (!tableToBillMapping.ContainsKey(tableId))
             {
                 Console.WriteLine($"Table not Open.");
@@ -617,6 +649,7 @@ namespace TablePos
 
         private void printTable(string tableId)
         {
+            tableId = tableId.Trim();
             if (!tableToBillMapping.ContainsKey(tableId))
             {
                 Console.WriteLine($"Table not Open.");
@@ -634,6 +667,7 @@ namespace TablePos
 
         private void printBill(string billId)
         {
+            billId = billId.Trim();
             if (!billsStore.ContainsKey(billId))
             {
                 Console.WriteLine($"Bill Not Found.");
