@@ -26,3 +26,5 @@ using System.Runtime.CompilerServices;
 //[assembly: AssemblyKeyFile("")]
 
 [assembly: log4net.Config.XmlConfigurator(Watch = true)]
+[assembly: AssemblyFileVersion("2.1.0")]
+

@@ -27,7 +27,7 @@
     <ExternalConsole>true</ExternalConsole>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SPIClient, Version=2.1.4.31613, Culture=neutral, PublicKeyToken=edf39156ce36eff9">
+    <Reference Include="SPIClient, Version=2.1.5.26716, Culture=neutral, PublicKeyToken=edf39156ce36eff9, processorArchitecture=MSIL">
       <HintPath>..\packages\SPIClient.2.1.4\lib\net40\SPIClient.dll</HintPath>
     </Reference>
     <Reference Include="System" />

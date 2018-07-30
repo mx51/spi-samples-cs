@@ -192,6 +192,7 @@ namespace KebabPos
                     Console.WriteLine(!purchaseResponse.WasCustomerReceiptPrinted() ? purchaseResponse.GetCustomerReceipt().TrimEnd() : "# PRINTED FROM EFTPOS");
                     Console.WriteLine("# PURCHASE: {0}", purchaseResponse.GetPurchaseAmount());
                     Console.WriteLine("# TIP: {0}", purchaseResponse.GetTipAmount());
+                    Console.WriteLine("# SURCHARGE: {0}", purchaseResponse.GetSurchargeAmount());
                     Console.WriteLine("# CASHOUT: {0}", purchaseResponse.GetCashoutAmount());
                     Console.WriteLine("# BANKED NON-CASH AMOUNT: {0}", purchaseResponse.GetBankNonCashAmount());
                     Console.WriteLine("# BANKED CASH AMOUNT: {0}", purchaseResponse.GetBankCashAmount());
