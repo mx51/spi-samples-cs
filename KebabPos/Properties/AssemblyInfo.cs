@@ -25,6 +25,7 @@ using System.Runtime.CompilerServices;
 //[assembly: AssemblyDelaySign(false)]
 //[assembly: AssemblyKeyFile("")]
 
+[assembly: log4net.Config.Repository("SPIClient")]
 [assembly: log4net.Config.XmlConfigurator(Watch = true)]
 [assembly: AssemblyFileVersion("2.1.6")]
 
