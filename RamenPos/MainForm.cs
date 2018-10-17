@@ -49,6 +49,23 @@ namespace RamenPos
             GetDeviceIpAddress(DeviceIpAddressRequest());
         }
 
+        private void chkAutoIpAddress_CheckedChanged(object sender, EventArgs e)
+        {
+            txtIpAddress.ResetText();
+            if (chkAutoIpAddress.Checked)
+            {
+                txtIpAddress.Enabled = false;
+                txtIpAddress.BackColor = Color.LightGray;
+                btnResolveIpAddress.Enabled = true;
+            }
+            else
+            {
+                txtIpAddress.Enabled = true;
+                txtIpAddress.BackColor = Color.White;
+                btnResolveIpAddress.Enabled = false;
+            }
+        }
+
         private bool ValidateControls()
         {
             var valid = true;
@@ -79,22 +96,9 @@ namespace RamenPos
 
             return valid;
         }
+
         #endregion
 
-        private void chkAutoIpAddress_CheckedChanged(object sender, EventArgs e)
-        {
-            if (chkAutoIpAddress.Checked)
-            {
-                txtIpAddress.Enabled = false;
-                txtIpAddress.BackColor = Color.LightGray;
-            }
-            else
-            {
-                txtIpAddress.ResetText();
-                txtIpAddress.Enabled = true;
-                txtIpAddress.BackColor = Color.White;
-            }
-        }
 
         #region SPI Client
         private void InitialiseSpi()
