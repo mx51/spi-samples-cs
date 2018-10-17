@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MotelPos", "MotelPos\MotelP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TablePos", "TablePos\TablePos.csproj", "{4C93962A-0BD3-4F1B-8533-B92EC56C0E54}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RamenPos", "RamenPos\RamenPos.csproj", "{5F996002-5688-46A1-BECC-9FB043239FC0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{4C93962A-0BD3-4F1B-8533-B92EC56C0E54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C93962A-0BD3-4F1B-8533-B92EC56C0E54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C93962A-0BD3-4F1B-8533-B92EC56C0E54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F996002-5688-46A1-BECC-9FB043239FC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F996002-5688-46A1-BECC-9FB043239FC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F996002-5688-46A1-BECC-9FB043239FC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F996002-5688-46A1-BECC-9FB043239FC0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
