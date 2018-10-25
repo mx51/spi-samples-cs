@@ -55,6 +55,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -83,7 +84,7 @@
     <None Include="Resources\450191.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\fork-spi-client-windows\spi-client-windows\SPIClient\SPIClient.csproj">
+    <ProjectReference Include="..\..\..\spi-client-windows\spi-client-windows\SPIClient\SPIClient.csproj">
       <Project>{3bb60a49-eba4-4099-8756-95a654a9329e}</Project>
       <Name>SPIClient</Name>
     </ProjectReference>

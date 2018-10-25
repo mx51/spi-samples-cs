@@ -3,75 +3,56 @@ using System.Drawing;
 using System.Windows.Forms;
 using SPIClient;
 using SPIClient.Service;
+using Message = SPIClient.Message;
 
 namespace RamenPos
 {
     public partial class RamenPos : RamenForm
     {
-        private const string ApiKey = "RamenPosDeviceIpApiKey"; // this key needs to be requested from Assembly Payments
+        private const string ApiKey = "RamenPosDeviceAddressApiKey"; // this key needs to be requested from Assembly Payments
 
         public RamenPos()
         {
             InitializeComponent();
-            InitialiseSpi();
+            Start();
         }
 
-        private DeviceIpAddressRequest DeviceIpAddressRequest()
+        #region Form Controls
+        /// <summary>
+        /// This will trigger auto address resolution
+        /// </summary>
+        private void btnSave_Click(object sender, EventArgs e)
         {
-            return new DeviceIpAddressRequest
-            {
-                ApiKey = ApiKey,
-                SerialNumber = SerialNumber
-            };
-        }
-
-        #region User Controls
-        private void btnPair_Click(object sender, EventArgs e)
-        {
-            if (!ValidateControls())
-                return;
-
-            // spi already initiated, set values
-            SpiClient.SetEftposAddress(EftposAddress);
-            SpiClient.SetPosId(PosId);
-
-            SpiClient.Pair();
-        }
-
-        private void btnResolveIpAddress_Click(object sender, EventArgs e)
-        {
-            if (!ValidateControls())
-                return;
-
-            if (!chkAutoIpAddress.Checked)
-                return;
-
-            GetDeviceIpAddress(DeviceIpAddressRequest());
+            SpiClient.SetAutoAddressResolution(AutoAddressEnabled); // trigger auto address 
+            SpiClient.SetSerialNumber(SerialNumber); // trigger auto address
         }
 
         private void chkAutoIpAddress_CheckedChanged(object sender, EventArgs e)
         {
-            txtIpAddress.ResetText();
-            if (chkAutoIpAddress.Checked)
-            {
-                txtIpAddress.Enabled = false;
-                txtIpAddress.BackColor = Color.LightGray;
-                btnResolveIpAddress.Enabled = true;
-            }
-            else
-            {
-                txtIpAddress.Enabled = true;
-                txtIpAddress.BackColor = Color.White;
-                btnResolveIpAddress.Enabled = false;
-            }
+            btnSave.Enabled = chkAutoAddress.Checked;
+            txtAddress.Enabled = !chkAutoAddress.Checked;
+            txtAddress.BackColor = chkAutoAddress.Checked ? Color.LightGray : Color.White;
         }
 
-        private bool ValidateControls()
+        private void btnPair_Click(object sender, EventArgs e)
+        {
+            if (!AreControlsValid())
+                return;
+
+            SpiClient.SetPosId(PosId);
+            SpiClient.SetSerialNumber(SerialNumber);
+            SpiClient.SetEftposAddress(EftposAddress);
+
+            SpiClient.Pair();
+        }
+
+        private bool AreControlsValid()
         {
             var valid = true;
 
+            AutoAddressEnabled = chkAutoAddress.Checked;
             PosId = txtPosId.Text;
-            EftposAddress = txtIpAddress.Text;
+            EftposAddress = txtAddress.Text;
             SerialNumber = txtSerialNumber.Text;
 
             errorProvider.Clear();
@@ -82,30 +63,28 @@ namespace RamenPos
                 valid = false;
             }
 
-            if (chkAutoIpAddress.Checked && string.IsNullOrWhiteSpace(SerialNumber))
+            if (chkAutoAddress.Checked && string.IsNullOrWhiteSpace(SerialNumber))
             {
                 errorProvider.SetError(txtSerialNumber, "Please provide a Serial Number");
                 valid = false;
             }
 
-            if (!chkAutoIpAddress.Checked && string.IsNullOrWhiteSpace(EftposAddress))
+            if (string.IsNullOrWhiteSpace(EftposAddress))
             {
-                errorProvider.SetError(chkAutoIpAddress, "Please provide a IP Address or enable Auto IP detection");
+                errorProvider.SetError(chkAutoAddress, "Please provide an address or enable auto address detection");
                 valid = false;
             }
 
             return valid;
         }
-
         #endregion
 
-
         #region SPI Client
-        private void InitialiseSpi()
+        private void Start()
         {
-            SpiClient = new Spi(PosId, EftposAddress, Secrets, DeviceIpAddressRequest());
+            SpiClient = new Spi(PosId, SerialNumber, EftposAddress, Secrets);
 
-            SpiClient.DeviceIpAddressChanged += OnDeviceIpAddressChanged;
+            SpiClient.DeviceAddressChanged += OnDeviceAddressChanged;
             SpiClient.StatusChanged += OnSpiStatusChanged;
             SpiClient.PairingFlowStateChanged += OnPairingFlowStateChanged;
             SpiClient.SecretsChanged += OnSecretsChanged;
@@ -113,22 +92,20 @@ namespace RamenPos
             SpiClient.Start();
         }
 
-        private void GetDeviceIpAddress(DeviceIpAddressRequest deviceIpAddressRequest)
+        private void OnDeviceAddressChanged(object sender, DeviceAddressStatus e)
         {
-            if (!chkAutoIpAddress.Checked)
-                return;
-
-            SpiClient.AutoIpResolutionEnable = true;
-            SpiClient.GetDeviceIpAddress(deviceIpAddressRequest);
-            SpiClient.SetEftposAddress(EftposAddress);
+            if (!string.IsNullOrWhiteSpace(e?.Address))
+                txtAddress.Text = e.Address;
         }
 
         private void OnTxFlowStateChanged(object sender, TransactionFlowState e)
         {
+            MessageBox.Show("1");
         }
 
         private void OnSecretsChanged(object sender, Secrets e)
         {
+            MessageBox.Show("2");
         }
 
         private void OnPairingFlowStateChanged(object sender, PairingFlowState e)
@@ -147,15 +124,10 @@ namespace RamenPos
 
         private void OnSpiStatusChanged(object sender, SpiStatusEventArgs e)
         {
+            MessageBox.Show("3");
         }
 
-        private void OnDeviceIpAddressChanged(object sender, DeviceIpAddressStatus e)
-        {
-            txtIpAddress.Text = e?.Ip;
-            EftposAddress = e?.Ip;
-        }
 
         #endregion
-
     }
 }

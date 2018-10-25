@@ -35,13 +35,13 @@
             this.txtPosId = new System.Windows.Forms.TextBox();
             this.txtSerialNumber = new System.Windows.Forms.TextBox();
             this.lblSerialNumber = new System.Windows.Forms.Label();
-            this.lblIpAddress = new System.Windows.Forms.Label();
-            this.chkAutoIpAddress = new System.Windows.Forms.CheckBox();
-            this.txtIpAddress = new System.Windows.Forms.TextBox();
+            this.lblEftposAddress = new System.Windows.Forms.Label();
+            this.chkAutoAddress = new System.Windows.Forms.CheckBox();
+            this.txtAddress = new System.Windows.Forms.TextBox();
             this.btnPair = new System.Windows.Forms.Button();
             this.lblDescription = new System.Windows.Forms.Label();
             this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
-            this.btnResolveIpAddress = new System.Windows.Forms.Button();
+            this.btnSave = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pbRamenPos)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
             this.SuspendLayout();
@@ -94,40 +94,40 @@
             this.lblSerialNumber.TabIndex = 4;
             this.lblSerialNumber.Text = "SERIAL NUMBER";
             // 
-            // lblIpAddress
+            // lblEftposAddress
             // 
-            this.lblIpAddress.AutoSize = true;
-            this.lblIpAddress.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblIpAddress.Location = new System.Drawing.Point(459, 205);
-            this.lblIpAddress.Name = "lblIpAddress";
-            this.lblIpAddress.Size = new System.Drawing.Size(86, 16);
-            this.lblIpAddress.TabIndex = 5;
-            this.lblIpAddress.Text = "IP ADDRESS";
+            this.lblEftposAddress.AutoSize = true;
+            this.lblEftposAddress.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblEftposAddress.Location = new System.Drawing.Point(459, 205);
+            this.lblEftposAddress.Name = "lblEftposAddress";
+            this.lblEftposAddress.Size = new System.Drawing.Size(126, 16);
+            this.lblEftposAddress.TabIndex = 5;
+            this.lblEftposAddress.Text = "EFTPOS ADDRESS";
             // 
-            // chkAutoIpAddress
+            // chkAutoAddress
             // 
-            this.chkAutoIpAddress.AutoSize = true;
-            this.chkAutoIpAddress.Checked = true;
-            this.chkAutoIpAddress.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkAutoIpAddress.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkAutoIpAddress.Location = new System.Drawing.Point(658, 228);
-            this.chkAutoIpAddress.Name = "chkAutoIpAddress";
-            this.chkAutoIpAddress.Size = new System.Drawing.Size(54, 20);
-            this.chkAutoIpAddress.TabIndex = 6;
-            this.chkAutoIpAddress.Text = "Auto";
-            this.chkAutoIpAddress.UseVisualStyleBackColor = true;
-            this.chkAutoIpAddress.CheckedChanged += new System.EventHandler(this.chkAutoIpAddress_CheckedChanged);
+            this.chkAutoAddress.AutoSize = true;
+            this.chkAutoAddress.Checked = true;
+            this.chkAutoAddress.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkAutoAddress.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkAutoAddress.Location = new System.Drawing.Point(658, 228);
+            this.chkAutoAddress.Name = "chkAutoAddress";
+            this.chkAutoAddress.Size = new System.Drawing.Size(54, 20);
+            this.chkAutoAddress.TabIndex = 6;
+            this.chkAutoAddress.Text = "Auto";
+            this.chkAutoAddress.UseVisualStyleBackColor = true;
+            this.chkAutoAddress.CheckedChanged += new System.EventHandler(this.chkAutoIpAddress_CheckedChanged);
             // 
-            // txtIpAddress
+            // txtAddress
             // 
-            this.txtIpAddress.BackColor = System.Drawing.Color.LightGray;
-            this.txtIpAddress.Enabled = false;
-            this.txtIpAddress.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtIpAddress.Location = new System.Drawing.Point(462, 226);
-            this.txtIpAddress.MaxLength = 20;
-            this.txtIpAddress.Name = "txtIpAddress";
-            this.txtIpAddress.Size = new System.Drawing.Size(190, 22);
-            this.txtIpAddress.TabIndex = 7;
+            this.txtAddress.BackColor = System.Drawing.Color.LightGray;
+            this.txtAddress.Enabled = false;
+            this.txtAddress.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtAddress.Location = new System.Drawing.Point(462, 226);
+            this.txtAddress.MaxLength = 20;
+            this.txtAddress.Name = "txtAddress";
+            this.txtAddress.Size = new System.Drawing.Size(190, 22);
+            this.txtAddress.TabIndex = 7;
             // 
             // btnPair
             // 
@@ -160,29 +160,29 @@
             this.errorProvider.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
             this.errorProvider.ContainerControl = this;
             // 
-            // btnResolveIpAddress
+            // btnSave
             // 
-            this.btnResolveIpAddress.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.btnResolveIpAddress.Font = new System.Drawing.Font("Arial", 8F);
-            this.btnResolveIpAddress.Location = new System.Drawing.Point(614, 254);
-            this.btnResolveIpAddress.Name = "btnResolveIpAddress";
-            this.btnResolveIpAddress.Size = new System.Drawing.Size(98, 42);
-            this.btnResolveIpAddress.TabIndex = 10;
-            this.btnResolveIpAddress.Text = "Resolve IP";
-            this.btnResolveIpAddress.UseVisualStyleBackColor = false;
-            this.btnResolveIpAddress.Click += new System.EventHandler(this.btnResolveIpAddress_Click);
+            this.btnSave.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.btnSave.Font = new System.Drawing.Font("Arial", 8F);
+            this.btnSave.Location = new System.Drawing.Point(614, 254);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(98, 42);
+            this.btnSave.TabIndex = 10;
+            this.btnSave.Text = "Save";
+            this.btnSave.UseVisualStyleBackColor = false;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // RamenPos
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(744, 467);
-            this.Controls.Add(this.btnResolveIpAddress);
+            this.Controls.Add(this.btnSave);
             this.Controls.Add(this.lblDescription);
             this.Controls.Add(this.btnPair);
-            this.Controls.Add(this.txtIpAddress);
-            this.Controls.Add(this.chkAutoIpAddress);
-            this.Controls.Add(this.lblIpAddress);
+            this.Controls.Add(this.txtAddress);
+            this.Controls.Add(this.chkAutoAddress);
+            this.Controls.Add(this.lblEftposAddress);
             this.Controls.Add(this.lblSerialNumber);
             this.Controls.Add(this.txtSerialNumber);
             this.Controls.Add(this.txtPosId);
@@ -208,13 +208,13 @@
         private System.Windows.Forms.TextBox txtPosId;
         private System.Windows.Forms.TextBox txtSerialNumber;
         private System.Windows.Forms.Label lblSerialNumber;
-        private System.Windows.Forms.Label lblIpAddress;
-        private System.Windows.Forms.CheckBox chkAutoIpAddress;
-        private System.Windows.Forms.TextBox txtIpAddress;
+        private System.Windows.Forms.Label lblEftposAddress;
+        private System.Windows.Forms.CheckBox chkAutoAddress;
+        private System.Windows.Forms.TextBox txtAddress;
         private System.Windows.Forms.Button btnPair;
         private System.Windows.Forms.Label lblDescription;
         private System.Windows.Forms.ErrorProvider errorProvider;
-        private System.Windows.Forms.Button btnResolveIpAddress;
+        private System.Windows.Forms.Button btnSave;
     }
 }
 

@@ -30,5 +30,6 @@ namespace RamenPos
         internal string EftposAddress { get; set; }
         internal Secrets Secrets { get; set; }
         internal string SerialNumber { get; set; }
+        internal bool AutoAddressEnabled { get; set; }
     }
 }
