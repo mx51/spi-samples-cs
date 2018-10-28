@@ -10,6 +10,7 @@ namespace RamenPos
     public partial class RamenPos : RamenForm
     {
         private const string ApiKey = "RamenPosDeviceAddressApiKey"; // this key needs to be requested from Assembly Payments
+        private const string AcquirerCode = "wbc";
 
         public RamenPos()
         {
@@ -23,6 +24,10 @@ namespace RamenPos
         /// </summary>
         private void btnSave_Click(object sender, EventArgs e)
         {
+            if (!AreControlsValid(false))
+                return;
+
+            SpiClient.SetTestMode(chkTestMode.Checked);
             SpiClient.SetAutoAddressResolution(AutoAddressEnabled); // trigger auto address 
             SpiClient.SetSerialNumber(SerialNumber); // trigger auto address
         }
@@ -30,13 +35,13 @@ namespace RamenPos
         private void chkAutoIpAddress_CheckedChanged(object sender, EventArgs e)
         {
             btnSave.Enabled = chkAutoAddress.Checked;
-            txtAddress.Enabled = !chkAutoAddress.Checked;
-            txtAddress.BackColor = chkAutoAddress.Checked ? Color.LightGray : Color.White;
+            chkTestMode.Checked = chkAutoAddress.Checked;
+            chkTestMode.Enabled = chkAutoAddress.Checked;
         }
 
         private void btnPair_Click(object sender, EventArgs e)
         {
-            if (!AreControlsValid())
+            if (!AreControlsValid(true))
                 return;
 
             SpiClient.SetPosId(PosId);
@@ -44,9 +49,10 @@ namespace RamenPos
             SpiClient.SetEftposAddress(EftposAddress);
 
             SpiClient.Pair();
+            this.Enabled = false;
         }
 
-        private bool AreControlsValid()
+        private bool AreControlsValid(bool isPairing)
         {
             var valid = true;
 
@@ -57,6 +63,12 @@ namespace RamenPos
 
             errorProvider.Clear();
 
+            if (isPairing && string.IsNullOrWhiteSpace(EftposAddress))
+            {
+                errorProvider.SetError(txtAddress, "Please enable auto address resolution or enter a device address");
+                valid = false;
+            }
+
             if (string.IsNullOrWhiteSpace(PosId))
             {
                 errorProvider.SetError(txtPosId, "Please provide a Pos Id");
@@ -66,12 +78,6 @@ namespace RamenPos
             if (chkAutoAddress.Checked && string.IsNullOrWhiteSpace(SerialNumber))
             {
                 errorProvider.SetError(txtSerialNumber, "Please provide a Serial Number");
-                valid = false;
-            }
-
-            if (string.IsNullOrWhiteSpace(EftposAddress))
-            {
-                errorProvider.SetError(chkAutoAddress, "Please provide an address or enable auto address detection");
                 valid = false;
             }
 
@@ -89,45 +95,105 @@ namespace RamenPos
             SpiClient.PairingFlowStateChanged += OnPairingFlowStateChanged;
             SpiClient.SecretsChanged += OnSecretsChanged;
             SpiClient.TxFlowStateChanged += OnTxFlowStateChanged;
+            
+            // initialise auto ip
+            SpiClient.SetAcquirerCode(AcquirerCode);
+            SpiClient.SetDeviceApiKey(ApiKey);
+
             SpiClient.Start();
         }
 
         private void OnDeviceAddressChanged(object sender, DeviceAddressStatus e)
         {
             if (!string.IsNullOrWhiteSpace(e?.Address))
+            {
                 txtAddress.Text = e.Address;
+                MessageBox.Show($@"Device Address has been updated to {e.Address}", @"Device Address Updated");
+            }
         }
 
         private void OnTxFlowStateChanged(object sender, TransactionFlowState e)
         {
-            MessageBox.Show("1");
+            SpiFlowInfo();
+            SpiPairingStatus();
         }
 
         private void OnSecretsChanged(object sender, Secrets e)
         {
-            MessageBox.Show("2");
+            SpiFlowInfo();
+            SpiPairingStatus();
         }
 
         private void OnPairingFlowStateChanged(object sender, PairingFlowState e)
         {
-            if (SpiClient.CurrentFlow != SpiFlow.Pairing || !SpiClient.CurrentPairingFlowState.AwaitingCheckFromPos)
-                return;
-
-            var result = MessageBox.Show(SpiClient.CurrentPairingFlowState.ConfirmationCode, @"Confirmation Code",
-                MessageBoxButtons.YesNo);
-
-            if (result == DialogResult.Yes)
-                SpiClient.PairingConfirmCode();
-            else
-                SpiClient.PairingCancel();
+            SpiActions();
+            SpiPairingStatus();
         }
 
         private void OnSpiStatusChanged(object sender, SpiStatusEventArgs e)
         {
-            MessageBox.Show("3");
+            SpiFlowInfo();
+            SpiActions();
+            SpiPairingStatus();
         }
 
+        private void SpiFlowInfo()
+        {
+            switch (SpiClient.CurrentFlow)
+            {
+                case SpiFlow.Pairing:
+                    var pairingState = SpiClient.CurrentPairingFlowState;
+                    System.Diagnostics.Debug.WriteLine("### PAIRING PROCESS UPDATE ###");
+                    System.Diagnostics.Debug.WriteLine($"# {pairingState.Message}");
+                    System.Diagnostics.Debug.WriteLine($"# Finished? {pairingState.Finished}");
+                    System.Diagnostics.Debug.WriteLine($"# Successful? {pairingState.Successful}");
+                    System.Diagnostics.Debug.WriteLine($"# Confirmation Code: {pairingState.ConfirmationCode}");
+                    System.Diagnostics.Debug.WriteLine(
+                        $"# Waiting Confirm from Eftpos? {pairingState.AwaitingCheckFromEftpos}");
+                    System.Diagnostics.Debug.WriteLine(
+                        $"# Waiting Confirm from POS? {pairingState.AwaitingCheckFromPos}");
+                    break;
+                case SpiFlow.Transaction:
+                    break;
+                case SpiFlow.Idle:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
 
+        private void SpiActions()
+        {
+            if (SpiClient.CurrentFlow != SpiFlow.Pairing)
+            {
+                Invoke(new Action(() => this.Enabled = true));
+                return;
+            }
+
+            // checking for confirmation code
+            if (SpiClient.CurrentPairingFlowState.AwaitingCheckFromPos)
+            {
+                var result = MessageBox.Show($@"Confirm Pairing Code : {SpiClient.CurrentPairingFlowState.ConfirmationCode}", @"Please confirm pairing",
+                    MessageBoxButtons.YesNo);
+
+                if (result == DialogResult.Yes)
+                    SpiClient.PairingConfirmCode();
+                else
+                    SpiClient.PairingCancel();
+            }
+
+            // paired
+            if (SpiClient.CurrentStatus == SpiStatus.PairedConnecting && SpiClient.CurrentFlow == SpiFlow.Idle)
+            {
+                Invoke(new Action(() => this.Enabled = true));
+                btnPair.Text = "Unpair";
+            }
+        }
+
+        private void SpiPairingStatus()
+        {
+            Invoke(new Action(() => lblPairingStatus.Text = SpiClient.CurrentStatus.ToString()));
+        }
         #endregion
     }
 }
