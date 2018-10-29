@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace AcmePosWF.Properties
+namespace RamenPos.Properties
 {
 
 

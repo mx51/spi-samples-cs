@@ -1,16 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.0.0
-MinimumVisualStudioVersion = 10.0.0.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcmePosCs", "AcmePosCs\AcmePosCs.csproj", "{97E0041F-9050-4314-A619-1187B145B05D}"
-EndProject
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2046
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4403BC3E-C6EB-4B6C-963B-5BC3C2BB9419}"
 	ProjectSection(SolutionItems) = preProject
 		Readme.md = Readme.md
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcmePosWF", "AcmePosWF\AcmePosWF.csproj", "{4FCAB0D7-0E2C-41FE-92CD-A1223390A70A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KebabPos", "KebabPos\KebabPos.csproj", "{5CC27880-DC49-4B9A-8442-8E4684E8B566}"
 EndProject
@@ -18,20 +14,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MotelPos", "MotelPos\MotelP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TablePos", "TablePos\TablePos.csproj", "{4C93962A-0BD3-4F1B-8533-B92EC56C0E54}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RamenPos", "RamenPos\RamenPos.csproj", "{5F996002-5688-46A1-BECC-9FB043239FC0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPIClient", "..\..\spi-client-windows\spi-client-windows\SPIClient\SPIClient.csproj", "{3BB60A49-EBA4-4099-8756-95A654A9329E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{97E0041F-9050-4314-A619-1187B145B05D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{97E0041F-9050-4314-A619-1187B145B05D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{97E0041F-9050-4314-A619-1187B145B05D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{97E0041F-9050-4314-A619-1187B145B05D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4FCAB0D7-0E2C-41FE-92CD-A1223390A70A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4FCAB0D7-0E2C-41FE-92CD-A1223390A70A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4FCAB0D7-0E2C-41FE-92CD-A1223390A70A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4FCAB0D7-0E2C-41FE-92CD-A1223390A70A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5CC27880-DC49-4B9A-8442-8E4684E8B566}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5CC27880-DC49-4B9A-8442-8E4684E8B566}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CC27880-DC49-4B9A-8442-8E4684E8B566}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -44,8 +36,19 @@ Global
 		{4C93962A-0BD3-4F1B-8533-B92EC56C0E54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C93962A-0BD3-4F1B-8533-B92EC56C0E54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C93962A-0BD3-4F1B-8533-B92EC56C0E54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F996002-5688-46A1-BECC-9FB043239FC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F996002-5688-46A1-BECC-9FB043239FC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F996002-5688-46A1-BECC-9FB043239FC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F996002-5688-46A1-BECC-9FB043239FC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BB60A49-EBA4-4099-8756-95A654A9329E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BB60A49-EBA4-4099-8756-95A654A9329E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BB60A49-EBA4-4099-8756-95A654A9329E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BB60A49-EBA4-4099-8756-95A654A9329E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BBA9E33C-A7DD-41B3-B692-DD20F08E02EC}
 	EndGlobalSection
 EndGlobal
