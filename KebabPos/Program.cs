@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Reflection;
 using SPIClient;
-using SPIClient.Service;
-
 
 namespace KebabPos
 {
@@ -30,7 +28,6 @@ namespace KebabPos
 
         private Spi _spi;
         private string _posId = "KEBABPOS1";
-        private string _serialNumber = "patest1";
         private string _eftposAddress = "192.168.1.1";
         private Secrets _spiSecrets = null;
 
@@ -41,29 +38,18 @@ namespace KebabPos
             log.Info("Starting KebabPos...");
             LoadPersistedState();
 
-            _spi = new Spi(_posId, _serialNumber, _eftposAddress, _spiSecrets); // It is ok to not have the secrets yet to start with.
-
-            _spi.DeviceAddressChanged += DeviceAddressChanged;
+            _spi = new Spi(_posId, _eftposAddress, _spiSecrets); // It is ok to not have the secrets yet to start with.
             _spi.StatusChanged += OnSpiStatusChanged;
             _spi.PairingFlowStateChanged += OnPairingFlowStateChanged;
             _spi.SecretsChanged += OnSecretsChanged;
             _spi.TxFlowStateChanged += OnTxFlowStateChanged;
             _spi.Start();
 
-            _spi.SetSerialNumber("patest1");
-            _spi.SetDeviceApiKey("KebabPosAutoResolutionTesting");
-            _spi.SetAutoAddressResolution(true);
-
             Console.Clear();
             Console.WriteLine("# Welcome to KebabPos !");
             PrintStatusAndActions();
             Console.Write("> ");
             AcceptUserInput();
-        }
-
-        private void DeviceAddressChanged(object sender, DeviceAddressStatus e)
-        {
-            _spi.Pair();
         }
 
         private void OnTxFlowStateChanged(object sender, TransactionFlowState txState)
