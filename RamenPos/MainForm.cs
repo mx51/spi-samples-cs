@@ -568,10 +568,12 @@ namespace RamenPos
         {
             ActionsForm.listBoxFlow.Items.Clear();
 
+
             switch (SpiClient.CurrentFlow)
             {
-                case SpiFlow.Pairing:
+                case SpiFlow.Pairing:                    
                     var pairingState = SpiClient.CurrentPairingFlowState;
+                    ActionsForm.lblFlowMessage.Text = pairingState.Message;
                     ActionsForm.listBoxFlow.Items.Add("### PAIRING PROCESS UPDATE ###");
                     ActionsForm.listBoxFlow.Items.Add($"# {pairingState.Message}");
                     ActionsForm.listBoxFlow.Items.Add($"# Finished? {pairingState.Finished}");
@@ -581,8 +583,9 @@ namespace RamenPos
                     ActionsForm.listBoxFlow.Items.Add($"# Waiting Confirm from POS? {pairingState.AwaitingCheckFromPos}");
                     break;
 
-                case SpiFlow.Transaction:
+                case SpiFlow.Transaction:                    
                     var txState = SpiClient.CurrentTxFlowState;
+                    ActionsForm.lblFlowMessage.Text = txState.DisplayMessage;
                     ActionsForm.listBoxFlow.Items.Add("### TX PROCESS UPDATE ###");
                     ActionsForm.listBoxFlow.Items.Add($"# {txState.DisplayMessage}");
                     ActionsForm.listBoxFlow.Items.Add($"# Id: {txState.PosRefId}");
