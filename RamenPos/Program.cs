@@ -1,7 +1,6 @@
-﻿using System;
+﻿using SPIClient;
+using System;
 using System.Windows.Forms;
-using SPIClient;
-using SPIClient.Service;
 
 namespace RamenPos
 {
@@ -15,21 +14,26 @@ namespace RamenPos
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new RamenPos());
+            Application.Run(new MainForm());
         }
-    }
+    }    
 
     /// <inheritdoc />
     /// <summary>
     /// Global SpiClient class
     /// </summary>
     public class RamenForm : Form
-    {
-        internal Spi SpiClient { get; set; }
-        internal string PosId { get; set; }
-        internal string EftposAddress { get; set; }
-        internal Secrets Secrets { get; set; }
-        internal string SerialNumber { get; set; }
-        internal bool AutoAddressEnabled { get; set; }
+    {        internal static Spi SpiClient { get; set; }
+        internal static string PosId { get; set; }
+        internal static string EftposAddress { get; set; }
+        internal static Secrets Secrets { get; set; }
+        internal static string SerialNumber { get; set; }
+        internal static bool AutoAddressEnabled { get; set; }
+        internal static TransactionOptions Options { get; set; }
+        internal static MainForm MainForm { get; set; }
+        internal static TransactionForm TransactionForm { get; set; }
+        internal static ActionsForm ActionsForm { get; set; }
+
+        private readonly log4net.ILog log = log4net.LogManager.GetLogger("spi");
     }
 }
