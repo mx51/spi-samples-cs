@@ -22,6 +22,7 @@ namespace RamenPos
         {
             MainForm = this;
             btnMain.Text = ButtonCaption.Pair;
+            txtAddress.Enabled = false;
             TransactionForm = new TransactionForm();
             ActionsForm = new ActionsForm();
 
@@ -38,7 +39,7 @@ namespace RamenPos
 
             SpiClient.SetTestMode(chkTestMode.Checked);
             SpiClient.SetAutoAddressResolution(AutoAddressEnabled); // trigger auto address 
-            SpiClient.SetSerialNumber(SerialNumber); // trigger auto address   
+            SpiClient.SetSerialNumber(SerialNumber); // trigger auto address            
         }
 
         private void chkAutoIpAddress_CheckedChanged(object sender, EventArgs e)
@@ -47,6 +48,7 @@ namespace RamenPos
             btnSave.Enabled = chkAutoAddress.Checked;
             chkTestMode.Checked = chkAutoAddress.Checked;
             chkTestMode.Enabled = chkAutoAddress.Checked;
+            txtAddress.Enabled = !chkAutoAddress.Checked;
         }
 
         private bool AreControlsValid(bool isPairing)
