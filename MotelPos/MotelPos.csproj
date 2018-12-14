@@ -27,8 +27,8 @@
     <ExternalConsole>true</ExternalConsole>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SPIClient, Version=2.1.6.20405, Culture=neutral, PublicKeyToken=edf39156ce36eff9, processorArchitecture=MSIL">
-      <HintPath>..\packages\SPIClient.2.1.6\lib\net40\SPIClient.dll</HintPath>
+    <Reference Include="SPIClient, Version=2.1.9.9242, Culture=neutral, PublicKeyToken=edf39156ce36eff9, processorArchitecture=MSIL">
+      <HintPath>..\packages\SPIClient.2.1.9\lib\net40\SPIClient.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="log4net">
@@ -53,7 +53,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
