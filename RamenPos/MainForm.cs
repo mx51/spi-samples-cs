@@ -214,13 +214,16 @@ namespace RamenPos
 
         private void OnDeviceAddressChanged(object sender, DeviceAddressStatus e)
         {
-            btnMain.Enabled = false;
-            if (!string.IsNullOrWhiteSpace(e?.Address))
+            this.Invoke(new MethodInvoker(delegate ()
             {
-                txtAddress.Text = e.Address;
-                btnMain.Enabled = true;
-                MessageBox.Show($@"Device Address has been updated to {e.Address}", @"Device Address Updated");
-            }
+                btnMain.Enabled = false;
+                if (!string.IsNullOrWhiteSpace(e?.Address))
+                {
+                    txtAddress.Text = e.Address;
+                    btnMain.Enabled = true;
+                    MessageBox.Show($@"Device Address has been updated to {e.Address}", @"Device Address Updated");
+                }
+            }));
         }
 
         private void OnTxFlowStateChanged(object sender, TransactionFlowState e)
@@ -330,23 +333,29 @@ namespace RamenPos
         {
             this.Invoke(new MethodInvoker(delegate ()
             {
-                ActionsForm.listBoxFlow.Items.Clear();
-                ActionsForm.lblFlowMessage.Text = "# --> Battery Level Changed Successful";
-                var terminalBattery = new TerminalBattery(message);
-                ActionsForm.listBoxFlow.Items.Add("# Battery Level Changed #");
-                ActionsForm.listBoxFlow.Items.Add("# Battery Level: " + terminalBattery.BatteryLevel.Replace("d", "") + "%");
-                SpiClient.AckFlowEndedAndBackToIdle();
-                ActionsForm.Show();
+                if (!ActionsForm.Visible)
+                {
+                    ActionsForm.listBoxFlow.Items.Clear();
+                    ActionsForm.lblFlowMessage.Text = "# --> Battery Level Changed Successful";
+                    var terminalBattery = new TerminalBattery(message);
+                    ActionsForm.listBoxFlow.Items.Add("# Battery Level Changed #");
+                    ActionsForm.listBoxFlow.Items.Add("# Battery Level: " + terminalBattery.BatteryLevel.Replace("d", "") + "%");
+                    SpiClient.AckFlowEndedAndBackToIdle();
+                    ActionsForm.Show();
+                }
             }));
         }
 
         internal void SpiStatusAndActions()
         {
-            SpiFlowInfo();
-            SpiActions();
-            SpiPairingStatus();
-            ActionsForm.Show();
-            ActionsForm.BringToFront();
+            this.Invoke(new MethodInvoker(delegate ()
+            {
+                SpiFlowInfo();
+                SpiActions();
+                SpiPairingStatus();
+                ActionsForm.Show();
+                ActionsForm.BringToFront();
+            }));
         }
 
         private void SpiActions()
@@ -391,7 +400,7 @@ namespace RamenPos
                                 GetUnvisibleActionComponents();
                             }
                             else
-                            {                                
+                            {
                                 GetOKActionComponents();
                             }
                             break;
@@ -422,7 +431,7 @@ namespace RamenPos
                             btnMain.Text = ButtonCaption.UnPair;
                             TransactionForm.lblStatus.BackColor = Color.Yellow;
                             ActionsForm.lblFlowMessage.Text = "# --> SPI Status Changed: " + SpiClient.CurrentStatus;
-                            GetOKActionComponents();                            
+                            GetOKActionComponents();
                             break;
 
                         case SpiFlow.Transaction:
@@ -493,7 +502,7 @@ namespace RamenPos
                             TransactionForm.lblStatus.BackColor = Color.Green;
                             ActionsForm.lblFlowMessage.Text = "# --> SPI Status Changed: " + SpiClient.CurrentStatus;
                             Hide();
-                            TransactionForm.Show();                            
+                            TransactionForm.Show();
 
                             if (ActionsForm.btnAction1.Text == ButtonCaption.Retry)
                             {
@@ -573,7 +582,7 @@ namespace RamenPos
 
             switch (SpiClient.CurrentFlow)
             {
-                case SpiFlow.Pairing:                    
+                case SpiFlow.Pairing:
                     var pairingState = SpiClient.CurrentPairingFlowState;
                     ActionsForm.lblFlowMessage.Text = pairingState.Message;
                     ActionsForm.listBoxFlow.Items.Add("### PAIRING PROCESS UPDATE ###");
@@ -585,7 +594,7 @@ namespace RamenPos
                     ActionsForm.listBoxFlow.Items.Add($"# Waiting Confirm from POS? {pairingState.AwaitingCheckFromPos}");
                     break;
 
-                case SpiFlow.Transaction:                    
+                case SpiFlow.Transaction:
                     var txState = SpiClient.CurrentTxFlowState;
                     ActionsForm.lblFlowMessage.Text = txState.DisplayMessage;
                     ActionsForm.listBoxFlow.Items.Add("### TX PROCESS UPDATE ###");
@@ -676,10 +685,10 @@ namespace RamenPos
 
                 case SPIClient.Message.SuccessState.Failed:
                     ActionsForm.listBoxFlow.Items.Add($"# WE DID NOT GET PAID :(");
-                    ActionsForm.listBoxFlow.Items.Add($"# Error: {txState.Response.GetError()}");
-                    ActionsForm.listBoxFlow.Items.Add($"# Error Detail: {txState.Response.GetErrorDetail()}");
                     if (txState.Response != null)
                     {
+                        ActionsForm.listBoxFlow.Items.Add($"# Error: {txState.Response.GetError()}");
+                        ActionsForm.listBoxFlow.Items.Add($"# Error Detail: {txState.Response.GetErrorDetail()}");
                         purchaseResponse = new PurchaseResponse(txState.Response);
                         ActionsForm.listBoxFlow.Items.Add($"# Response: {purchaseResponse.GetResponseText()}");
                         ActionsForm.listBoxFlow.Items.Add($"# RRN: {purchaseResponse.GetRRN()}");
@@ -992,6 +1001,14 @@ namespace RamenPos
             ActionsForm.txtAction3.Visible = false;
             ActionsForm.txtAction4.Visible = false;
             ActionsForm.cboxAction1.Visible = false;
+        }
+
+        public bool IsFormOpen(Type formType)
+        {
+            foreach (Form form in Application.OpenForms)
+                if (form.GetType().Name == form.Name)
+                    return true;
+            return false;
         }
 
         #endregion
