@@ -606,6 +606,7 @@ namespace RamenPos
                     ActionsForm.listBoxFlow.Items.Add($"# Attempting to Cancel : {txState.AttemptingToCancel}");
                     ActionsForm.listBoxFlow.Items.Add($"# Finished: {txState.Finished}");
                     ActionsForm.listBoxFlow.Items.Add($"# Success: {txState.Success}");
+                    ActionsForm.listBoxFlow.Items.Add($"# Last GLT Request Id: {txState.LastGltRequestId}");
 
                     if (txState.AwaitingSignatureCheck)
                     {
