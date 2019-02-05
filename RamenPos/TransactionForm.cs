@@ -158,7 +158,8 @@ namespace RamenPos
             ActionsForm.txtAction3.Visible = false;
             ActionsForm.lblAction4.Visible = false;
             ActionsForm.txtAction4.Visible = false;
-            ActionsForm.cboxAction1.Visible = false;
+            ActionsForm.cboxAction1.Visible = true;
+            ActionsForm.cboxAction1.Text = CheckboxCaption.SuppressMerhcantPassword;
             TransactionForm.Enabled = false;
             ActionsForm.Show();
         }
@@ -241,7 +242,7 @@ namespace RamenPos
             SpiClient.Config.PromptForCustomerCopyOnEftpos = cboxReceiptFrom.Checked;
         }
 
-        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        private void cboxSignFromEftpos_CheckedChanged(object sender, EventArgs e)
         {
             SpiClient.Config.SignatureFlowOnEftpos = cboxSignFromEftpos.Checked;
         }

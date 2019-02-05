@@ -102,7 +102,7 @@
             this.cboxSignFromEftpos.TabIndex = 6;
             this.cboxSignFromEftpos.Text = "Sign From EFTPOS";
             this.cboxSignFromEftpos.UseVisualStyleBackColor = true;
-            this.cboxSignFromEftpos.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
+            this.cboxSignFromEftpos.CheckedChanged += new System.EventHandler(this.cboxSignFromEftpos_CheckedChanged);
             // 
             // cboxReceiptFrom
             // 

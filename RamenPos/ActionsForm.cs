@@ -183,7 +183,7 @@ namespace RamenPos
         {
             int.TryParse(txtAction1.Text, out int amount);
             int.TryParse(txtAction2.Text, out int surchargeAmount);
-            var motoRes = SpiClient.InitiateMotoPurchaseTx("moto-" + DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss"), amount, surchargeAmount);
+            var motoRes = SpiClient.InitiateMotoPurchaseTx("moto-" + DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss"), amount, surchargeAmount, cboxAction1.Checked);
 
             if (motoRes.Initiated)
             {

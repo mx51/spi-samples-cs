@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
+using Newtonsoft.Json;
 using SPIClient;
 
 namespace TablePos
@@ -50,13 +52,16 @@ namespace TablePos
         private string _posId = "TABLEPOS1";
         private string _eftposAddress = "192.168.1.9";
         private Secrets _spiSecrets = null;
+        private string _serialNumber = "";
 
         private void Start()
         {
             log.Info("Starting TablePos...");
             LoadPersistedState();
 
-            _spi = new Spi(_posId, _eftposAddress, _spiSecrets);
+            _spi = new Spi(_posId, _serialNumber, _eftposAddress, _spiSecrets);
+            _spi.SetPosInfo("assembly", "2.5.0");
+
             _spi.StatusChanged += OnSpiStatusChanged;
             _spi.PairingFlowStateChanged += OnPairingFlowStateChanged;
             _spi.SecretsChanged += OnSecretsChanged;
@@ -66,8 +71,17 @@ namespace TablePos
             _pat.Config.LabelTableId = "Table Number";
             _pat.GetBillStatus = PayAtTableGetBillDetails;
             _pat.BillPaymentReceived = PayAtTableBillPaymentReceived;
+            _pat.BillPaymentFlowEnded = PayAtTableBillPaymentFlowEnded;
+            _pat.GetOpenTables = PayAtTableGetOpenTables;
 
-            _spi.Start();
+            try
+            {
+                _spi.Start();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($@"SPI check failed: {e.Message}", @"Please ensure you followed all the configuration steps on your machine");
+            }
 
             Console.Clear();
             Console.WriteLine("# Welcome to TablePos !");
@@ -124,7 +138,7 @@ namespace TablePos
         /// <param name="tableId"></param>
         /// <param name="operatorId"></param>
         /// <returns></returns>
-        private BillStatusResponse PayAtTableGetBillDetails(string billId, string tableId, string operatorId)
+        private BillStatusResponse PayAtTableGetBillDetails(string billId, string tableId, string operatorId, bool paymentFlowStarted)
         {
 
             if (string.IsNullOrWhiteSpace(billId))
@@ -154,13 +168,22 @@ namespace TablePos
 
             var myBill = billsStore[billId];
 
+            if (billsStore[billId].paymentFlowStarted)
+            {
+                Console.WriteLine($"Table is Locked.");
+                return new BillStatusResponse { Result = BillRetrievalResult.INVALID_TABLE_ID };
+            }
+
             var response = new BillStatusResponse
             {
                 Result = BillRetrievalResult.SUCCESS,
                 BillId = billId,
                 TableId = tableId,
+                OperatorId = operatorId,
                 TotalAmount = myBill.TotalAmount,
-                OutstandingAmount = myBill.OutstandingAmount
+                OutstandingAmount = myBill.OutstandingAmount,
+                PaymentFlowStarted = true
+
             };
             assemblyBillDataStore.TryGetValue(billId, out var billData);
             response.BillData = billData;
@@ -185,6 +208,7 @@ namespace TablePos
             var bill = billsStore[billPayment.BillId];
             bill.OutstandingAmount -= billPayment.PurchaseAmount;
             bill.tippedAmount += billPayment.TipAmount;
+            bill.paymentFlowStarted = bill.OutstandingAmount == 0 ? false : true;
             Console.WriteLine($"Updated Bill: {bill}");
             Console.Write($"> ");
 
@@ -199,6 +223,69 @@ namespace TablePos
                 Result = BillRetrievalResult.SUCCESS,
                 OutstandingAmount = bill.OutstandingAmount,
                 TotalAmount = bill.TotalAmount
+            };
+        }
+
+        private void PayAtTableBillPaymentFlowEnded(Message message)
+        {
+            var billPaymentFlowEndedResponse = new BillPaymentFlowEndedResponse(message);
+
+            if (!billsStore.ContainsKey(billPaymentFlowEndedResponse.BillId))
+            {
+                // We cannot find this bill.
+                Console.WriteLine("Incorrect Bill Id!");
+            }
+
+            var myBill = billsStore[billPaymentFlowEndedResponse.BillId];
+            myBill.paymentFlowStarted = false;
+
+            Console.WriteLine(
+                $"Bill Id                : {billPaymentFlowEndedResponse.BillId}" + Environment.NewLine +
+                $"Table                  : {billPaymentFlowEndedResponse.TableId}" + Environment.NewLine +
+                $"Operator Id            : {billPaymentFlowEndedResponse.OperatorId}" + Environment.NewLine +
+                $"Bill OutStanding Amount: ${billPaymentFlowEndedResponse.BillOutstandingAmount / 100.0:0.00}" + Environment.NewLine +
+                $"Bill Total Amount      : ${billPaymentFlowEndedResponse.BillTotalAmount / 100.0:0.00}" + Environment.NewLine +
+                $"Card Total Count       : {billPaymentFlowEndedResponse.CardTotalCount}" + Environment.NewLine +
+                $"Card Total Amount      : {billPaymentFlowEndedResponse.CardTotalAmount}" + Environment.NewLine +
+                $"Cash Total Count       : {billPaymentFlowEndedResponse.CashTotalCount}" + Environment.NewLine +
+                $"Card Total Amount      : {billPaymentFlowEndedResponse.CashTotalAmount}" + Environment.NewLine +
+                $"Payment Flow Started   : {myBill.paymentFlowStarted}");
+            Console.Write("> ");
+        }
+
+        private GetOpenTablesResponse PayAtTableGetOpenTables(string operatorId)
+        {
+            var openTableList = new List<OpenTablesEntry>();
+
+            if (tableToBillMapping.Count > 0)
+            {
+                foreach (var item in tableToBillMapping)
+                {
+                    if (billsStore[item.Value].OperatorId == operatorId)
+                    {
+                        var openTablesItem = new OpenTablesEntry
+                        {
+                            TableId = item.Key,
+                            Label = billsStore[item.Value].Label,
+                            BillOutstandingAmount = billsStore[item.Value].OutstandingAmount
+                        };
+
+                        openTableList.Add(openTablesItem);
+                    }
+                }
+
+                Console.WriteLine("#    Open Tables: " + tableToBillMapping.Keys.Aggregate((i, j) => "TableId: " + i + ", BillId: " + j));
+            }
+            else
+            {
+                Console.WriteLine("# No Open Tables.");
+            }
+
+            var openTableListJson = JsonConvert.SerializeObject(openTableList);
+
+            return new GetOpenTablesResponse
+            {
+                TableData = Convert.ToBase64String(Encoding.UTF8.GetBytes(openTableListJson))
             };
         }
 
@@ -351,9 +438,10 @@ namespace TablePos
         private void PrintActions()
         {
             Console.WriteLine("# ----------- TABLE ACTIONS ------------");
-            Console.WriteLine("# [open:12]         - Start a new bill for table 12");
+            Console.WriteLine("# [open:12:3:vip]   - Start a new bill for table 12, operator Id 3, Label is vip");
             Console.WriteLine("# [add:12:1000]     - Add $10.00 to the bill of table 12");
             Console.WriteLine("# [close:12]        - Close table 12");
+            Console.WriteLine("# [lock:12:true]    - Lock/Unlock table 12");
             Console.WriteLine("# [tables]          - List open tables");
             Console.WriteLine("# [table:12]        - Print current bill for table 12");
             Console.WriteLine("# [bill:9876789876] - Print bill with id 9876789876");
@@ -365,6 +453,10 @@ namespace TablePos
                 Console.WriteLine("# [purchase:1200] - Quick Purchase Tx");
                 Console.WriteLine("# [yuck] - hand out a refund!");
                 Console.WriteLine("# [settle] - Initiate Settlement");
+                Console.WriteLine("#");
+                Console.WriteLine("# [print_merchant_copy:true] - Offer Merchant Receipt From Eftpos");
+                Console.WriteLine("# [rcpt_from_eftpos:true] - Offer Customer Receipt From Eftpos");
+                Console.WriteLine("# [sig_flow_from_eftpos:true] - Signature Flow to be handled by Eftpos");
                 Console.WriteLine("#");
             }
             Console.WriteLine("# ----------- SETTINGS ACTIONS ------------");
@@ -423,8 +515,9 @@ namespace TablePos
             Console.WriteLine("# --------------- STATUS ------------------");
             Console.WriteLine($"# {_posId} <-> Eftpos: {_eftposAddress} #");
             Console.WriteLine($"# SPI STATUS: {_spi.CurrentStatus}     FLOW: {_spi.CurrentFlow} #");
+            Console.WriteLine($"# SPI CONFIG: {_spi.Config}");
             Console.WriteLine("# ----------------TABLES-------------------");
-            Console.WriteLine($"#    Open Tables: {tableToBillMapping.Count}");
+            Console.WriteLine($"# Open Tables   : {tableToBillMapping.Count}");
             Console.WriteLine($"# Bills in Store: {billsStore.Count}");
             Console.WriteLine($"# Assembly Bills: {assemblyBillDataStore.Count}");
             Console.WriteLine($"# -----------------------------------------");
@@ -440,28 +533,39 @@ namespace TablePos
                 var spInput = input.Split(':');
                 switch (spInput[0].ToLower())
                 {
-                    case "open":                        
-                        if (!CheckInput(spInput, 1)) { break; };
-                        openTable(spInput[1]); Console.Write("> ");
+                    case "open":
+                        if (!CheckInput(spInput, 2)) { break; };
+                        var label = "";
+                        if (spInput.Length > 3)
+                        {
+                            label = spInput[3];
+                        }
+                        OpenTable(spInput[1], spInput[2], label); Console.Write("> ");
                         break;
                     case "close":
                         if (!CheckInput(spInput, 1)) { break; };
-                        closeTable(spInput[1]); Console.Write("> ");
+                        CloseTable(spInput[1]); Console.Write("> ");
+                        break;
+                    case "lock":
+                        if (!CheckInput(spInput, 2)) { break; };
+                        var isLock = false;
+                        bool.TryParse(spInput[2], out isLock);
+                        LockTable(spInput[1], isLock); Console.Write("> ");
                         break;
                     case "add":
                         if (!CheckInput(spInput, 1)) { break; };
-                        addToTable(spInput[1], int.Parse(spInput[2])); Console.Write("> ");
+                        AddToTable(spInput[1], int.Parse(spInput[2])); Console.Write("> ");
                         break;
                     case "table":
                         if (!CheckInput(spInput, 1)) { break; };
-                        printTable(spInput[1]); Console.Write("> ");
+                        PrintTable(spInput[1]); Console.Write("> ");
                         break;
                     case "bill":
                         if (!CheckInput(spInput, 1)) { break; };
-                        printBill(spInput[1]); Console.Write("> ");
+                        PrintBill(spInput[1]); Console.Write("> ");
                         break;
                     case "tables":
-                        printTables(); Console.Write("> ");
+                        PrintTables(); Console.Write("> ");
                         break;
 
                     case "purchase":
@@ -544,6 +648,19 @@ namespace TablePos
                         }
                         break;
 
+                    case "print_merchant_copy":
+                        _spi.Config.PrintMerchantCopy = spInput[1].ToLower() == "true";
+                        Console.Write("> ");
+                        break;
+                    case "rcpt_from_eftpos":
+                        _spi.Config.PromptForCustomerCopyOnEftpos = spInput[1].ToLower() == "true";
+                        Console.Write("> ");
+                        break;
+                    case "sig_flow_from_eftpos":
+                        _spi.Config.SignatureFlowOnEftpos = spInput[1].ToLower() == "true";
+                        Console.Write("> ");
+                        break;
+
                     case "ok":
                         Console.Clear();
                         _spi.AckFlowEndedAndBackToIdle();
@@ -590,7 +707,7 @@ namespace TablePos
 
         #region My Pos Functions
 
-        private void openTable(string tableId)
+        private void OpenTable(string tableId, string operatorId, string label)
         {
             int tableIdInt;
             int.TryParse(tableId, out tableIdInt);
@@ -608,13 +725,13 @@ namespace TablePos
                 return;
             }
 
-            var newBill = new Bill() { BillId = newBillId(), TableId = tableId };
+            var newBill = new Bill() { BillId = NewBillId(), TableId = tableId, OperatorId = operatorId, Label = label };
             billsStore.Add(newBill.BillId, newBill);
             tableToBillMapping.Add(newBill.TableId, newBill.BillId);
             Console.WriteLine($"Opened: {newBill}");
         }
 
-        private void addToTable(string tableId, int amountCents)
+        private void AddToTable(string tableId, int amountCents)
         {
             tableId = tableId.Trim();
             if (!tableToBillMapping.ContainsKey(tableId))
@@ -622,13 +739,20 @@ namespace TablePos
                 Console.WriteLine($"Table not Open.");
                 return;
             }
+
             var bill = billsStore[tableToBillMapping[tableId]];
+            if (bill.paymentFlowStarted)
+            {
+                Console.WriteLine($"Table is Locked.");
+                return;
+            }
+
             bill.TotalAmount += amountCents;
             bill.OutstandingAmount += amountCents;
             Console.WriteLine($"Updated: {bill}");
         }
 
-        private void closeTable(string tableId)
+        private void CloseTable(string tableId)
         {
             tableId = tableId.Trim();
             if (!tableToBillMapping.ContainsKey(tableId))
@@ -637,6 +761,12 @@ namespace TablePos
                 return;
             }
             var bill = billsStore[tableToBillMapping[tableId]];
+            if (bill.paymentFlowStarted)
+            {
+                Console.WriteLine($"Table is Locked.");
+                return;
+            }
+
             if (bill.OutstandingAmount > 0)
             {
                 Console.WriteLine($"Bill not Paid Yet: {bill}");
@@ -647,7 +777,7 @@ namespace TablePos
             Console.WriteLine($"Closed: {bill}");
         }
 
-        private void printTable(string tableId)
+        private void LockTable(string tableId, bool isLock)
         {
             tableId = tableId.Trim();
             if (!tableToBillMapping.ContainsKey(tableId))
@@ -655,17 +785,52 @@ namespace TablePos
                 Console.WriteLine($"Table not Open.");
                 return;
             }
-            printBill(tableToBillMapping[tableId]);
+            var bill = billsStore[tableToBillMapping[tableId]];
+            bill.paymentFlowStarted = isLock;
+            if (isLock)
+            {
+                Console.WriteLine($"Locked: {bill}");
+            }
+            else
+            {
+                Console.WriteLine($"UnLocked: {bill}");
+            }
         }
 
-        private void printTables()
+        private void PrintTable(string tableId)
         {
-            if (tableToBillMapping.Count > 0) { Console.WriteLine("#    Open Tables: " + tableToBillMapping.Keys.Aggregate((i, j) => i + "," + j)); } else { Console.WriteLine("# No Open Tables."); }
-            if (billsStore.Count > 0) Console.WriteLine("# My Bills Store: " + billsStore.Keys.Aggregate((i, j) => i + "," + j));
-            if (assemblyBillDataStore.Count > 0) Console.WriteLine("# Assembly Bills Data: " + assemblyBillDataStore.Keys.Aggregate((i, j) => i + "," + j));
+            tableId = tableId.Trim();
+            if (!tableToBillMapping.ContainsKey(tableId))
+            {
+                Console.WriteLine($"Table not Open.");
+                return;
+            }
+            PrintBill(tableToBillMapping[tableId]);
         }
 
-        private void printBill(string billId)
+        private void PrintTables()
+        {
+            if (tableToBillMapping.Count > 0)
+            {
+                Console.WriteLine("#    Open Tables: " + tableToBillMapping.Keys.Aggregate((i, j) => i + "," + j));
+            }
+            else
+            {
+                Console.WriteLine("# No Open Tables.");
+            }
+
+            if (billsStore.Count > 0)
+            {
+                Console.WriteLine("# My Bills Store: " + billsStore.Keys.Aggregate((i, j) => i + "," + j));
+            }
+
+            if (assemblyBillDataStore.Count > 0)
+            {
+                Console.WriteLine("# Assembly Bills Data: " + assemblyBillDataStore.Keys.Aggregate((i, j) => i + "," + j));
+            }
+        }
+
+        private void PrintBill(string billId)
         {
             billId = billId.Trim();
             if (!billsStore.ContainsKey(billId))
@@ -676,7 +841,7 @@ namespace TablePos
             Console.WriteLine($"Bill: {billsStore[billId]}");
         }
 
-        private string newBillId()
+        private string NewBillId()
         {
             return (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds.ToString();
         }
@@ -738,19 +903,23 @@ namespace TablePos
         {
             public string BillId;
             public string TableId;
+            public string OperatorId;
+            public string Label;
             public int TotalAmount = 0;
             public int OutstandingAmount = 0;
             public int tippedAmount = 0;
+            public bool paymentFlowStarted = false;
 
             public override string ToString()
             {
-                return $"{BillId} - Table:{TableId} Total:${TotalAmount / 100.0:0.00} Outstanding:${OutstandingAmount / 100.0:0.00} Tips:${tippedAmount / 100.0:0.00}";
+                return $"{BillId} - Table:{TableId} Operator Id:{OperatorId} Label:{Label} Total:${TotalAmount / 100.0:0.00} " +
+                    $"Outstanding:${OutstandingAmount / 100.0:0.00} Tips:${tippedAmount / 100.0:0.00} Payment Flow Started:{paymentFlowStarted}";
             }
         }
 
         #endregion
 
-        private string _version = Assembly.GetEntryAssembly().GetName().Version.ToString();
+        private readonly string _version = Assembly.GetEntryAssembly().GetName().Version.ToString();
 
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger("spi");
     }
