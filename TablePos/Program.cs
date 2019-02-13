@@ -164,15 +164,16 @@ namespace TablePos
                 // We could not find the billId that was asked for.
                 // We just tell the Eftpos that.
                 return new BillStatusResponse { Result = BillRetrievalResult.INVALID_BILL_ID };
-            }
+            }            
 
-            var myBill = billsStore[billId];
-
-            if (billsStore[billId].paymentFlowStarted)
+            if (billsStore[billId].Locked)
             {
                 Console.WriteLine($"Table is Locked.");
                 return new BillStatusResponse { Result = BillRetrievalResult.INVALID_TABLE_ID };
             }
+
+            var myBill = billsStore[billId];
+            billsStore[billId].Locked = paymentFlowStarted;
 
             var response = new BillStatusResponse
             {
@@ -181,9 +182,7 @@ namespace TablePos
                 TableId = tableId,
                 OperatorId = operatorId,
                 TotalAmount = myBill.TotalAmount,
-                OutstandingAmount = myBill.OutstandingAmount,
-                PaymentFlowStarted = true
-
+                OutstandingAmount = myBill.OutstandingAmount
             };
             assemblyBillDataStore.TryGetValue(billId, out var billData);
             response.BillData = billData;
@@ -207,8 +206,8 @@ namespace TablePos
             Console.WriteLine($"# Got a {billPayment.PaymentType} Payment against bill {billPayment.BillId} for table {billPayment.TableId}");
             var bill = billsStore[billPayment.BillId];
             bill.OutstandingAmount -= billPayment.PurchaseAmount;
-            bill.tippedAmount += billPayment.TipAmount;
-            bill.paymentFlowStarted = bill.OutstandingAmount == 0 ? false : true;
+            bill.TippedAmount += billPayment.TipAmount;
+            bill.Locked = bill.OutstandingAmount == 0 ? false : true;
             Console.WriteLine($"Updated Bill: {bill}");
             Console.Write($"> ");
 
@@ -237,7 +236,7 @@ namespace TablePos
             }
 
             var myBill = billsStore[billPaymentFlowEndedResponse.BillId];
-            myBill.paymentFlowStarted = false;
+            myBill.Locked = false;
 
             Console.WriteLine(
                 $"Bill Id                : {billPaymentFlowEndedResponse.BillId}" + Environment.NewLine +
@@ -249,7 +248,7 @@ namespace TablePos
                 $"Card Total Amount      : {billPaymentFlowEndedResponse.CardTotalAmount}" + Environment.NewLine +
                 $"Cash Total Count       : {billPaymentFlowEndedResponse.CashTotalCount}" + Environment.NewLine +
                 $"Card Total Amount      : {billPaymentFlowEndedResponse.CashTotalAmount}" + Environment.NewLine +
-                $"Payment Flow Started   : {myBill.paymentFlowStarted}");
+                $"Locked                 : {myBill.Locked}");
             Console.Write("> ");
         }
 
@@ -741,7 +740,7 @@ namespace TablePos
             }
 
             var bill = billsStore[tableToBillMapping[tableId]];
-            if (bill.paymentFlowStarted)
+            if (bill.Locked)
             {
                 Console.WriteLine($"Table is Locked.");
                 return;
@@ -761,7 +760,7 @@ namespace TablePos
                 return;
             }
             var bill = billsStore[tableToBillMapping[tableId]];
-            if (bill.paymentFlowStarted)
+            if (bill.Locked)
             {
                 Console.WriteLine($"Table is Locked.");
                 return;
@@ -777,7 +776,7 @@ namespace TablePos
             Console.WriteLine($"Closed: {bill}");
         }
 
-        private void LockTable(string tableId, bool isLock)
+        private void LockTable(string tableId, bool locked)
         {
             tableId = tableId.Trim();
             if (!tableToBillMapping.ContainsKey(tableId))
@@ -786,8 +785,8 @@ namespace TablePos
                 return;
             }
             var bill = billsStore[tableToBillMapping[tableId]];
-            bill.paymentFlowStarted = isLock;
-            if (isLock)
+            bill.Locked = locked;
+            if (locked)
             {
                 Console.WriteLine($"Locked: {bill}");
             }
@@ -907,13 +906,15 @@ namespace TablePos
             public string Label;
             public int TotalAmount = 0;
             public int OutstandingAmount = 0;
-            public int tippedAmount = 0;
-            public bool paymentFlowStarted = false;
+            public int TippedAmount = 0;
+            public bool Locked = false;
+
+
 
             public override string ToString()
             {
                 return $"{BillId} - Table:{TableId} Operator Id:{OperatorId} Label:{Label} Total:${TotalAmount / 100.0:0.00} " +
-                    $"Outstanding:${OutstandingAmount / 100.0:0.00} Tips:${tippedAmount / 100.0:0.00} Payment Flow Started:{paymentFlowStarted}";
+                    $"Outstanding:${OutstandingAmount / 100.0:0.00} Tips:${TippedAmount / 100.0:0.00} Locked:{Locked}";
             }
         }
 
