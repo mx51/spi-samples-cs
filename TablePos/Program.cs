@@ -173,7 +173,7 @@ namespace TablePos
                 Console.WriteLine($"Table is Locked.");
                 return new BillStatusResponse { Result = BillRetrievalResult.INVALID_TABLE_ID };
             }
-            
+
             billsStore[billId].Locked = paymentFlowStarted;
 
             var response = new BillStatusResponse
@@ -258,6 +258,7 @@ namespace TablePos
         private GetOpenTablesResponse PayAtTableGetOpenTables(string operatorId)
         {
             var openTableList = new List<OpenTablesEntry>();
+            bool isOpenTables = false;
 
             if (tableToBillMapping.Count > 0)
             {
@@ -265,6 +266,12 @@ namespace TablePos
                 {
                     if (billsStore[item.Value].OperatorId == operatorId)
                     {
+                        if (!isOpenTables)
+                        {
+                            Console.WriteLine("#    Open Tables: ");
+                            isOpenTables = true;
+                        }
+
                         var openTablesItem = new OpenTablesEntry
                         {
                             TableId = item.Key,
@@ -272,13 +279,14 @@ namespace TablePos
                             BillOutstandingAmount = billsStore[item.Value].OutstandingAmount
                         };
 
+                        Console.WriteLine("Table Id : " + item.Key + ", Bill Id: " + billsStore[item.Value].BillId + ", Outstanding Amount: $" + billsStore[item.Value].OutstandingAmount / 100);
                         openTableList.Add(openTablesItem);
                     }
                 }
-
-                Console.WriteLine("#    Open Tables: " + tableToBillMapping.Keys.Aggregate((i, j) => "TableId: " + i + ", BillId: " + j));
             }
-            else
+
+
+            if (!isOpenTables)
             {
                 Console.WriteLine("# No Open Tables.");
             }
