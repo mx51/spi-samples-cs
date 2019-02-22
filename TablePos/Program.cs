@@ -164,15 +164,16 @@ namespace TablePos
                 // We could not find the billId that was asked for.
                 // We just tell the Eftpos that.
                 return new BillStatusResponse { Result = BillRetrievalResult.INVALID_BILL_ID };
-            }            
+            }
 
-            if (billsStore[billId].Locked)
+            var myBill = billsStore[billId];
+
+            if (billsStore[billId].Locked && paymentFlowStarted)
             {
                 Console.WriteLine($"Table is Locked.");
                 return new BillStatusResponse { Result = BillRetrievalResult.INVALID_TABLE_ID };
             }
-
-            var myBill = billsStore[billId];
+            
             billsStore[billId].Locked = paymentFlowStarted;
 
             var response = new BillStatusResponse
@@ -208,6 +209,8 @@ namespace TablePos
             bill.OutstandingAmount -= billPayment.PurchaseAmount;
             bill.TippedAmount += billPayment.TipAmount;
             bill.Locked = bill.OutstandingAmount == 0 ? false : true;
+            //bill.Locked = bill.OutstandingAmount == bill.TotalAmount ? true : false;
+
             Console.WriteLine($"Updated Bill: {bill}");
             Console.Write($"> ");
 
