@@ -209,7 +209,6 @@ namespace TablePos
             bill.OutstandingAmount -= billPayment.PurchaseAmount;
             bill.TippedAmount += billPayment.TipAmount;
             bill.Locked = bill.OutstandingAmount == 0 ? false : true;
-            //bill.Locked = bill.OutstandingAmount == bill.TotalAmount ? true : false;
 
             Console.WriteLine($"Updated Bill: {bill}");
             Console.Write($"> ");
