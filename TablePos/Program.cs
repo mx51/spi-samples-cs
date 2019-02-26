@@ -249,7 +249,7 @@ namespace TablePos
                 $"Card Total Count       : {billPaymentFlowEndedResponse.CardTotalCount}" + Environment.NewLine +
                 $"Card Total Amount      : {billPaymentFlowEndedResponse.CardTotalAmount}" + Environment.NewLine +
                 $"Cash Total Count       : {billPaymentFlowEndedResponse.CashTotalCount}" + Environment.NewLine +
-                $"Card Total Amount      : {billPaymentFlowEndedResponse.CashTotalAmount}" + Environment.NewLine +
+                $"Cash Total Amount      : {billPaymentFlowEndedResponse.CashTotalAmount}" + Environment.NewLine +
                 $"Locked                 : {myBill.Locked}");
             Console.Write("> ");
         }
@@ -263,7 +263,7 @@ namespace TablePos
             {
                 foreach (var item in tableToBillMapping)
                 {
-                    if (billsStore[item.Value].OperatorId == operatorId)
+                    if (billsStore[item.Value].OperatorId == operatorId && billsStore[item.Value].OutstandingAmount > 0)
                     {
                         if (!isOpenTables)
                         {
