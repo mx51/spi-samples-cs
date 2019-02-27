@@ -98,7 +98,7 @@ namespace RamenPos
             ActionsForm.cboxAction1.Visible = false;
             TransactionForm.Enabled = false;
 
-            var settleRes = SpiClient.InitiateSettleTx(RequestIdHelper.Id("settle"));
+            var settleRes = SpiClient.InitiateSettleTx(RequestIdHelper.Id("settle"), Options);
             ActionsForm.listBoxFlow.Items.Add(settleRes.Initiated ? "# Settle Initiated. Will be updated with Progress." : "# Could not initiate settlement: " + settleRes.Message + ". Please Retry.");
             ActionsForm.Show();
         }
@@ -208,7 +208,7 @@ namespace RamenPos
             ActionsForm.cboxAction1.Visible = false;
             TransactionForm.Enabled = false;
 
-            var senqRes = SpiClient.InitiateSettlementEnquiry(RequestIdHelper.Id("stlenq"));
+            var senqRes = SpiClient.InitiateSettlementEnquiry(RequestIdHelper.Id("stlenq"), Options);
             ActionsForm.listBoxFlow.Items.Add(senqRes.Initiated ? "# Settle Initiated. Will be updated with Progress." : "# Could not initiate settlement: " + senqRes.Message + ". Please Retry.");
             ActionsForm.Show();
         }
