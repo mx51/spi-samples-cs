@@ -167,7 +167,7 @@ namespace RamenPos
         private void DoRefund()
         {
             int.TryParse(txtAction1.Text, out int amount);
-            var refund = SpiClient.InitiateRefundTx("rfnd-" + DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss"), amount, cboxAction1.Checked);
+            var refund = SpiClient.InitiateRefundTx("rfnd-" + DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss"), amount, cboxAction1.Checked, Options);
 
             if (refund.Initiated)
             {
@@ -183,7 +183,7 @@ namespace RamenPos
         {
             int.TryParse(txtAction1.Text, out int amount);
             int.TryParse(txtAction2.Text, out int surchargeAmount);
-            var motoRes = SpiClient.InitiateMotoPurchaseTx("moto-" + DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss"), amount, surchargeAmount);
+            var motoRes = SpiClient.InitiateMotoPurchaseTx("moto-" + DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss"), amount, surchargeAmount, cboxAction1.Checked, Options);
 
             if (motoRes.Initiated)
             {
@@ -199,7 +199,7 @@ namespace RamenPos
         {
             int.TryParse(txtAction1.Text, out int amount);
             int.TryParse(txtAction2.Text, out int surchargeAmount);
-            var coRes = SpiClient.InitiateCashoutOnlyTx("cshout-" + DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss"), amount, surchargeAmount);
+            var coRes = SpiClient.InitiateCashoutOnlyTx("cshout-" + DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss"), amount, surchargeAmount, Options);
 
             if (coRes.Initiated)
             {

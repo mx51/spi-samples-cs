@@ -98,7 +98,7 @@ namespace RamenPos
             ActionsForm.cboxAction1.Visible = false;
             TransactionForm.Enabled = false;
 
-            var settleRes = SpiClient.InitiateSettleTx(RequestIdHelper.Id("settle"));
+            var settleRes = SpiClient.InitiateSettleTx(RequestIdHelper.Id("settle"), Options);
             ActionsForm.listBoxFlow.Items.Add(settleRes.Initiated ? "# Settle Initiated. Will be updated with Progress." : "# Could not initiate settlement: " + settleRes.Message + ". Please Retry.");
             ActionsForm.Show();
         }
@@ -158,7 +158,8 @@ namespace RamenPos
             ActionsForm.txtAction3.Visible = false;
             ActionsForm.lblAction4.Visible = false;
             ActionsForm.txtAction4.Visible = false;
-            ActionsForm.cboxAction1.Visible = false;
+            ActionsForm.cboxAction1.Visible = true;
+            ActionsForm.cboxAction1.Text = CheckboxCaption.SuppressMerhcantPassword;
             TransactionForm.Enabled = false;
             ActionsForm.Show();
         }
@@ -207,7 +208,7 @@ namespace RamenPos
             ActionsForm.cboxAction1.Visible = false;
             TransactionForm.Enabled = false;
 
-            var senqRes = SpiClient.InitiateSettlementEnquiry(RequestIdHelper.Id("stlenq"));
+            var senqRes = SpiClient.InitiateSettlementEnquiry(RequestIdHelper.Id("stlenq"), Options);
             ActionsForm.listBoxFlow.Items.Add(senqRes.Initiated ? "# Settle Initiated. Will be updated with Progress." : "# Could not initiate settlement: " + senqRes.Message + ". Please Retry.");
             ActionsForm.Show();
         }
@@ -241,7 +242,7 @@ namespace RamenPos
             SpiClient.Config.PromptForCustomerCopyOnEftpos = cboxReceiptFrom.Checked;
         }
 
-        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        private void cboxSignFromEftpos_CheckedChanged(object sender, EventArgs e)
         {
             SpiClient.Config.SignatureFlowOnEftpos = cboxSignFromEftpos.Checked;
         }

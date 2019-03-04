@@ -782,7 +782,7 @@ namespace RamenPos
                         ActionsForm.listBoxFlow.Items.Add($"# Scheme: {cashoutResponse.SchemeName}");
                         ActionsForm.listBoxFlow.Items.Add("# Customer Receipt:");
 
-                        TransactionForm.richtextReceipt.Text = TransactionForm.richtextReceipt.Text + Environment.NewLine + cashoutResponse.GetCustomerReceipt().TrimEnd();
+                        TransactionForm.richtextReceipt.Text = !cashoutResponse.WasCustomerReceiptPrinted() ? TransactionForm.richtextReceipt.Text + Environment.NewLine + cashoutResponse.GetCustomerReceipt().TrimEnd() : TransactionForm.richtextReceipt.Text + Environment.NewLine + "# PRINTED FROM EFTPOS";
                     }
                     break;
                 case SPIClient.Message.SuccessState.Unknown:
@@ -830,7 +830,7 @@ namespace RamenPos
                         ActionsForm.listBoxFlow.Items.Add($"# Scheme: {purchaseResponse.SchemeName}");
                         ActionsForm.listBoxFlow.Items.Add("# Customer Receipt:");
 
-                        TransactionForm.richtextReceipt.Text = TransactionForm.richtextReceipt.Text + Environment.NewLine + purchaseResponse.GetCustomerReceipt().TrimEnd();
+                        TransactionForm.richtextReceipt.Text = !purchaseResponse.WasCustomerReceiptPrinted() ? TransactionForm.richtextReceipt.Text + Environment.NewLine + purchaseResponse.GetCustomerReceipt().TrimEnd() : TransactionForm.richtextReceipt.Text + Environment.NewLine + "# PRINTED FROM EFTPOS";
                     }
                     break;
                 case SPIClient.Message.SuccessState.Unknown:
@@ -887,8 +887,6 @@ namespace RamenPos
                     {
                         var settleResponse = new Settlement(txState.Response);
                         ActionsForm.listBoxFlow.Items.Add($"# Response: {settleResponse.GetResponseText()}");
-                        ActionsForm.listBoxFlow.Items.Add("# Merchant Receipt:");
-                        ActionsForm.listBoxFlow.Items.Add(settleResponse.GetReceipt().TrimEnd());
                         ActionsForm.listBoxFlow.Items.Add("# Period Start: " + settleResponse.GetPeriodStartTime());
                         ActionsForm.listBoxFlow.Items.Add("# Period End: " + settleResponse.GetPeriodEndTime());
                         ActionsForm.listBoxFlow.Items.Add("# Settlement Time: " + settleResponse.GetTriggeredTime());
@@ -902,9 +900,11 @@ namespace RamenPos
                         var schemes = settleResponse.GetSchemeSettlementEntries();
                         foreach (var s in schemes)
                         {
-                            TransactionForm.richtextReceipt.Text = TransactionForm.richtextReceipt.Text + Environment.NewLine + "# " + s;
+                            ActionsForm.listBoxFlow.Items.Add("# " + s);                            
                         }
 
+                        TransactionForm.richtextReceipt.Text = TransactionForm.richtextReceipt.Text + Environment.NewLine + "# Merchant Receipt:";                        
+                        TransactionForm.richtextReceipt.Text = !settleResponse.WasMerchantReceiptPrinted() ? TransactionForm.richtextReceipt.Text + Environment.NewLine + settleResponse.GetReceipt().TrimEnd() : TransactionForm.richtextReceipt.Text + Environment.NewLine + "# PRINTED FROM EFTPOS";
                     }
                     break;
                 case SPIClient.Message.SuccessState.Failed:
@@ -916,7 +916,7 @@ namespace RamenPos
                         ActionsForm.listBoxFlow.Items.Add($"# Error: {txState.Response.GetError()}");
                         ActionsForm.listBoxFlow.Items.Add("# Merchant Receipt:");
 
-                        TransactionForm.richtextReceipt.Text = TransactionForm.richtextReceipt.Text + Environment.NewLine + settleResponse.GetReceipt().TrimEnd();
+                        TransactionForm.richtextReceipt.Text = !settleResponse.WasMerchantReceiptPrinted() ? TransactionForm.richtextReceipt.Text + Environment.NewLine + settleResponse.GetReceipt().TrimEnd() : TransactionForm.richtextReceipt.Text + Environment.NewLine + "# PRINTED FROM EFTPOS";
                     }
                     break;
                 case SPIClient.Message.SuccessState.Unknown:
@@ -937,8 +937,6 @@ namespace RamenPos
                     {
                         var settleResponse = new Settlement(txState.Response);
                         ActionsForm.listBoxFlow.Items.Add($"# Response: {settleResponse.GetResponseText()}");
-                        ActionsForm.listBoxFlow.Items.Add("# Merchant Receipt:");
-                        ActionsForm.listBoxFlow.Items.Add(settleResponse.GetReceipt().TrimEnd());
                         ActionsForm.listBoxFlow.Items.Add("# Period Start: " + settleResponse.GetPeriodStartTime());
                         ActionsForm.listBoxFlow.Items.Add("# Period End: " + settleResponse.GetPeriodEndTime());
                         ActionsForm.listBoxFlow.Items.Add("# Settlement Time: " + settleResponse.GetTriggeredTime());
@@ -952,8 +950,11 @@ namespace RamenPos
                         var schemes = settleResponse.GetSchemeSettlementEntries();
                         foreach (var s in schemes)
                         {
-                            TransactionForm.richtextReceipt.Text = TransactionForm.richtextReceipt.Text + Environment.NewLine + "# " + s;
+                            ActionsForm.listBoxFlow.Items.Add("# " + s);
                         }
+
+                        TransactionForm.richtextReceipt.Text = TransactionForm.richtextReceipt.Text + Environment.NewLine + "# Merchant Receipt:";
+                        TransactionForm.richtextReceipt.Text = !settleResponse.WasMerchantReceiptPrinted() ? TransactionForm.richtextReceipt.Text + Environment.NewLine + settleResponse.GetReceipt().TrimEnd() : TransactionForm.richtextReceipt.Text + Environment.NewLine + "# PRINTED FROM EFTPOS";
                     }
                     break;
                 case SPIClient.Message.SuccessState.Failed:
@@ -965,7 +966,7 @@ namespace RamenPos
                         ActionsForm.listBoxFlow.Items.Add($"# Error: {txState.Response.GetError()}");
                         ActionsForm.listBoxFlow.Items.Add("# Merchant Receipt:");
 
-                        TransactionForm.richtextReceipt.Text = TransactionForm.richtextReceipt.Text + Environment.NewLine + settleResponse.GetReceipt().TrimEnd();
+                        TransactionForm.richtextReceipt.Text = !settleResponse.WasMerchantReceiptPrinted() ? TransactionForm.richtextReceipt.Text + Environment.NewLine + settleResponse.GetReceipt().TrimEnd() : TransactionForm.richtextReceipt.Text + Environment.NewLine + "# PRINTED FROM EFTPOS";
                     }
                     break;
                 case SPIClient.Message.SuccessState.Unknown:

@@ -51,13 +51,13 @@
             this.pnlStatus = new System.Windows.Forms.Panel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.secretsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlOtherTransactions = new System.Windows.Forms.Panel();
             this.btnTerminalSettings = new System.Windows.Forms.Button();
             this.btnHeaderFooter = new System.Windows.Forms.Button();
             this.btnTerminalStatus = new System.Windows.Forms.Button();
             this.btnFreeformReceipt = new System.Windows.Forms.Button();
             this.lblOtherTransactions = new System.Windows.Forms.Label();
-            this.secretsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlSettings.SuspendLayout();
             this.pnlTransactions.SuspendLayout();
             this.pnlReceipt.SuspendLayout();
@@ -86,7 +86,7 @@
             this.cboPrintMerchantCopy.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cboPrintMerchantCopy.Location = new System.Drawing.Point(16, 97);
             this.cboPrintMerchantCopy.Name = "cboPrintMerchantCopy";
-            this.cboPrintMerchantCopy.Size = new System.Drawing.Size(160, 23);
+            this.cboPrintMerchantCopy.Size = new System.Drawing.Size(319, 43);
             this.cboPrintMerchantCopy.TabIndex = 7;
             this.cboPrintMerchantCopy.Text = "Print Merchant Copy";
             this.cboPrintMerchantCopy.UseVisualStyleBackColor = true;
@@ -98,11 +98,11 @@
             this.cboxSignFromEftpos.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cboxSignFromEftpos.Location = new System.Drawing.Point(16, 74);
             this.cboxSignFromEftpos.Name = "cboxSignFromEftpos";
-            this.cboxSignFromEftpos.Size = new System.Drawing.Size(144, 23);
+            this.cboxSignFromEftpos.Size = new System.Drawing.Size(285, 43);
             this.cboxSignFromEftpos.TabIndex = 6;
             this.cboxSignFromEftpos.Text = "Sign From EFTPOS";
             this.cboxSignFromEftpos.UseVisualStyleBackColor = true;
-            this.cboxSignFromEftpos.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
+            this.cboxSignFromEftpos.CheckedChanged += new System.EventHandler(this.cboxSignFromEftpos_CheckedChanged);
             // 
             // cboxReceiptFrom
             // 
@@ -110,7 +110,7 @@
             this.cboxReceiptFrom.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cboxReceiptFrom.Location = new System.Drawing.Point(16, 51);
             this.cboxReceiptFrom.Name = "cboxReceiptFrom";
-            this.cboxReceiptFrom.Size = new System.Drawing.Size(166, 23);
+            this.cboxReceiptFrom.Size = new System.Drawing.Size(328, 43);
             this.cboxReceiptFrom.TabIndex = 5;
             this.cboxReceiptFrom.Text = "Receipt From EFTPOS";
             this.cboxReceiptFrom.UseVisualStyleBackColor = true;
@@ -325,12 +325,13 @@
             // 
             // menuStrip1
             // 
+            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.settingsToolStripMenuItem,
             this.secretsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(535, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(535, 49);
             this.menuStrip1.TabIndex = 8;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -340,9 +341,19 @@
             this.settingsToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.settingsToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(131, 24);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(254, 45);
             this.settingsToolStripMenuItem.Text = "Pairing Settings";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
+            // 
+            // secretsToolStripMenuItem
+            // 
+            this.secretsToolStripMenuItem.BackColor = System.Drawing.Color.LightGray;
+            this.secretsToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.secretsToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            this.secretsToolStripMenuItem.Name = "secretsToolStripMenuItem";
+            this.secretsToolStripMenuItem.Size = new System.Drawing.Size(130, 45);
+            this.secretsToolStripMenuItem.Text = "Secrets";
+            this.secretsToolStripMenuItem.Click += new System.EventHandler(this.secretsToolStripMenuItem_Click);
             // 
             // pnlOtherTransactions
             // 
@@ -418,19 +429,10 @@
             this.lblOtherTransactions.Text = "Other Transactions";
             this.lblOtherTransactions.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // secretsToolStripMenuItem
-            // 
-            this.secretsToolStripMenuItem.BackColor = System.Drawing.Color.LightGray;
-            this.secretsToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.secretsToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.secretsToolStripMenuItem.Name = "secretsToolStripMenuItem";
-            this.secretsToolStripMenuItem.Size = new System.Drawing.Size(71, 24);
-            this.secretsToolStripMenuItem.Text = "Secrets";
-            this.secretsToolStripMenuItem.Click += new System.EventHandler(this.secretsToolStripMenuItem_Click);
-            // 
             // TransactionForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AllowDrop = true;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 27F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(535, 611);
             this.Controls.Add(this.pnlOtherTransactions);

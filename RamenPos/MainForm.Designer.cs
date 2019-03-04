@@ -63,7 +63,7 @@
             // 
             this.pbRamenPos.Image = global::RamenPos.Properties.Resources._450191;
             this.pbRamenPos.Location = new System.Drawing.Point(60, 119);
-            this.pbRamenPos.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.pbRamenPos.Margin = new System.Windows.Forms.Padding(6);
             this.pbRamenPos.Name = "pbRamenPos";
             this.pbRamenPos.Size = new System.Drawing.Size(820, 756);
             this.pbRamenPos.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -85,7 +85,7 @@
             // 
             this.txtPosId.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtPosId.Location = new System.Drawing.Point(12, 73);
-            this.txtPosId.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.txtPosId.Margin = new System.Windows.Forms.Padding(6);
             this.txtPosId.MaxLength = 10;
             this.txtPosId.Name = "txtPosId";
             this.txtPosId.Size = new System.Drawing.Size(496, 37);
@@ -95,7 +95,7 @@
             // 
             this.txtSerialNumber.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtSerialNumber.Location = new System.Drawing.Point(12, 163);
-            this.txtSerialNumber.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.txtSerialNumber.Margin = new System.Windows.Forms.Padding(6);
             this.txtSerialNumber.MaxLength = 20;
             this.txtSerialNumber.Name = "txtSerialNumber";
             this.txtSerialNumber.Size = new System.Drawing.Size(496, 37);
@@ -130,7 +130,7 @@
             this.chkAutoAddress.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkAutoAddress.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkAutoAddress.Location = new System.Drawing.Point(218, 46);
-            this.chkAutoAddress.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.chkAutoAddress.Margin = new System.Windows.Forms.Padding(6);
             this.chkAutoAddress.Name = "chkAutoAddress";
             this.chkAutoAddress.Size = new System.Drawing.Size(97, 34);
             this.chkAutoAddress.TabIndex = 6;
@@ -143,7 +143,7 @@
             this.txtAddress.BackColor = System.Drawing.SystemColors.Window;
             this.txtAddress.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtAddress.Location = new System.Drawing.Point(12, 252);
-            this.txtAddress.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.txtAddress.Margin = new System.Windows.Forms.Padding(6);
             this.txtAddress.MaxLength = 20;
             this.txtAddress.Name = "txtAddress";
             this.txtAddress.Size = new System.Drawing.Size(496, 37);
@@ -157,7 +157,7 @@
             this.btnMain.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnMain.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnMain.Location = new System.Drawing.Point(1220, 794);
-            this.btnMain.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.btnMain.Margin = new System.Windows.Forms.Padding(6);
             this.btnMain.Name = "btnMain";
             this.btnMain.Size = new System.Drawing.Size(216, 81);
             this.btnMain.TabIndex = 8;
@@ -188,7 +188,7 @@
             this.btnSave.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.btnSave.Font = new System.Drawing.Font("Arial", 8F);
             this.btnSave.Location = new System.Drawing.Point(360, 37);
-            this.btnSave.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.btnSave.Margin = new System.Windows.Forms.Padding(6);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(128, 60);
             this.btnSave.TabIndex = 10;
@@ -202,9 +202,9 @@
             this.grpAutoAddressResolution.Controls.Add(this.chkAutoAddress);
             this.grpAutoAddressResolution.Controls.Add(this.btnSave);
             this.grpAutoAddressResolution.Location = new System.Drawing.Point(920, 390);
-            this.grpAutoAddressResolution.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.grpAutoAddressResolution.Margin = new System.Windows.Forms.Padding(6);
             this.grpAutoAddressResolution.Name = "grpAutoAddressResolution";
-            this.grpAutoAddressResolution.Padding = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.grpAutoAddressResolution.Padding = new System.Windows.Forms.Padding(6);
             this.grpAutoAddressResolution.Size = new System.Drawing.Size(548, 125);
             this.grpAutoAddressResolution.TabIndex = 11;
             this.grpAutoAddressResolution.TabStop = false;
@@ -217,7 +217,7 @@
             this.chkTestMode.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkTestMode.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkTestMode.Location = new System.Drawing.Point(12, 46);
-            this.chkTestMode.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.chkTestMode.Margin = new System.Windows.Forms.Padding(6);
             this.chkTestMode.Name = "chkTestMode";
             this.chkTestMode.Size = new System.Drawing.Size(163, 34);
             this.chkTestMode.TabIndex = 12;
@@ -241,7 +241,7 @@
             this.txtSecrets.Enabled = false;
             this.txtSecrets.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtSecrets.Location = new System.Drawing.Point(12, 87);
-            this.txtSecrets.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.txtSecrets.Margin = new System.Windows.Forms.Padding(6);
             this.txtSecrets.Name = "txtSecrets";
             this.txtSecrets.Size = new System.Drawing.Size(496, 37);
             this.txtSecrets.TabIndex = 14;
@@ -277,9 +277,9 @@
             this.grpSettings.Controls.Add(this.lblEftposAddress);
             this.grpSettings.Controls.Add(this.txtAddress);
             this.grpSettings.Location = new System.Drawing.Point(920, 63);
-            this.grpSettings.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.grpSettings.Margin = new System.Windows.Forms.Padding(6);
             this.grpSettings.Name = "grpSettings";
-            this.grpSettings.Padding = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.grpSettings.Padding = new System.Windows.Forms.Padding(6);
             this.grpSettings.Size = new System.Drawing.Size(548, 315);
             this.grpSettings.TabIndex = 18;
             this.grpSettings.TabStop = false;
@@ -289,9 +289,9 @@
             this.grpSecrets.Controls.Add(this.cboxSecrets);
             this.grpSecrets.Controls.Add(this.txtSecrets);
             this.grpSecrets.Location = new System.Drawing.Point(920, 527);
-            this.grpSecrets.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.grpSecrets.Margin = new System.Windows.Forms.Padding(6);
             this.grpSecrets.Name = "grpSecrets";
-            this.grpSecrets.Padding = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.grpSecrets.Padding = new System.Windows.Forms.Padding(6);
             this.grpSecrets.Size = new System.Drawing.Size(548, 160);
             this.grpSecrets.TabIndex = 19;
             this.grpSecrets.TabStop = false;
@@ -301,7 +301,7 @@
             this.cboxSecrets.AutoSize = true;
             this.cboxSecrets.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cboxSecrets.Location = new System.Drawing.Point(12, 37);
-            this.cboxSecrets.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.cboxSecrets.Margin = new System.Windows.Forms.Padding(6);
             this.cboxSecrets.Name = "cboxSecrets";
             this.cboxSecrets.Size = new System.Drawing.Size(132, 34);
             this.cboxSecrets.TabIndex = 15;
@@ -313,6 +313,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1476, 898);
             this.Controls.Add(this.grpSecrets);
             this.Controls.Add(this.grpSettings);
@@ -325,7 +326,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.Margin = new System.Windows.Forms.Padding(6);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "MainForm";
