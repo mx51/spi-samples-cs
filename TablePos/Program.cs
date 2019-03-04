@@ -61,7 +61,6 @@ namespace TablePos
 
             _spi = new Spi(_posId, _serialNumber, _eftposAddress, _spiSecrets);
             _spi.SetPosInfo("assembly", "2.5.0");
-
             _spi.StatusChanged += OnSpiStatusChanged;
             _spi.PairingFlowStateChanged += OnPairingFlowStateChanged;
             _spi.SecretsChanged += OnSecretsChanged;
