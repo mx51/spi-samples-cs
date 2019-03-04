@@ -32,7 +32,8 @@ namespace MotelPos
 
             LoadPersistedState();
 
-            _spi = new Spi(_posId, _eftposAddress, _spiSecrets); // It is ok to not have the secrets yet to start with.
+            _spi = new Spi(_posId, "", _eftposAddress, _spiSecrets); // It is ok to not have the secrets yet to start with.
+            _spi.SetPosInfo("assembly", "2.4.0");
             _spi.StatusChanged += OnSpiStatusChanged;
             _spi.PairingFlowStateChanged += OnPairingFlowStateChanged;
             _spi.SecretsChanged += OnSecretsChanged;

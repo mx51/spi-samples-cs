@@ -56,7 +56,8 @@ namespace TablePos
             log.Info("Starting TablePos...");
             LoadPersistedState();
 
-            _spi = new Spi(_posId, _eftposAddress, _spiSecrets);
+            _spi = new Spi(_posId, "",  _eftposAddress, _spiSecrets);
+            _spi.SetPosInfo("assembly", "2.4.0");
             _spi.StatusChanged += OnSpiStatusChanged;
             _spi.PairingFlowStateChanged += OnPairingFlowStateChanged;
             _spi.SecretsChanged += OnSecretsChanged;
