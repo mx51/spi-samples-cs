@@ -223,6 +223,7 @@ namespace TablePos
             var bill = billsStore[billPayment.BillId];
             bill.OutstandingAmount -= billPayment.PurchaseAmount;
             bill.TippedAmount += billPayment.TipAmount;
+            bill.SurchargeAmount += billPayment.SurchargeAmount;
             bill.Locked = bill.OutstandingAmount == 0 ? false : true;
 
             Console.WriteLine($"Updated Bill: {bill}");
@@ -1040,6 +1041,7 @@ namespace TablePos
             public int TotalAmount = 0;
             public int OutstandingAmount = 0;
             public int TippedAmount = 0;
+            public int SurchargeAmount = 0;
             public bool Locked = false;
 
 
@@ -1047,7 +1049,7 @@ namespace TablePos
             public override string ToString()
             {
                 return $"{BillId} - Table:{TableId} Operator Id:{OperatorId} Label:{Label} Total:${TotalAmount / 100.0:0.00} " +
-                    $"Outstanding:${OutstandingAmount / 100.0:0.00} Tips:${TippedAmount / 100.0:0.00} Locked:{Locked}";
+                    $"Outstanding:${OutstandingAmount / 100.0:0.00} Tips:${TippedAmount / 100.0:0.00} Surcharge:${SurchargeAmount / 100.0:0.00}  Locked:{Locked}";
             }
         }
 
