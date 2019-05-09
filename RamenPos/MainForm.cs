@@ -1,7 +1,9 @@
 ﻿using SPIClient;
 using SPIClient.Service;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace RamenPos
@@ -10,6 +12,10 @@ namespace RamenPos
     {
         private const string ApiKey = "RamenPosDeviceAddressApiKey"; // this key needs to be requested from Assembly Payments
         private const string AcquirerCode = "wbc";
+        public bool IsStarted;
+        private Dictionary<string, string> secretsDict = new Dictionary<string, string>();
+        private string validDeviceAddress = "";
+        private string validSerialNumber = "";
 
         public MainForm()
         {
@@ -21,11 +27,26 @@ namespace RamenPos
         private void RamenPos_Load(object sender, EventArgs e)
         {
             MainForm = this;
-            btnMain.Text = ButtonCaption.Pair;
-            txtAddress.Enabled = false;
             TransactionForm = new TransactionForm();
             ActionsForm = new ActionsForm();
+            btnMain.Text = ButtonCaption.Pair;
+            txtAddress.Enabled = false;
 
+            if (File.Exists("Secrets.bin"))
+            {
+                secretsDict = ReadFromBinaryFile<Dictionary<string, string>>("Secrets.bin");
+
+                if (secretsDict.Count > 0)
+                {
+                    txtAddress.Text = secretsDict["EftposAddress"];
+                    txtPosId.Text = secretsDict["PosId"];
+                    txtSecrets.Text = secretsDict["Secrets"];
+                    cboxSecrets.Checked = true;
+                    cboxAutoAddress.Checked = false;
+                }
+            }
+
+            IsStarted = true;
             Start();
         }
 
@@ -38,24 +59,24 @@ namespace RamenPos
                 return;
 
             SpiClient.SetTestMode(chkTestMode.Checked);
-            SpiClient.SetAutoAddressResolution(AutoAddressEnabled); // trigger auto address 
-            SpiClient.SetSerialNumber(SerialNumber); // trigger auto address            
+            SpiClient.SetAutoAddressResolution(AutoAddressEnabled); // trigger auto address             
+            SpiClient.SetSerialNumber(SerialNumber); // trigger auto address
         }
 
-        private void chkAutoIpAddress_CheckedChanged(object sender, EventArgs e)
+        private void cboxAutoIpAddress_CheckedChanged(object sender, EventArgs e)
         {
-            btnMain.Enabled = !chkAutoAddress.Checked;
-            btnSave.Enabled = chkAutoAddress.Checked;
-            chkTestMode.Checked = chkAutoAddress.Checked;
-            chkTestMode.Enabled = chkAutoAddress.Checked;
-            txtAddress.Enabled = !chkAutoAddress.Checked;
+            btnMain.Enabled = true;
+            btnSave.Enabled = cboxAutoAddress.Checked;
+            chkTestMode.Checked = cboxAutoAddress.Checked;
+            chkTestMode.Enabled = cboxAutoAddress.Checked;
+            txtAddress.Enabled = !cboxAutoAddress.Checked;
         }
 
         private bool AreControlsValid(bool isPairing)
         {
             var valid = true;
 
-            AutoAddressEnabled = chkAutoAddress.Checked;
+            AutoAddressEnabled = cboxAutoAddress.Checked;
             PosId = txtPosId.Text;
             EftposAddress = txtAddress.Text;
             SerialNumber = txtSerialNumber.Text;
@@ -74,7 +95,7 @@ namespace RamenPos
                 valid = false;
             }
 
-            if (chkAutoAddress.Checked && string.IsNullOrWhiteSpace(SerialNumber))
+            if (cboxAutoAddress.Checked && string.IsNullOrWhiteSpace(SerialNumber))
             {
                 errorProvider.SetError(txtSerialNumber, "Please provide a Serial Number");
                 valid = false;
@@ -151,6 +172,7 @@ namespace RamenPos
                     if (!AreControlsValidForSecrets())
                         return;
 
+                    IsStarted = false;
                     Secrets = new Secrets(txtSecrets.Text.Split(':')[0], txtSecrets.Text.Split(':')[1]);
                     Start();
                     break;
@@ -159,7 +181,6 @@ namespace RamenPos
                         return;
 
                     SpiClient.SetPosId(PosId);
-                    SpiClient.SetSerialNumber(SerialNumber);
                     SpiClient.SetEftposAddress(EftposAddress);
                     SpiClient.Pair();
                     MainForm.Enabled = false;
@@ -172,18 +193,69 @@ namespace RamenPos
             }
         }
 
+        private static T ReadFromBinaryFile<T>(string filePath)
+        {
+            using (Stream stream = File.Open(filePath, FileMode.Open))
+            {
+                var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                return (T)binaryFormatter.Deserialize(stream);
+            }
+        }
+
+        private static void WriteToBinaryFile<T>(string filePath, T objectToWrite, bool append = false)
+        {
+            using (Stream stream = File.Open(filePath, append ? FileMode.Append : FileMode.Create))
+            {
+                var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                binaryFormatter.Serialize(stream, objectToWrite);
+            }
+        }
+
+        public void SaveSecrets()
+        {
+            if (File.Exists("Secrets.bin"))
+            {
+                if (secretsDict.ContainsKey("PosId"))
+                {
+                    secretsDict["PosId"] = PosId;
+                }
+                else
+                {
+                    secretsDict.Add("PosId", PosId);
+                }
+
+                if (secretsDict.ContainsKey("EftposAddress"))
+                {
+                    secretsDict["EftposAddress"] = EftposAddress;
+                }
+                else
+                {
+                    secretsDict.Add("EftposAddress", EftposAddress);
+                }
+
+                if (secretsDict.ContainsKey("Secrets"))
+                {
+                    secretsDict["Secrets"] = Secrets.EncKey + ":" + Secrets.HmacKey;
+                }
+                else
+                {
+                    secretsDict.Add("Secrets", Secrets.EncKey + ":" + Secrets.HmacKey);
+                }
+
+                File.Delete("Secrets.bin");
+            }
+
+            WriteToBinaryFile("Secrets.bin", secretsDict, false);
+        }
+
         #endregion
 
         #region SPI Client
         private void Start()
         {
             SpiClient = new Spi(PosId, SerialNumber, EftposAddress, Secrets);
-            SpiClient.SetPosInfo("assembly", "2.4.0");
+            SpiClient.SetPosInfo("assembly", "2.6.0");
             Options = new TransactionOptions();
-            Options.SetCustomerReceiptFooter("");
-            Options.SetCustomerReceiptHeader("");
-            Options.SetMerchantReceiptFooter("");
-            Options.SetMerchantReceiptHeader("");
 
             SpiClient.DeviceAddressChanged += OnDeviceAddressChanged;
             SpiClient.StatusChanged += OnSpiStatusChanged;
@@ -210,6 +282,14 @@ namespace RamenPos
     MessageBoxButtons.OK);
                 grpAutoAddressResolution.Enabled = false;
             }
+
+            if (!IsStarted)
+            {
+                this.Invoke(new MethodInvoker(delegate ()
+                {
+                    SpiStatusAndActions();
+                }));
+            }
         }
 
         private void OnDeviceAddressChanged(object sender, DeviceAddressStatus e)
@@ -217,11 +297,33 @@ namespace RamenPos
             this.Invoke(new MethodInvoker(delegate ()
             {
                 btnMain.Enabled = false;
-                if (!string.IsNullOrWhiteSpace(e?.Address))
+                if (e != null)
                 {
-                    txtAddress.Text = e.Address;
-                    btnMain.Enabled = true;
-                    MessageBox.Show($@"Device Address has been updated to {e.Address}", @"Device Address Updated");
+                    switch (e.ResponseCode)
+                    {
+                        case ResponseCode.SUCCESS:
+                            txtAddress.Text = e.Address;
+                            btnMain.Enabled = true;
+                            validDeviceAddress = txtAddress.Text;
+                            validSerialNumber = txtSerialNumber.Text;
+                            MessageBox.Show($@"Device Address has been updated to {e.Address}", @"Device Address Updated");
+                            break;
+                        case ResponseCode.ERROR:
+                            txtAddress.Text = "";
+                            MessageBox.Show("The serial number is invalid!");
+                            break;
+                        case ResponseCode.ADDRESS_NOT_CHANGED:
+                            btnMain.Enabled = true;
+                            MessageBox.Show("The IP address have not changed!");                            
+                            break;
+                        case ResponseCode.SERIAL_NUMBER_NOT_CHANGED:
+                            btnMain.Enabled = true;
+                            MessageBox.Show("The serial number have not changed!");
+                            break;
+                        default:
+                            MessageBox.Show("The serial number is invalid! or The IP address have not changed!");
+                            break;
+                    }
                 }
             }));
         }
@@ -378,6 +480,11 @@ namespace RamenPos
                             transactionsToolStripMenuItem.Visible = false;
                             GetUnvisibleActionComponents();
                             TransactionForm.lblStatus.BackColor = Color.Red;
+                            if (File.Exists("Secrets.bin"))
+                            {
+                                var secretsFile = new FileInfo("Secrets.bin");
+                                File.Delete(secretsFile.FullName);
+                            }
                             break;
 
                         case SpiFlow.Pairing:
@@ -498,6 +605,7 @@ namespace RamenPos
                     switch (SpiClient.CurrentFlow)
                     {
                         case SpiFlow.Idle:
+                            SaveSecrets();
                             btnMain.Text = ButtonCaption.UnPair;
                             TransactionForm.lblStatus.BackColor = Color.Green;
                             ActionsForm.lblFlowMessage.Text = "# --> SPI Status Changed: " + SpiClient.CurrentStatus;
@@ -900,10 +1008,10 @@ namespace RamenPos
                         var schemes = settleResponse.GetSchemeSettlementEntries();
                         foreach (var s in schemes)
                         {
-                            ActionsForm.listBoxFlow.Items.Add("# " + s);                            
+                            ActionsForm.listBoxFlow.Items.Add("# " + s);
                         }
 
-                        TransactionForm.richtextReceipt.Text = TransactionForm.richtextReceipt.Text + Environment.NewLine + "# Merchant Receipt:";                        
+                        TransactionForm.richtextReceipt.Text = TransactionForm.richtextReceipt.Text + Environment.NewLine + "# Merchant Receipt:";
                         TransactionForm.richtextReceipt.Text = !settleResponse.WasMerchantReceiptPrinted() ? TransactionForm.richtextReceipt.Text + Environment.NewLine + settleResponse.GetReceipt().TrimEnd() : TransactionForm.richtextReceipt.Text + Environment.NewLine + "# PRINTED FROM EFTPOS";
                     }
                     break;

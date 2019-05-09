@@ -4,8 +4,8 @@ using System.Windows.Forms;
 
 namespace RamenPos
 {
-    public partial class TransactionForm :RamenForm
-    {        
+    public partial class TransactionForm : RamenForm
+    {
         public TransactionForm()
         {
             InitializeComponent();
@@ -83,8 +83,8 @@ namespace RamenPos
 
         private void btnSettle_Click(object sender, EventArgs e)
         {
-            ActionsForm.btnAction1.Visible = true;
-            ActionsForm.btnAction1.Text = ButtonCaption.Cancel;
+            ActionsForm.btnAction1.Enabled = false;
+            ActionsForm.btnAction1.Visible = false;
             ActionsForm.btnAction2.Visible = false;
             ActionsForm.btnAction3.Visible = false;
             ActionsForm.lblAction1.Visible = false;
@@ -133,6 +133,7 @@ namespace RamenPos
             MainForm.grpSecrets.Enabled = false;
             MainForm.grpAutoAddressResolution.Enabled = false;
             MainForm.grpSettings.Enabled = false;
+            MainForm.btnMain.Enabled = true;
             Hide();
             MainForm.Show();
         }
@@ -192,9 +193,8 @@ namespace RamenPos
 
         private void btnSettleEnq_Click(object sender, EventArgs e)
         {
-            ActionsForm.btnAction1.Enabled = true;
-            ActionsForm.btnAction1.Visible = true;
-            ActionsForm.btnAction1.Text = ButtonCaption.Cancel;
+            ActionsForm.btnAction1.Enabled = false;
+            ActionsForm.btnAction1.Visible = false;
             ActionsForm.btnAction2.Visible = false;
             ActionsForm.btnAction3.Visible = false;
             ActionsForm.lblAction1.Visible = false;
@@ -318,10 +318,12 @@ namespace RamenPos
 
             if (Secrets != null)
             {
-                ActionsForm.listBoxFlow.Items.Add("Pos Id: " + PosId);
-                ActionsForm.listBoxFlow.Items.Add("Eftpos Address: " + EftposAddress);
-                ActionsForm.listBoxFlow.Items.Add("Secrets: " + Secrets.EncKey + ":" +
-                  Secrets.HmacKey);
+                ActionsForm.listBoxFlow.Items.Add("Pos Id:");
+                ActionsForm.listBoxFlow.Items.Add(PosId);
+                ActionsForm.listBoxFlow.Items.Add("Eftpos Address:");
+                ActionsForm.listBoxFlow.Items.Add(EftposAddress);
+                ActionsForm.listBoxFlow.Items.Add("Secrets:");
+                ActionsForm.listBoxFlow.Items.Add(Secrets.EncKey + ":" + Secrets.HmacKey);
             }
             else
             {

@@ -46,7 +46,7 @@ namespace RamenPos
                 case ButtonCaption.OKUnpaired:
                     SpiClient.AckFlowEndedAndBackToIdle();
                     MainForm.btnMain.Text = ButtonCaption.Pair;
-                    TransactionForm.lblStatus.BackColor = Color.Red;                    
+                    TransactionForm.lblStatus.BackColor = Color.Red;
                     MainForm.grpSecrets.Enabled = true;
                     MainForm.grpAutoAddressResolution.Enabled = true;
                     MainForm.grpSettings.Enabled = true;
