@@ -53,6 +53,7 @@ namespace TablePos
         private string _eftposAddress = "192.168.1.9";
         private Secrets _spiSecrets = null;
         private string _serialNumber = "";
+        private List<string> allowedOperatorIdList = new List<string>();
 
         private void Start()
         {
@@ -66,8 +67,8 @@ namespace TablePos
             _spi.SecretsChanged += OnSecretsChanged;
             _spi.TxFlowStateChanged += OnTxFlowStateChanged;
 
-            _pat = _spi.EnablePayAtTable();
-            _pat.Config.LabelTableId = "Table Number";
+            _pat = _spi.EnablePayAtTable();            
+            EnablePayAtTableConfigs();
             _pat.GetBillStatus = PayAtTableGetBillDetails;
             _pat.BillPaymentReceived = PayAtTableBillPaymentReceived;
             _pat.BillPaymentFlowEnded = PayAtTableBillPaymentFlowEnded;
@@ -87,6 +88,21 @@ namespace TablePos
             PrintStatusAndActions();
             Console.Write("> ");
             AcceptUserInput();
+        }
+
+        private void EnablePayAtTableConfigs()
+        {
+            _pat.Config.PayAtTableEnabled = true;
+            _pat.Config.OperatorIdEnabled = true;
+            _pat.Config.AllowedOperatorIds = new List<string>();
+            _pat.Config.EqualSplitEnabled = true;
+            _pat.Config.SplitByAmountEnabled = true;
+            _pat.Config.SummaryReportEnabled = true;
+            _pat.Config.TippingEnabled = true;
+            _pat.Config.LabelOperatorId = "Operator ID";
+            _pat.Config.LabelPayButton = "Pay at Table";
+            _pat.Config.LabelTableId = "Table Number";
+            _pat.Config.TableRetrievalEnabled = true;
         }
 
         #region Main Spi Callbacks
@@ -446,24 +462,36 @@ namespace TablePos
         private void PrintActions()
         {
             Console.WriteLine("# ----------- TABLE ACTIONS ------------");
-            Console.WriteLine("# [open:12:3:vip]   - Start a new bill for table 12, operator Id 3, Label is vip");
-            Console.WriteLine("# [add:12:1000]     - Add $10.00 to the bill of table 12");
-            Console.WriteLine("# [close:12]        - Close table 12");
-            Console.WriteLine("# [lock:12:true]    - Lock/Unlock table 12");
-            Console.WriteLine("# [tables]          - List open tables");
-            Console.WriteLine("# [table:12]        - Print current bill for table 12");
-            Console.WriteLine("# [bill:9876789876] - Print bill with id 9876789876");
+            Console.WriteLine("# [open:12:3:vip:true/false] - start a new bill for table 12, operator Id 3, Label is vip, Lock is false");
+            Console.WriteLine("# [add:12:1000]              - add $10.00 to the bill of table 12");
+            Console.WriteLine("# [close:12]                 - close table 12");
+            Console.WriteLine("# [locked:12:true/false]       - Lock/Unlock table 12");
+            Console.WriteLine("# [tables]                   - list open tables");
+            Console.WriteLine("# [table:12]                 - print current bill for table 12");
+            Console.WriteLine("# [bill:9876789876]          - print bill with ID 9876789876");
             Console.WriteLine("#");
 
             if (_spi.CurrentFlow == SpiFlow.Idle)
             {
+                Console.WriteLine("# ----------- TABLE CONFIG ------------");
+                Console.WriteLine("# [pat_all_enable]       - enable all pay at table settings");
+                Console.WriteLine("# [pat_enabled:true/false]           - enable/disable pay at table");
+                Console.WriteLine("# [operatorid_enabled:true/false]    - enable/disable operator id property");
+                Console.WriteLine("# [set_allowed_operatorid:2]         - set allowed operator id");
+                Console.WriteLine("# [equal_split:true/false]           - enable/disable equal split property");
+                Console.WriteLine("# [split_by_amount:true/false]       - enable/disable split by amount property");
+                Console.WriteLine("# [tipping:true/false]               - enable/disable tipping property");
+                Console.WriteLine("# [summary_report:true/false]        - enable/disable operator id");
+                Console.WriteLine("# [set_label_operatorid:Operator Id] - set operatorid label");
+                Console.WriteLine("# [set_label_tableid:Table Number]   - set tableid label");
+                Console.WriteLine("# [set_label_paybutton:Pay At Table] - set pay button label");
                 Console.WriteLine("# ----------- OTHER ACTIONS ------------");
                 Console.WriteLine("# [purchase:1200] - Quick Purchase Tx");
                 Console.WriteLine("# [yuck] - hand out a refund!");
                 Console.WriteLine("# [settle] - Initiate Settlement");
-                Console.WriteLine("#");
-                Console.WriteLine("# [print_merchant_copy:true] - Offer Merchant Receipt From Eftpos");
-                Console.WriteLine("# [rcpt_from_eftpos:true] - Offer Customer Receipt From Eftpos");
+                Console.WriteLine("# ----------- PRINT CONFIG ------------");
+                Console.WriteLine("# [print_merchant_copy:true/false] - Offer Merchant Receipt From Eftpos");
+                Console.WriteLine("# [rcpt_from_eftpos:true/false] - Offer Customer Receipt From Eftpos");
                 Console.WriteLine("# [sig_flow_from_eftpos:true] - Signature Flow to be handled by Eftpos");
                 Console.WriteLine("#");
             }
@@ -548,32 +576,39 @@ namespace TablePos
                         {
                             label = spInput[3];
                         }
-                        OpenTable(spInput[1], spInput[2], label); Console.Write("> ");
+                        OpenTable(spInput[1], spInput[2], label);
+                        Console.Write("> ");
                         break;
                     case "close":
                         if (!CheckInput(spInput, 1)) { break; };
-                        CloseTable(spInput[1]); Console.Write("> ");
+                        CloseTable(spInput[1]);
+                        Console.Write("> ");
                         break;
-                    case "lock":
+                    case "locked":
                         if (!CheckInput(spInput, 2)) { break; };
                         var isLock = false;
                         bool.TryParse(spInput[2], out isLock);
-                        LockTable(spInput[1], isLock); Console.Write("> ");
+                        LockTable(spInput[1], isLock);
+                        Console.Write("> ");
                         break;
                     case "add":
                         if (!CheckInput(spInput, 1)) { break; };
-                        AddToTable(spInput[1], int.Parse(spInput[2])); Console.Write("> ");
+                        AddToTable(spInput[1], int.Parse(spInput[2]));
+                        Console.Write("> ");
                         break;
                     case "table":
                         if (!CheckInput(spInput, 1)) { break; };
-                        PrintTable(spInput[1]); Console.Write("> ");
+                        PrintTable(spInput[1]);
+                        Console.Write("> ");
                         break;
                     case "bill":
                         if (!CheckInput(spInput, 1)) { break; };
-                        PrintBill(spInput[1]); Console.Write("> ");
+                        PrintBill(spInput[1]);
+                        Console.Write("> ");
                         break;
                     case "tables":
-                        PrintTables(); Console.Write("> ");
+                        PrintTables();
+                        Console.Write("> ");
                         break;
 
                     case "purchase":
@@ -604,7 +639,7 @@ namespace TablePos
                         else
                         {
                             Console.WriteLine($"## -> Could not set POS ID");
-                        };
+                        }
                         PrintStatusAndActions();
                         Console.Write("> ");
                         break;
@@ -619,8 +654,97 @@ namespace TablePos
                         else
                         {
                             Console.WriteLine($"## -> Could not set Eftpos Address");
-                        };
+                        }
                         PrintStatusAndActions();
+                        Console.Write("> ");
+                        break;
+
+                    case "pat_enabled":
+                        if (!CheckInput(spInput, 1)) { break; };
+                        bool output = false;
+                        bool.TryParse(spInput[1], out output);
+                        _pat.Config.PayAtTableEnabled = output;
+                        _pat.PushPayAtTableConfig();
+                        Console.Write("> ");
+                        break;
+
+                    case "pat_all_enable":
+                        EnablePayAtTableConfigs();
+                        _pat.PushPayAtTableConfig();
+                        Console.Write("> ");
+                        break;
+
+                    case "operatorid_enabled":
+                        if (!CheckInput(spInput, 1)) { break; };
+                        output = false;
+                        bool.TryParse(spInput[1], out output);
+                        _pat.Config.OperatorIdEnabled = output;
+                        _pat.PushPayAtTableConfig();
+                        Console.Write("> ");
+                        break;
+
+                    case "equal_split":
+                        if (!CheckInput(spInput, 1)) { break; };
+                        output = false;
+                        bool.TryParse(spInput[1], out output);
+                        _pat.Config.EqualSplitEnabled = output;
+                        _pat.PushPayAtTableConfig();
+                        Console.Write("> ");
+                        break;
+
+                    case "split_by_amount":
+                        if (!CheckInput(spInput, 1)) { break; };
+                        output = false;
+                        bool.TryParse(spInput[1], out output);
+                        _pat.Config.SplitByAmountEnabled = output;
+                        _pat.PushPayAtTableConfig();
+                        Console.Write("> ");
+                        break;
+
+                    case "tipping":
+                        if (!CheckInput(spInput, 1)) { break; };
+                        output = false;
+                        bool.TryParse(spInput[1], out output);
+                        _pat.Config.TippingEnabled = output;
+                        _pat.PushPayAtTableConfig();
+                        Console.Write("> ");
+                        break;
+
+                    case "summary_report":
+                        if (!CheckInput(spInput, 1)) { break; };
+                        output = false;
+                        bool.TryParse(spInput[1], out output);
+                        _pat.Config.SummaryReportEnabled = output;
+                        _pat.PushPayAtTableConfig();
+                        Console.Write("> ");
+                        break;
+
+                    case "set_allowed_operatorid":
+                        if (!CheckInput(spInput, 1)) { break; };
+                        allowedOperatorIdList.Add(spInput[1]);
+                        _pat.Config.AllowedOperatorIds = allowedOperatorIdList;
+                        _pat.PushPayAtTableConfig();
+                        Console.Write("> ");
+                        break;
+
+                    case "set_label_operatorid":
+                        if (!CheckInput(spInput, 1)) { break; };
+                        _pat.Config.LabelOperatorId = spInput[1];
+                        _pat.PushPayAtTableConfig();
+                        Console.Write("> ");
+                        break;
+
+                    case "set_label_tableid":
+                        if (!CheckInput(spInput, 1)) { break; };
+                        _pat.Config.LabelTableId = spInput[1];
+                        _pat.PushPayAtTableConfig();
+                        Console.Write("> ");
+                        break;
+
+                    case "set_label_paybutton":
+                        if (!CheckInput(spInput, 1)) { break; };
+                        _pat.Config.LabelPayButton = spInput[1];
+                        _pat.PushPayAtTableConfig();
                         Console.Write("> ");
                         break;
 
