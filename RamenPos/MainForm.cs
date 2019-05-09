@@ -14,8 +14,6 @@ namespace RamenPos
         private const string AcquirerCode = "wbc";
         public bool IsStarted;
         private Dictionary<string, string> secretsDict = new Dictionary<string, string>();
-        private string validDeviceAddress = "";
-        private string validSerialNumber = "";
 
         public MainForm()
         {
@@ -304,8 +302,6 @@ namespace RamenPos
                         case ResponseCode.SUCCESS:
                             txtAddress.Text = e.Address;
                             btnMain.Enabled = true;
-                            validDeviceAddress = txtAddress.Text;
-                            validSerialNumber = txtSerialNumber.Text;
                             MessageBox.Show($@"Device Address has been updated to {e.Address}", @"Device Address Updated");
                             break;
                         case ResponseCode.ERROR:
