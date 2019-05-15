@@ -302,22 +302,26 @@ namespace RamenPos
                         case ResponseCode.SUCCESS:
                             txtAddress.Text = e.Address;
                             btnMain.Enabled = true;
-                            MessageBox.Show($@"Device Address has been updated to {e.Address}", @"Device Address Updated");
+                            MessageBox.Show($@"Device Address has been updated to {e.Address}", @"DEVICE ADRESS UPDATED");
                             break;
-                        case ResponseCode.ERROR:
+                        case ResponseCode.INVALID_SERIAL_NUMBER:
                             txtAddress.Text = "";
-                            MessageBox.Show("The serial number is invalid!");
+                            MessageBox.Show("The serial number is invalid: " + e.ResponseStatusDescription + " : " + e.ResponseMessage, "DEVICE ADRESS ERROR");
+                            break;
+                        case ResponseCode.DEVICE_SERVICE_ERROR:
+                            txtAddress.Text = "";
+                            MessageBox.Show("The device service error: " + e.ResponseStatusDescription + " : " + e.ResponseMessage, "DEVICE ADRESS ERROR");
                             break;
                         case ResponseCode.ADDRESS_NOT_CHANGED:
                             btnMain.Enabled = true;
-                            MessageBox.Show("The IP address have not changed!");                            
+                            MessageBox.Show("The IP address have not changed!", "DEVICE ADRESS ERROR");
                             break;
                         case ResponseCode.SERIAL_NUMBER_NOT_CHANGED:
                             btnMain.Enabled = true;
-                            MessageBox.Show("The serial number have not changed!");
+                            MessageBox.Show("The serial number have not changed!", "DEVICE ADRESS ERROR");
                             break;
                         default:
-                            MessageBox.Show("The serial number is invalid! or The IP address have not changed!");
+                            MessageBox.Show("The serial number is invalid! or The IP address have not changed!", "DEVICE ADRESS ERROR");
                             break;
                     }
                 }
