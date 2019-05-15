@@ -486,7 +486,7 @@ namespace TablePos
                 Console.WriteLine("# [set_label_operatorid:Operator Id]   - set operatorid label");
                 Console.WriteLine("# [set_label_tableid:Table Number]     - set tableid label");
                 Console.WriteLine("# [set_label_paybutton:Pay At Table]   - set pay button label");
-                Console.WriteLine("# [table_retrieval_enabled:true/false] - enable/disable operator id");
+                Console.WriteLine("# [table_retrieval_enabled:true/false] - enable/disable table retrieval button");
                 Console.WriteLine("# ----------- OTHER ACTIONS ------------");
                 Console.WriteLine("# [purchase:1200] - Quick Purchase Tx");
                 Console.WriteLine("# [yuck] - hand out a refund!");
