@@ -475,17 +475,18 @@ namespace TablePos
             if (_spi.CurrentFlow == SpiFlow.Idle)
             {
                 Console.WriteLine("# ----------- TABLE CONFIG ------------");
-                Console.WriteLine("# [pat_all_enable]       - enable all pay at table settings");
-                Console.WriteLine("# [pat_enabled:true/false]           - enable/disable pay at table");
-                Console.WriteLine("# [operatorid_enabled:true/false]    - enable/disable operator id property");
-                Console.WriteLine("# [set_allowed_operatorid:2]         - set allowed operator id");
-                Console.WriteLine("# [equal_split:true/false]           - enable/disable equal split property");
-                Console.WriteLine("# [split_by_amount:true/false]       - enable/disable split by amount property");
-                Console.WriteLine("# [tipping:true/false]               - enable/disable tipping property");
-                Console.WriteLine("# [summary_report:true/false]        - enable/disable operator id");
-                Console.WriteLine("# [set_label_operatorid:Operator Id] - set operatorid label");
-                Console.WriteLine("# [set_label_tableid:Table Number]   - set tableid label");
-                Console.WriteLine("# [set_label_paybutton:Pay At Table] - set pay button label");
+                Console.WriteLine("# [pat_all_enable]                     - enable all pay at table settings");
+                Console.WriteLine("# [pat_enabled:true/false]             - enable/disable pay at table");
+                Console.WriteLine("# [operatorid_enabled:true/false]      - enable/disable operator id property");
+                Console.WriteLine("# [set_allowed_operatorid:2]           - set allowed operator id");
+                Console.WriteLine("# [equal_split:true/false]             - enable/disable equal split property");
+                Console.WriteLine("# [split_by_amount:true/false]         - enable/disable split by amount property");
+                Console.WriteLine("# [tipping:true/false]                 - enable/disable tipping property");
+                Console.WriteLine("# [summary_report:true/false]          - enable/disable operator id");
+                Console.WriteLine("# [set_label_operatorid:Operator Id]   - set operatorid label");
+                Console.WriteLine("# [set_label_tableid:Table Number]     - set tableid label");
+                Console.WriteLine("# [set_label_paybutton:Pay At Table]   - set pay button label");
+                Console.WriteLine("# [table_retrieval_enabled:true/false] - enable/disable operator id");
                 Console.WriteLine("# ----------- OTHER ACTIONS ------------");
                 Console.WriteLine("# [purchase:1200] - Quick Purchase Tx");
                 Console.WriteLine("# [yuck] - hand out a refund!");
@@ -745,6 +746,15 @@ namespace TablePos
                     case "set_label_paybutton":
                         if (!CheckInput(spInput, 1)) { break; };
                         _pat.Config.LabelPayButton = spInput[1];
+                        _pat.PushPayAtTableConfig();
+                        Console.Write("> ");
+                        break;
+
+                    case "table_retrieval_enabled":
+                        if (!CheckInput(spInput, 1)) { break; };
+                        output = false;
+                        bool.TryParse(spInput[1], out output);
+                        _pat.Config.TableRetrievalEnabled = output;
                         _pat.PushPayAtTableConfig();
                         Console.Write("> ");
                         break;
