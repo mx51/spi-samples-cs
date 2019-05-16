@@ -40,7 +40,14 @@ namespace RamenPos
                     txtPosId.Text = secretsDict["PosId"];
                     txtSecrets.Text = secretsDict["Secrets"];
                     cboxSecrets.Checked = true;
-                    cboxAutoAddress.Checked = false;
+                    txtSerialNumber.Text = secretsDict["SerialNumber"];
+                    SerialNumber = secretsDict["SerialNumber"];
+                    bool.TryParse(secretsDict["AutoAddressEnabled"], out bool autoAddressEnabled);
+                    AutoAddressEnabled = autoAddressEnabled;
+                    cboxAutoAddress.Checked = autoAddressEnabled;
+                    bool.TryParse(secretsDict["TestMode"], out bool testMode);
+                    chkTestMode.Checked = testMode;
+                    btnMain.Enabled = true;
                 }
             }
 
@@ -68,6 +75,7 @@ namespace RamenPos
             chkTestMode.Checked = cboxAutoAddress.Checked;
             chkTestMode.Enabled = cboxAutoAddress.Checked;
             txtAddress.Enabled = !cboxAutoAddress.Checked;
+            txtSerialNumber.Enabled = true;
         }
 
         private bool AreControlsValid(bool isPairing)
@@ -184,6 +192,9 @@ namespace RamenPos
                     MainForm.Enabled = false;
                     break;
                 case ButtonCaption.UnPair:
+                    txtPosId.Text = "";
+                    txtAddress.Text = "";
+                    txtSerialNumber.Text = "";
                     SpiClient.Unpair();
                     break;
                 default:
@@ -211,36 +222,58 @@ namespace RamenPos
 
         public void SaveSecrets()
         {
-            if (File.Exists("Secrets.bin"))
+            if (secretsDict.ContainsKey("PosId"))
             {
-                if (secretsDict.ContainsKey("PosId"))
-                {
-                    secretsDict["PosId"] = PosId;
-                }
-                else
-                {
-                    secretsDict.Add("PosId", PosId);
-                }
+                secretsDict["PosId"] = PosId;
+            }
+            else
+            {
+                secretsDict.Add("PosId", PosId);
+            }
 
-                if (secretsDict.ContainsKey("EftposAddress"))
-                {
-                    secretsDict["EftposAddress"] = EftposAddress;
-                }
-                else
-                {
-                    secretsDict.Add("EftposAddress", EftposAddress);
-                }
+            if (secretsDict.ContainsKey("EftposAddress"))
+            {
+                secretsDict["EftposAddress"] = EftposAddress;
+            }
+            else
+            {
+                secretsDict.Add("EftposAddress", EftposAddress);
+            }
 
-                if (secretsDict.ContainsKey("Secrets"))
-                {
-                    secretsDict["Secrets"] = Secrets.EncKey + ":" + Secrets.HmacKey;
-                }
-                else
-                {
-                    secretsDict.Add("Secrets", Secrets.EncKey + ":" + Secrets.HmacKey);
-                }
+            if (secretsDict.ContainsKey("SerialNumber"))
+            {
+                secretsDict["SerialNumber"] = SerialNumber;
+            }
+            else
+            {
+                secretsDict.Add("SerialNumber", SerialNumber);
+            }
 
-                File.Delete("Secrets.bin");
+            if (secretsDict.ContainsKey("AutoAddressEnabled"))
+            {
+                secretsDict["AutoAddressEnabled"] = AutoAddressEnabled.ToString();
+            }
+            else
+            {
+                secretsDict.Add("AutoAddressEnabled", AutoAddressEnabled.ToString());
+            }
+
+            if (secretsDict.ContainsKey("TestMode"))
+            {
+                secretsDict["TestMode"] = chkTestMode.Checked.ToString();
+            }
+            else
+            {
+                secretsDict.Add("TestMode", chkTestMode.Checked.ToString());
+            }
+
+            if (secretsDict.ContainsKey("Secrets"))
+            {
+                secretsDict["Secrets"] = Secrets.EncKey + ":" + Secrets.HmacKey;
+            }
+            else
+            {
+                secretsDict.Add("Secrets", Secrets.EncKey + ":" + Secrets.HmacKey);
             }
 
             WriteToBinaryFile("Secrets.bin", secretsDict, false);
