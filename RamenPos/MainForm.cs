@@ -330,26 +330,26 @@ namespace RamenPos
                 btnMain.Enabled = false;
                 if (e != null)
                 {
-                    switch (e.ResponseCode)
+                    switch (e.DeviceAddressResponseCode)
                     {
-                        case ResponseCode.SUCCESS:
+                        case DeviceAddressResponseCode.SUCCESS:
                             txtAddress.Text = e.Address;
                             btnMain.Enabled = true;
                             MessageBox.Show($@"Device Address has been updated to {e.Address}", @"DEVICE ADRESS UPDATED");
                             break;
-                        case ResponseCode.INVALID_SERIAL_NUMBER:
+                        case DeviceAddressResponseCode.INVALID_SERIAL_NUMBER:
                             txtAddress.Text = "";
                             MessageBox.Show("The serial number is invalid: " + e.ResponseStatusDescription + " : " + e.ResponseMessage, "DEVICE ADRESS ERROR");
                             break;
-                        case ResponseCode.DEVICE_SERVICE_ERROR:
+                        case DeviceAddressResponseCode.DEVICE_SERVICE_ERROR:
                             txtAddress.Text = "";
                             MessageBox.Show("The device service error: " + e.ResponseStatusDescription + " : " + e.ResponseMessage, "DEVICE ADRESS ERROR");
                             break;
-                        case ResponseCode.ADDRESS_NOT_CHANGED:
+                        case DeviceAddressResponseCode.ADDRESS_NOT_CHANGED:
                             btnMain.Enabled = true;
                             MessageBox.Show("The IP address have not changed!", "DEVICE ADRESS ERROR");
                             break;
-                        case ResponseCode.SERIAL_NUMBER_NOT_CHANGED:
+                        case DeviceAddressResponseCode.SERIAL_NUMBER_NOT_CHANGED:
                             btnMain.Enabled = true;
                             MessageBox.Show("The serial number have not changed!", "DEVICE ADRESS ERROR");
                             break;
