@@ -83,7 +83,6 @@ namespace RamenPos
 
         private void btnSettle_Click(object sender, EventArgs e)
         {
-            ActionsForm.btnAction1.Enabled = false;
             ActionsForm.btnAction1.Visible = false;
             ActionsForm.btnAction2.Visible = false;
             ActionsForm.btnAction3.Visible = false;
@@ -193,7 +192,6 @@ namespace RamenPos
 
         private void btnSettleEnq_Click(object sender, EventArgs e)
         {
-            ActionsForm.btnAction1.Enabled = false;
             ActionsForm.btnAction1.Visible = false;
             ActionsForm.btnAction2.Visible = false;
             ActionsForm.btnAction3.Visible = false;

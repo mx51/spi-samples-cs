@@ -588,8 +588,16 @@ namespace RamenPos
                             }
                             else if (!SpiClient.CurrentTxFlowState.Finished)
                             {
-                                ActionsForm.btnAction1.Visible = true;
-                                ActionsForm.btnAction1.Text = ButtonCaption.Cancel;
+                                if (SpiClient.CurrentTxFlowState.Type != TransactionType.SettlementEnquiry)
+                                {
+                                    ActionsForm.btnAction1.Visible = true;
+                                    ActionsForm.btnAction1.Text = ButtonCaption.Cancel;
+                                }
+                                else
+                                {
+                                    ActionsForm.btnAction1.Visible = false;
+                                }
+
                                 ActionsForm.btnAction2.Visible = false;
                                 ActionsForm.btnAction3.Visible = false;
                                 GetUnvisibleActionComponents();
@@ -603,11 +611,20 @@ namespace RamenPos
                                         break;
 
                                     case SPIClient.Message.SuccessState.Failed:
+                                        if (SpiClient.CurrentTxFlowState.Type != TransactionType.SettlementEnquiry)
+                                        {
+                                            ActionsForm.btnAction1.Text = ButtonCaption.Retry;
+                                            ActionsForm.btnAction2.Visible = true;
+                                            ActionsForm.btnAction2.Text = ButtonCaption.Cancel;
+                                        }
+                                        else
+                                        {
+                                            ActionsForm.btnAction1.Text = ButtonCaption.OK;
+                                            ActionsForm.btnAction2.Visible = false;
+                                        }
+
                                         ActionsForm.btnAction1.Enabled = true;
                                         ActionsForm.btnAction1.Visible = true;
-                                        ActionsForm.btnAction1.Text = ButtonCaption.Retry;
-                                        ActionsForm.btnAction2.Visible = true;
-                                        ActionsForm.btnAction2.Text = ButtonCaption.Cancel;
                                         ActionsForm.btnAction3.Visible = false;
                                         GetUnvisibleActionComponents();
                                         break;
@@ -669,8 +686,16 @@ namespace RamenPos
                             }
                             else if (!SpiClient.CurrentTxFlowState.Finished)
                             {
-                                ActionsForm.btnAction1.Visible = true;
-                                ActionsForm.btnAction1.Text = ButtonCaption.Cancel;
+                                if (SpiClient.CurrentTxFlowState.Type != TransactionType.SettlementEnquiry)
+                                {
+                                    ActionsForm.btnAction1.Visible = true;
+                                    ActionsForm.btnAction1.Text = ButtonCaption.Cancel;
+                                }
+                                else
+                                {
+                                    ActionsForm.btnAction1.Visible = false;
+                                }
+
                                 ActionsForm.btnAction2.Visible = false;
                                 ActionsForm.btnAction3.Visible = false;
                                 GetUnvisibleActionComponents();
@@ -684,11 +709,20 @@ namespace RamenPos
                                         break;
 
                                     case SPIClient.Message.SuccessState.Failed:
+                                        if (SpiClient.CurrentTxFlowState.Type != TransactionType.SettlementEnquiry)
+                                        {
+                                            ActionsForm.btnAction1.Text = ButtonCaption.Retry;
+                                            ActionsForm.btnAction2.Visible = true;
+                                            ActionsForm.btnAction2.Text = ButtonCaption.Cancel;
+                                        }
+                                        else
+                                        {
+                                            ActionsForm.btnAction1.Text = ButtonCaption.OK;
+                                            ActionsForm.btnAction2.Visible = false;
+                                        }
+
                                         ActionsForm.btnAction1.Enabled = true;
                                         ActionsForm.btnAction1.Visible = true;
-                                        ActionsForm.btnAction1.Text = ButtonCaption.Retry;
-                                        ActionsForm.btnAction2.Visible = true;
-                                        ActionsForm.btnAction2.Text = ButtonCaption.Cancel;
                                         ActionsForm.btnAction3.Visible = false;
                                         GetUnvisibleActionComponents();
                                         break;
