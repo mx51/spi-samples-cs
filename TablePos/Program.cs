@@ -262,7 +262,7 @@ namespace TablePos
             {
                 foreach (var item in tableToBillMapping)
                 {
-                    if (billsStore[item.Value].OperatorId == operatorId && billsStore[item.Value].OutstandingAmount > 0)
+                    if (billsStore[item.Value].OperatorId == operatorId && billsStore[item.Value].OutstandingAmount > 0 && !billsStore[item.Value].Locked)
                     {
                         if (!isOpenTables)
                         {
