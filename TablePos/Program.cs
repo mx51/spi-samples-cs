@@ -255,7 +255,7 @@ namespace TablePos
 
         private GetOpenTablesResponse PayAtTableGetOpenTables(string operatorId)
         {
-            var openTableList = new List<OpenTablesEntry>();
+            var openTablesEntries = new List<OpenTablesEntry>();
             bool isOpenTables = false;
 
             if (tableToBillMapping.Count > 0)
@@ -278,7 +278,7 @@ namespace TablePos
                         };
 
                         Console.WriteLine("Table Id : " + item.Key + ", Bill Id: " + billsStore[item.Value].BillId + ", Outstanding Amount: $" + billsStore[item.Value].OutstandingAmount / 100);
-                        openTableList.Add(openTablesItem);
+                        openTablesEntries.Add(openTablesItem);
                     }
                 }
             }
@@ -289,11 +289,9 @@ namespace TablePos
                 Console.WriteLine("# No Open Tables.");
             }
 
-            var openTableListJson = JsonConvert.SerializeObject(openTableList);
-
             return new GetOpenTablesResponse
             {
-                TableData = Convert.ToBase64String(Encoding.UTF8.GetBytes(openTableListJson))
+                OpenTablesEntries = openTablesEntries
             };
         }
 
@@ -717,14 +715,6 @@ namespace TablePos
 
         private void OpenTable(string tableId, string operatorId, string label)
         {
-            int tableIdInt;
-            int.TryParse(tableId, out tableIdInt);
-            if (tableIdInt <= 0)
-            {
-                Console.WriteLine("Incorrect Table Id!");
-                return;
-            }
-
             tableId = tableId.Trim();
 
             if (tableToBillMapping.ContainsKey(tableId))
