@@ -166,6 +166,7 @@ namespace RamenPos
                     break;
                 case ButtonCaption.UnPair:
                     SpiClient.Unpair();
+                    SpiClient.SetSerialNumber("");
                     break;
                 default:
                     break;
@@ -900,10 +901,10 @@ namespace RamenPos
                         var schemes = settleResponse.GetSchemeSettlementEntries();
                         foreach (var s in schemes)
                         {
-                            ActionsForm.listBoxFlow.Items.Add("# " + s);                            
+                            ActionsForm.listBoxFlow.Items.Add("# " + s);
                         }
 
-                        TransactionForm.richtextReceipt.Text = TransactionForm.richtextReceipt.Text + Environment.NewLine + "# Merchant Receipt:";                        
+                        TransactionForm.richtextReceipt.Text = TransactionForm.richtextReceipt.Text + Environment.NewLine + "# Merchant Receipt:";
                         TransactionForm.richtextReceipt.Text = !settleResponse.WasMerchantReceiptPrinted() ? TransactionForm.richtextReceipt.Text + Environment.NewLine + settleResponse.GetReceipt().TrimEnd() : TransactionForm.richtextReceipt.Text + Environment.NewLine + "# PRINTED FROM EFTPOS";
                     }
                     break;
