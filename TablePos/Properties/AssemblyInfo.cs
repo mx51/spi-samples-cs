@@ -26,5 +26,5 @@ using System.Runtime.CompilerServices;
 //[assembly: AssemblyKeyFile("")]
 
 [assembly: log4net.Config.XmlConfigurator(ConfigFile = "SPIClient.dll.config", Watch = true)]
-[assembly: AssemblyFileVersion("2.4.7")]
+[assembly: AssemblyFileVersion("2.6.1")]
 

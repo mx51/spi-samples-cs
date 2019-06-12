@@ -61,7 +61,7 @@ namespace TablePos
             LoadPersistedState();
 
             _spi = new Spi(_posId, _serialNumber, _eftposAddress, _spiSecrets);
-            _spi.SetPosInfo("assembly", "2.5.0");
+            _spi.SetPosInfo("assembly", "2.6.1");
             _spi.StatusChanged += OnSpiStatusChanged;
             _spi.PairingFlowStateChanged += OnPairingFlowStateChanged;
             _spi.SecretsChanged += OnSecretsChanged;
@@ -464,7 +464,7 @@ namespace TablePos
             Console.WriteLine("# [open:12:3:vip:true/false] - start a new bill for table 12, operator Id 3, Label is vip, Lock is false");
             Console.WriteLine("# [add:12:1000]              - add $10.00 to the bill of table 12");
             Console.WriteLine("# [close:12]                 - close table 12");
-            Console.WriteLine("# [locked:12:true/false]       - Lock/Unlock table 12");
+            Console.WriteLine("# [locked:12:true/false]     - Lock/Unlock table 12");
             Console.WriteLine("# [tables]                   - list open tables");
             Console.WriteLine("# [table:12]                 - print current bill for table 12");
             Console.WriteLine("# [bill:9876789876]          - print bill with ID 9876789876");
