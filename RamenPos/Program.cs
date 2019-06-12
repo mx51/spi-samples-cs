@@ -16,14 +16,15 @@ namespace RamenPos
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm());
         }
-    }    
+    }
 
     /// <inheritdoc />
     /// <summary>
     /// Global SpiClient class
     /// </summary>
     public class RamenForm : Form
-    {        internal static Spi SpiClient { get; set; }
+    {
+        internal static Spi SpiClient { get; set; }
         internal static string PosId { get; set; }
         internal static string EftposAddress { get; set; }
         internal static Secrets Secrets { get; set; }
