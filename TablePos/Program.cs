@@ -56,7 +56,6 @@ namespace TablePos
 
         private void Start()
         {
-            log.Info("Starting TablePos...");
             LoadPersistedState();
 
             _spi = new Spi(_posId, _serialNumber, _eftposAddress, _spiSecrets);
@@ -1061,8 +1060,6 @@ namespace TablePos
         #endregion
 
         private readonly string _version = Assembly.GetEntryAssembly().GetName().Version.ToString();
-
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger("spi");
 
         private readonly Regex regexItemsForTableId = new Regex("^[a-zA-Z0-9]*$");
     }
