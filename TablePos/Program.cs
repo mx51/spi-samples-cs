@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 using SPIClient;
 
 namespace TablePos
@@ -61,13 +60,13 @@ namespace TablePos
             LoadPersistedState();
 
             _spi = new Spi(_posId, _serialNumber, _eftposAddress, _spiSecrets);
-            _spi.SetPosInfo("assembly", "2.6.1");
+            _spi.SetPosInfo("assembly", "2.6.3");
             _spi.StatusChanged += OnSpiStatusChanged;
             _spi.PairingFlowStateChanged += OnPairingFlowStateChanged;
             _spi.SecretsChanged += OnSecretsChanged;
             _spi.TxFlowStateChanged += OnTxFlowStateChanged;
 
-            _pat = _spi.EnablePayAtTable();            
+            _pat = _spi.EnablePayAtTable();
             EnablePayAtTableConfigs();
             _pat.GetBillStatus = PayAtTableGetBillDetails;
             _pat.BillPaymentReceived = PayAtTableBillPaymentReceived;
@@ -247,10 +246,10 @@ namespace TablePos
         {
             var billPaymentFlowEndedResponse = new BillPaymentFlowEndedResponse(message);
 
-            if (!billsStore.ContainsKey(billPaymentFlowEndedResponse.BillId))
+            if (!billsStore.ContainsKey(billPaymentFlowEndedResponse.TableId))
             {
-                // We cannot find this bill.
-                Console.WriteLine("Incorrect Bill Id!");
+                // We cannot find this table id.
+                return;
             }
 
             var myBill = billsStore[billPaymentFlowEndedResponse.BillId];
@@ -303,7 +302,7 @@ namespace TablePos
 
             if (!isOpenTables)
             {
-                Console.WriteLine("# No Open Tables.");
+                // we cannot find Open Tables
             }
 
             return new GetOpenTablesResponse
@@ -852,6 +851,12 @@ namespace TablePos
         {
             tableId = tableId.Trim();
 
+            if (!regexItemsForTableId.IsMatch(tableId))
+            {
+                Console.WriteLine("Table Id cannot include special characters");
+                return;
+            }
+
             if (tableToBillMapping.ContainsKey(tableId))
             {
                 Console.WriteLine($"Table Already Open: {billsStore[tableToBillMapping[tableId]]}");
@@ -1058,5 +1063,7 @@ namespace TablePos
         private readonly string _version = Assembly.GetEntryAssembly().GetName().Version.ToString();
 
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger("spi");
+
+        private readonly Regex regexItemsForTableId = new Regex("^[a-zA-Z0-9]*$");
     }
 }

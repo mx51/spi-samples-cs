@@ -270,5 +270,10 @@ namespace RamenPos
         {
             Clipboard.SetData(DataFormats.Text, listBoxFlow.SelectedItem);
         }
+
+        private void ActionsForm_Activated(object sender, EventArgs e)
+        {
+            MainForm.Enabled = false;
+        }
     }
 }
