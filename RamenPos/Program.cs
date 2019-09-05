@@ -34,7 +34,5 @@ namespace RamenPos
         internal static MainForm MainForm { get; set; }
         internal static TransactionForm TransactionForm { get; set; }
         internal static ActionsForm ActionsForm { get; set; }
-
-        private readonly log4net.ILog log = log4net.LogManager.GetLogger("spi");
     }
 }

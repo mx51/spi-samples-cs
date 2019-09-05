@@ -28,7 +28,6 @@ namespace RamenPos
             TransactionForm = new TransactionForm();
             ActionsForm = new ActionsForm();
             btnMain.Text = ButtonCaption.Pair;
-            txtAddress.Enabled = false;
 
             if (File.Exists("Secrets.bin"))
             {
@@ -74,7 +73,6 @@ namespace RamenPos
             btnSave.Enabled = cboxAutoAddress.Checked;
             chkTestMode.Checked = cboxAutoAddress.Checked;
             chkTestMode.Enabled = cboxAutoAddress.Checked;
-            txtAddress.Enabled = !cboxAutoAddress.Checked;
             txtSerialNumber.Enabled = true;
         }
 
@@ -101,7 +99,7 @@ namespace RamenPos
                 valid = false;
             }
 
-            if (cboxAutoAddress.Checked && string.IsNullOrWhiteSpace(SerialNumber))
+            if (!isPairing && cboxAutoAddress.Checked && string.IsNullOrWhiteSpace(SerialNumber))
             {
                 errorProvider.SetError(txtSerialNumber, "Please provide a Serial Number");
                 valid = false;
@@ -186,17 +184,20 @@ namespace RamenPos
                     if (!AreControlsValid(true))
                         return;
 
+                    SpiClient.SetAutoAddressResolution(AutoAddressEnabled);
                     SpiClient.SetPosId(PosId);
                     SpiClient.SetEftposAddress(EftposAddress);
                     SpiClient.Pair();
-                    MainForm.Enabled = false;
                     break;
                 case ButtonCaption.UnPair:
                     txtPosId.Text = "";
                     txtAddress.Text = "";
                     txtSerialNumber.Text = "";
                     SpiClient.Unpair();
-                    SpiClient.SetSerialNumber("");
+                    if (AutoAddressEnabled)
+                    {
+                        SpiClient.SetSerialNumber("");
+                    }
                     break;
                 default:
                     break;
@@ -286,7 +287,7 @@ namespace RamenPos
         private void Start()
         {
             SpiClient = new Spi(PosId, SerialNumber, EftposAddress, Secrets);
-            SpiClient.SetPosInfo("assembly", "2.6.1");
+            SpiClient.SetPosInfo("assembly", "2.6.3");
             Options = new TransactionOptions();
 
             SpiClient.DeviceAddressChanged += OnDeviceAddressChanged;
@@ -1190,5 +1191,10 @@ namespace RamenPos
         }
 
         #endregion
+
+        private void MainForm_Activated(object sender, EventArgs e)
+        {
+            this.Enabled = true;
+        }
     }
 }

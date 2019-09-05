@@ -83,7 +83,7 @@
             // 
             this.txtPosId.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtPosId.Location = new System.Drawing.Point(6, 38);
-            this.txtPosId.MaxLength = 10;
+            this.txtPosId.MaxLength = 20;
             this.txtPosId.Name = "txtPosId";
             this.txtPosId.Size = new System.Drawing.Size(250, 22);
             this.txtPosId.TabIndex = 2;
@@ -309,6 +309,7 @@
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "`";
+            this.Activated += new System.EventHandler(this.MainForm_Activated);
             this.Load += new System.EventHandler(this.RamenPos_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pbRamenPos)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();

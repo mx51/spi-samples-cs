@@ -29,12 +29,10 @@ namespace MotelPos
 
         private void Start()
         {
-            log.Info("Starting MotelPos...");
-
             LoadPersistedState();
 
             _spi = new Spi(_posId, _serialNumber, _eftposAddress, _spiSecrets); // It is ok to not have the secrets yet to start with.
-            _spi.SetPosInfo("assembly", "2.6.1");
+            _spi.SetPosInfo("assembly", "2.6.3");
             _spi.StatusChanged += OnSpiStatusChanged;
             _spi.PairingFlowStateChanged += OnPairingFlowStateChanged;
             _spi.SecretsChanged += OnSecretsChanged;
@@ -523,7 +521,5 @@ namespace MotelPos
             _eftposAddress = argSplit[1];
             _spiSecrets = new Secrets(argSplit[2], argSplit[3]);
         }
-
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger("spi");
     }
 }
