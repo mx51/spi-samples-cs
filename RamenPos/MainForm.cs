@@ -194,10 +194,6 @@ namespace RamenPos
                     txtAddress.Text = "";
                     txtSerialNumber.Text = "";
                     SpiClient.Unpair();
-                    if (AutoAddressEnabled)
-                    {
-                        SpiClient.SetSerialNumber("");
-                    }
                     break;
                 default:
                     break;
@@ -284,10 +280,10 @@ namespace RamenPos
         #endregion
 
         #region SPI Client
-        private void Start()
+        internal void Start()
         {
             SpiClient = new Spi(PosId, SerialNumber, EftposAddress, Secrets);
-            SpiClient.SetPosInfo("assembly", "2.6.3");
+            SpiClient.SetPosInfo("Assembly_Sample_PoS", "2.6.3");
             Options = new TransactionOptions();
 
             SpiClient.DeviceAddressChanged += OnDeviceAddressChanged;
