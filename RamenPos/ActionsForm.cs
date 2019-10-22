@@ -44,6 +44,7 @@ namespace RamenPos
                     Hide();
                     break;
                 case ButtonCaption.OKUnpaired:
+                    SpiClient.Unpair();
                     SpiClient.AckFlowEndedAndBackToIdle();
                     MainForm.btnMain.Text = ButtonCaption.Pair;
                     TransactionForm.lblStatus.BackColor = Color.Red;
@@ -52,7 +53,11 @@ namespace RamenPos
                     MainForm.grpSettings.Enabled = true;
                     MainForm.cboxSecrets.Checked = false;
                     MainForm.Enabled = true;
+                    MainForm.txtPosId.Text = "";
+                    MainForm.txtAddress.Text = "";
+                    MainForm.txtSerialNumber.Text = "";
                     TransactionForm.Hide();
+                    MainForm.Start();
                     MainForm.Show();
                     Hide();
                     break;
