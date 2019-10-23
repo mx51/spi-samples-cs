@@ -245,7 +245,7 @@ namespace TablePos
         {
             var billPaymentFlowEndedResponse = new BillPaymentFlowEndedResponse(message);
 
-            if (!billsStore.ContainsKey(billPaymentFlowEndedResponse.TableId))
+            if (!billsStore.ContainsKey(billPaymentFlowEndedResponse.BillId))
             {
                 // We cannot find this table id.
                 return;
