@@ -276,7 +276,7 @@ namespace RamenPos
         internal void Start()
         {
             SpiClient = new Spi(PosId, SerialNumber, EftposAddress, Secrets);
-            SpiClient.SetPosInfo("Assembly_Sample_PoS", "2.6.3");
+            SpiClient.SetPosInfo("Assembly_Sample_PoS", "2.6.6");
             Options = new TransactionOptions();
 
             SpiClient.DeviceAddressChanged += OnDeviceAddressChanged;
@@ -290,6 +290,8 @@ namespace RamenPos
             SpiClient.TerminalConfigurationResponse = HandleTerminalConfigurationResponse;
             SpiClient.BatteryLevelChanged = HandleBatteryLevelChanged;
 
+            SpiClient.SetAcquirerCode(AcquirerCode);
+            SpiClient.SetDeviceApiKey(ApiKey);
 
             try
             {
@@ -308,8 +310,6 @@ namespace RamenPos
                     bool.TryParse(secretsDict["TestMode"], out bool testMode);
                     chkTestMode.Checked = testMode; // test mode not saved
                     btnMain.Enabled = true;
-                    SpiClient.SetAcquirerCode(AcquirerCode);
-                    SpiClient.SetDeviceApiKey(ApiKey);
                     SpiClient.SetTestMode(chkTestMode.Checked);
                     SpiClient.SetAutoAddressResolution(cboxAutoAddress.Checked);
                 }
