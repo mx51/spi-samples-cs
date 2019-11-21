@@ -14,6 +14,7 @@ namespace RamenPos
         private const string AcquirerCode = "wbc";
         public bool IsStarted;
         private Dictionary<string, string> secretsDict = new Dictionary<string, string>();
+        private bool IsReconnect;
 
         public MainForm()
         {
@@ -33,20 +34,11 @@ namespace RamenPos
             {
                 secretsDict = ReadFromBinaryFile<Dictionary<string, string>>("Secrets.bin");
 
-                if (secretsDict.Count > 0)
+                if (secretsDict?.Count > 0)
                 {
-                    txtAddress.Text = secretsDict["EftposAddress"];
-                    txtPosId.Text = secretsDict["PosId"];
                     txtSecrets.Text = secretsDict["Secrets"];
                     cboxSecrets.Checked = true;
-                    txtSerialNumber.Text = secretsDict["SerialNumber"];
-                    SerialNumber = secretsDict["SerialNumber"];
-                    bool.TryParse(secretsDict["AutoAddressEnabled"], out bool autoAddressEnabled);
-                    AutoAddressEnabled = autoAddressEnabled;
-                    cboxAutoAddress.Checked = autoAddressEnabled;
-                    bool.TryParse(secretsDict["TestMode"], out bool testMode);
-                    chkTestMode.Checked = testMode;
-                    btnMain.Enabled = true;
+                    IsReconnect = true;
                 }
             }
 
@@ -187,6 +179,7 @@ namespace RamenPos
                     SpiClient.SetAutoAddressResolution(AutoAddressEnabled);
                     SpiClient.SetPosId(PosId);
                     SpiClient.SetEftposAddress(EftposAddress);
+
                     SpiClient.Pair();
                     break;
                 case ButtonCaption.UnPair:
@@ -283,7 +276,7 @@ namespace RamenPos
         internal void Start()
         {
             SpiClient = new Spi(PosId, SerialNumber, EftposAddress, Secrets);
-            SpiClient.SetPosInfo("Assembly_Sample_PoS", "2.6.3");
+            SpiClient.SetPosInfo("Assembly_Sample_PoS", "2.6.6");
             Options = new TransactionOptions();
 
             SpiClient.DeviceAddressChanged += OnDeviceAddressChanged;
@@ -297,13 +290,29 @@ namespace RamenPos
             SpiClient.TerminalConfigurationResponse = HandleTerminalConfigurationResponse;
             SpiClient.BatteryLevelChanged = HandleBatteryLevelChanged;
 
-            // initialise auto ip
             SpiClient.SetAcquirerCode(AcquirerCode);
             SpiClient.SetDeviceApiKey(ApiKey);
 
             try
             {
                 SpiClient.Start();
+
+                if (IsReconnect)
+                {
+                    txtAddress.Text = secretsDict["EftposAddress"];
+                    txtPosId.Text = secretsDict["PosId"];
+                    txtSerialNumber.Text = secretsDict["SerialNumber"];
+                    SerialNumber = txtSerialNumber.Text;
+                    // auto address
+                    bool.TryParse(secretsDict["AutoAddressEnabled"], out bool autoAddressEnabled);
+                    AutoAddressEnabled = autoAddressEnabled;
+                    cboxAutoAddress.Checked = autoAddressEnabled;
+                    bool.TryParse(secretsDict["TestMode"], out bool testMode);
+                    chkTestMode.Checked = testMode; // test mode not saved
+                    btnMain.Enabled = true;
+                    SpiClient.SetTestMode(chkTestMode.Checked);
+                    SpiClient.SetAutoAddressResolution(cboxAutoAddress.Checked);
+                }
             }
             catch (Exception e)
             {
@@ -333,26 +342,25 @@ namespace RamenPos
                         case DeviceAddressResponseCode.SUCCESS:
                             txtAddress.Text = e.Address;
                             btnMain.Enabled = true;
-                            MessageBox.Show($@"Device Address has been updated to {e.Address}", @"DEVICE ADRESS UPDATED");
+                            MessageBox.Show($@"Address has been updated to {e.Address}", "Address updated");
                             break;
                         case DeviceAddressResponseCode.INVALID_SERIAL_NUMBER:
                             txtAddress.Text = "";
-                            MessageBox.Show("The serial number is invalid: " + e.ResponseStatusDescription + " : " + e.ResponseMessage, "DEVICE ADRESS ERROR");
+                            MessageBox.Show("The serial number is invalid", "Serial Number Invalid");
                             break;
                         case DeviceAddressResponseCode.DEVICE_SERVICE_ERROR:
                             txtAddress.Text = "";
-                            MessageBox.Show("The device service error: " + e.ResponseStatusDescription + " : " + e.ResponseMessage, "DEVICE ADRESS ERROR");
+                            MessageBox.Show("Cannot retrieve address for serial number, please try again", "Device address error");
                             break;
                         case DeviceAddressResponseCode.ADDRESS_NOT_CHANGED:
                             btnMain.Enabled = true;
-                            MessageBox.Show("The IP address have not changed!", "DEVICE ADRESS ERROR");
+                            MessageBox.Show("The address have not changed!", "Address Has Not Changed");
                             break;
                         case DeviceAddressResponseCode.SERIAL_NUMBER_NOT_CHANGED:
                             btnMain.Enabled = true;
-                            MessageBox.Show("The serial number have not changed!", "DEVICE ADRESS ERROR");
+                            MessageBox.Show("The serial number have not changed!", "Serial Number not Changed");
                             break;
                         default:
-                            MessageBox.Show("The serial number is invalid! or The IP address have not changed!", "DEVICE ADRESS ERROR");
                             break;
                     }
                 }
