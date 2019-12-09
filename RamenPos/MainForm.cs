@@ -289,6 +289,7 @@ namespace RamenPos
             SpiClient.TerminalStatusResponse = HandleTerminalStatusResponse;
             SpiClient.TerminalConfigurationResponse = HandleTerminalConfigurationResponse;
             SpiClient.BatteryLevelChanged = HandleBatteryLevelChanged;
+            SpiClient.TransactionUpdate = HandleTransactionUpdate;
 
             SpiClient.SetAcquirerCode(AcquirerCode);
             SpiClient.SetDeviceApiKey(ApiKey);
@@ -483,6 +484,21 @@ namespace RamenPos
                     ActionsForm.listBoxFlow.Items.Add("# Battery Level: " + terminalBattery.BatteryLevel.Replace("d", "") + "%");
                     SpiClient.AckFlowEndedAndBackToIdle();
                     ActionsForm.Show();
+                }
+            }));
+        }
+
+        private void HandleTransactionUpdate(SPIClient.Message message)
+        {
+            const string txUpdateText = "# Transaction Update:";
+
+            this.Invoke(new MethodInvoker(delegate ()
+            {
+                if (ActionsForm.Visible)
+                {
+                    var txUpdate = new TransactionUpdate(message);
+
+                    ActionsForm.listBoxFlow.Items.Add(txUpdateText + txUpdate.DisplayMessageText);
                 }
             }));
         }
