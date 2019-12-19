@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -466,6 +466,7 @@ namespace TablePos
             Console.WriteLine("# [tables]                   - list open tables");
             Console.WriteLine("# [table:12]                 - print current bill for table 12");
             Console.WriteLine("# [bill:9876789876]          - print bill with ID 9876789876");
+            Console.WriteLine("# [bill_ack:9876789876]      - Acknowledge that you have received the bill payment ended message for bill 9876789876");
             Console.WriteLine("#");
 
             if (_spi.CurrentFlow == SpiFlow.Idle)
@@ -602,6 +603,11 @@ namespace TablePos
                     case "bill":
                         if (!CheckInput(spInput, 1)) { break; };
                         PrintBill(spInput[1]);
+                        Console.Write("> ");
+                        break;
+                    case "bill_ack":
+                        if (!CheckInput(spInput, 1)) { break; };
+                        BillPaymentEndedAck(spInput[1]);
                         Console.Write("> ");
                         break;
                     case "tables":
@@ -976,6 +982,13 @@ namespace TablePos
                 return;
             }
             Console.WriteLine($"Bill: {billsStore[billId]}");
+        }
+
+        private void BillPaymentEndedAck(string billId)
+        {
+            billId = billId.Trim();
+            _pat.BillPaymentReceivedAck(billId);
+            Console.WriteLine($"Bill: {billId} Acknowledged");
         }
 
         private string NewBillId()
