@@ -289,7 +289,7 @@ namespace RamenPos
             SpiClient.TerminalStatusResponse = HandleTerminalStatusResponse;
             SpiClient.TerminalConfigurationResponse = HandleTerminalConfigurationResponse;
             SpiClient.BatteryLevelChanged = HandleBatteryLevelChanged;
-            SpiClient.TransactionUpdate = HandleTransactionUpdate;
+            SpiClient.TransactionUpdateMessage = HandleTransactionUpdate;
 
             SpiClient.SetAcquirerCode(AcquirerCode);
             SpiClient.SetDeviceApiKey(ApiKey);

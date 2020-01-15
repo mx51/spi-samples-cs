@@ -43,6 +43,9 @@ namespace KebabPos
             _spi.PairingFlowStateChanged += OnPairingFlowStateChanged;
             _spi.SecretsChanged += OnSecretsChanged;
             _spi.TxFlowStateChanged += OnTxFlowStateChanged;
+            _spi.SetPosInfo("KebabPoS", "2.7");
+            _spi.SetAcquirerCode("wbc");
+            _spi.SetTestMode(true);
             _spi.Start();
 
             Console.Clear();

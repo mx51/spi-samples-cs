@@ -48,9 +48,6 @@
     <Reference Include="Serilog.Sinks.File, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.Sinks.File.4.0.0\lib\net45\Serilog.Sinks.File.dll</HintPath>
     </Reference>
-    <Reference Include="SPIClient, Version=2.6.6.16658, Culture=neutral, PublicKeyToken=edf39156ce36eff9, processorArchitecture=MSIL">
-      <HintPath>..\packages\SPIClient.2.6.6\lib\net45\SPIClient.dll</HintPath>
-    </Reference>
     <Reference Include="SuperSocket.ClientEngine, Version=0.10.0.0, Culture=neutral, PublicKeyToken=ee9af13f57f00acc, processorArchitecture=MSIL">
       <HintPath>..\packages\SuperSocket.ClientEngine.Core.0.10.0\lib\net45\SuperSocket.ClientEngine.dll</HintPath>
     </Reference>
@@ -105,7 +102,6 @@
     <EmbeddedResource Include="TransactionForm.resx">
       <DependentUpon>TransactionForm.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="App.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -118,8 +114,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Readme.md" />
     <None Include="Resources\450191.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\spi-client-windows\SPIClient\SPIClient.csproj">
+      <Project>{3bb60a49-eba4-4099-8756-95a654a9329e}</Project>
+      <Name>SPIClient</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
