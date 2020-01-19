@@ -276,7 +276,7 @@ namespace RamenPos
         internal void Start()
         {
             SpiClient = new Spi(PosId, SerialNumber, EftposAddress, Secrets);
-            SpiClient.SetPosInfo("Assembly_Sample_PoS", "2.6.6");
+            SpiClient.SetPosInfo("Assembly_Sample_PoS", "2.7");
             Options = new TransactionOptions();
 
             SpiClient.DeviceAddressChanged += OnDeviceAddressChanged;
