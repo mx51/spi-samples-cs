@@ -625,7 +625,7 @@ namespace TablePos
                         break;
                     case "refund":
                     case "yuck":
-                        var yuckres = _spi.InitiateRefundTx("yuck-" + DateTime.Now.ToString("o"), 1000);
+                        var yuckres = _spi.InitiateRefundTx("yuck-" + DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss"), int.Parse(spInput[1]));
                         if (!yuckres.Initiated)
                         {
                             Console.WriteLine($"# Could not initiate refund: {yuckres.Message}. Please Retry.");

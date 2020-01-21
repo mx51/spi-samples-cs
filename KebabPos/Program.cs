@@ -5,7 +5,7 @@ using SPIClient;
 namespace KebabPos
 {
     /// <summary>
-    /// NOTE: THIS PROJECT USES THE 2.1.x of the SPI Client Library
+    /// NOTE: THIS PROJECT USES THE 2.7.x of the SPI Client Library
     ///  
     /// This is your POS. To integrate with SPI, you need to instantiate a Spi object
     /// and interact with it.
