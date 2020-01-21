@@ -652,8 +652,15 @@ namespace RamenPos
                                         break;
 
                                     case SPIClient.Message.SuccessState.Unknown:
-                                        GetOKActionComponents();
+                                        //GetOKActionComponents();
                                         ActionsForm.listBoxFlow.Items.Add("# .. Unexpected Flow .. " + SpiClient.CurrentFlow);
+                                        ActionsForm.btnAction1.Enabled = true;
+                                        ActionsForm.btnAction1.Visible = true;
+                                        ActionsForm.btnAction1.Text = ButtonCaption.Retry;
+                                        ActionsForm.btnAction2.Visible = true;
+                                        ActionsForm.btnAction2.Text = ButtonCaption.UnknownOverrideAsPaid;
+                                        ActionsForm.btnAction3.Visible = true;
+                                        ActionsForm.btnAction3.Text = ButtonCaption.UnknownCancel;
                                         break;
                                     default:
                                         break;
@@ -750,7 +757,14 @@ namespace RamenPos
                                         break;
 
                                     case SPIClient.Message.SuccessState.Unknown:
-                                        GetOKActionComponents();
+                                        ActionsForm.listBoxFlow.Items.Add("# .. Unexpected Flow .. " + SpiClient.CurrentFlow);
+                                        ActionsForm.btnAction1.Enabled = true;
+                                        ActionsForm.btnAction1.Visible = true;
+                                        ActionsForm.btnAction1.Text = ButtonCaption.Retry;
+                                        ActionsForm.btnAction2.Visible = true;
+                                        ActionsForm.btnAction2.Text = ButtonCaption.UnknownOverrideAsPaid;
+                                        ActionsForm.btnAction3.Visible = true;
+                                        ActionsForm.btnAction3.Text = ButtonCaption.UnknownCancel;
                                         break;
                                     default:
                                         break;

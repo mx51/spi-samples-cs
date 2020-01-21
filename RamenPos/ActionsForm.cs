@@ -126,6 +126,13 @@ namespace RamenPos
                 case ButtonCaption.DeclineSignature:
                     SpiClient.AcceptSignature(false);
                     break;
+                case ButtonCaption.UnknownOverrideAsPaid:
+                    SpiClient.AckFlowEndedAndBackToIdle();
+                    listBoxFlow.Items.Clear();
+                    MainForm.SpiStatusAndActions();
+                    TransactionForm.Enabled = true;
+                    Hide();
+                    break;
                 case ButtonCaption.Cancel:
                     SpiClient.AckFlowEndedAndBackToIdle();
                     listBoxFlow.Items.Clear();
@@ -140,9 +147,20 @@ namespace RamenPos
 
         private void btnAction3_Click(object sender, EventArgs e)
         {
-            if (btnAction3.Text == ButtonCaption.Cancel)
+            switch (btnAction3.Text)
             {
-                SpiClient.CancelTransaction();
+                case ButtonCaption.Cancel:
+                    SpiClient.CancelTransaction();
+                    break;
+                case ButtonCaption.UnknownCancel:
+                    SpiClient.AckFlowEndedAndBackToIdle();
+                    listBoxFlow.Items.Clear();
+                    MainForm.SpiStatusAndActions();
+                    TransactionForm.Enabled = true;
+                    Hide();
+                    break;
+                default:
+                    break;
             }
         }
 
