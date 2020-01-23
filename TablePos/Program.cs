@@ -59,7 +59,7 @@ namespace TablePos
             LoadPersistedState();
 
             _spi = new Spi(_posId, _serialNumber, _eftposAddress, _spiSecrets);
-            _spi.SetPosInfo("assembly", "2.6.3");
+            _spi.SetPosInfo("assembly", "2.7.0");
             _spi.StatusChanged += OnSpiStatusChanged;
             _spi.PairingFlowStateChanged += OnPairingFlowStateChanged;
             _spi.SecretsChanged += OnSecretsChanged;
