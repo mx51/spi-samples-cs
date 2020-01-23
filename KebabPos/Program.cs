@@ -47,6 +47,7 @@ namespace KebabPos
             _spi.SetAcquirerCode("wbc");
             _spi.SetTestMode(true);
             _spi.Start();
+            _spi.TransactionUpdateMessage = HandleTransactionUpdate;
 
             Console.Clear();
             Console.WriteLine("# Welcome to KebabPos !");
@@ -569,6 +570,12 @@ namespace KebabPos
             }
 
             Console.WriteLine();
+        }
+
+        private void HandleTransactionUpdate(Message message)
+        {
+            var txUpdate = new TransactionUpdate(message);
+            Console.WriteLine("# Transaction Update:" + txUpdate.DisplayMessageText);
         }
 
         private bool IsUnknownStatus()
