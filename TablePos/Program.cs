@@ -72,6 +72,8 @@ namespace TablePos
             _pat.BillPaymentFlowEnded = PayAtTableBillPaymentFlowEnded;
             _pat.GetOpenTables = PayAtTableGetOpenTables;
 
+            _spi.TransactionUpdateMessage = HandleTransactionUpdate;
+
             try
             {
                 _spi.Start();
@@ -138,6 +140,12 @@ namespace TablePos
             Console.WriteLine($"# --> SPI Status Changed: {status.SpiStatus}");
             PrintStatusAndActions();
             Console.Write("> ");
+        }
+
+        private void HandleTransactionUpdate(Message message)
+        {
+            var txUpdate = new TransactionUpdate(message);
+            Console.WriteLine("# Transaction Update:" + txUpdate.DisplayMessageText);
         }
 
         #endregion
@@ -514,7 +522,8 @@ namespace TablePos
             Console.WriteLine("# ----------- FLOW ACTIONS ------------");
             if (_spi.CurrentFlow == SpiFlow.Pairing)
             {
-                Console.WriteLine("# [pair_cancel] - Cancel Pairing");
+                if (!_spi.CurrentPairingFlowState.Finished)
+                    Console.WriteLine("# [pair_cancel] - Cancel Pairing");
 
                 if (_spi.CurrentPairingFlowState.AwaitingCheckFromPos)
                     Console.WriteLine("# [pair_confirm] - Confirm Pairing Code");
@@ -603,11 +612,6 @@ namespace TablePos
                     case "bill":
                         if (!CheckInput(spInput, 1)) { break; };
                         PrintBill(spInput[1]);
-                        Console.Write("> ");
-                        break;
-                    case "bill_ack":
-                        if (!CheckInput(spInput, 1)) { break; };
-                        BillPaymentEndedAck(spInput[1]);
                         Console.Write("> ");
                         break;
                     case "tables":
@@ -982,13 +986,6 @@ namespace TablePos
                 return;
             }
             Console.WriteLine($"Bill: {billsStore[billId]}");
-        }
-
-        private void BillPaymentEndedAck(string billId)
-        {
-            billId = billId.Trim();
-            _pat.BillPaymentReceivedAck(billId);
-            Console.WriteLine($"Bill: {billId} Acknowledged");
         }
 
         private string NewBillId()
