@@ -25,5 +25,5 @@ using System.Runtime.CompilerServices;
 //[assembly: AssemblyDelaySign(false)]
 //[assembly: AssemblyKeyFile("")]
 
-[assembly: AssemblyFileVersion("2.7.0")]
+[assembly: AssemblyFileVersion("2.7.2")]
 
