@@ -37,46 +37,23 @@ namespace RamenPos
                 if (secretsDict?.Count > 0)
                 {
                     txtSecrets.Text = secretsDict["Secrets"];
+                    txtAddress.Text = secretsDict["EftposAddress"];
+                    txtPosId.Text = secretsDict["PosId"];
+                    btnMain.Enabled = true;
                     cboxSecrets.Checked = true;
                     IsReconnect = true;
                 }
             }
 
             IsStarted = true;
-            Start();
-        }
-
-        /// <summary>
-        /// This will trigger auto address resolution
-        /// </summary>
-        private void btnSave_Click(object sender, EventArgs e)
-        {
-            if (!AreControlsValid(false))
-                return;
-
-            SpiClient.SetTestMode(chkTestMode.Checked);
-            SpiClient.SetAutoAddressResolution(AutoAddressEnabled); // trigger auto address             
-            SpiClient.SetSerialNumber(SerialNumber); // trigger auto address
-        }
-
-        private void cboxAutoIpAddress_CheckedChanged(object sender, EventArgs e)
-        {
-            btnMain.Enabled = true;
-            btnSave.Enabled = cboxAutoAddress.Checked;
-            chkTestMode.Checked = cboxAutoAddress.Checked;
-            chkTestMode.Enabled = cboxAutoAddress.Checked;
-            txtSerialNumber.Enabled = true;
         }
 
         private bool AreControlsValid(bool isPairing)
         {
             var valid = true;
 
-            AutoAddressEnabled = cboxAutoAddress.Checked;
             PosId = txtPosId.Text;
             EftposAddress = txtAddress.Text;
-            SerialNumber = txtSerialNumber.Text;
-
             errorProvider.Clear();
 
             if (isPairing && string.IsNullOrWhiteSpace(EftposAddress))
@@ -88,12 +65,6 @@ namespace RamenPos
             if (string.IsNullOrWhiteSpace(PosId))
             {
                 errorProvider.SetError(txtPosId, "Please provide a Pos Id");
-                valid = false;
-            }
-
-            if (!isPairing && cboxAutoAddress.Checked && string.IsNullOrWhiteSpace(SerialNumber))
-            {
-                errorProvider.SetError(txtSerialNumber, "Please provide a Serial Number");
                 valid = false;
             }
 
@@ -138,7 +109,6 @@ namespace RamenPos
         {
             Hide();
             MainForm.grpSecrets.Enabled = false;
-            MainForm.grpAutoAddressResolution.Enabled = false;
             MainForm.grpSettings.Enabled = false;
             TransactionForm.Show();
         }
@@ -146,7 +116,6 @@ namespace RamenPos
         private void cboxSecrets_CheckedChanged(object sender, EventArgs e)
         {
             txtSecrets.Enabled = cboxSecrets.Checked;
-            grpAutoAddressResolution.Enabled = !cboxSecrets.Checked;
 
             if (cboxSecrets.Checked)
             {
@@ -176,16 +145,17 @@ namespace RamenPos
                     if (!AreControlsValid(true))
                         return;
 
-                    SpiClient.SetAutoAddressResolution(AutoAddressEnabled);
-                    SpiClient.SetPosId(PosId);
-                    SpiClient.SetEftposAddress(EftposAddress);
+                    PosId = txtPosId.Text;
+                    EftposAddress = txtAddress.Text;
+                    Start();
 
-                    SpiClient.Pair();
+                    if (!SpiClient.Pair())
+                        errorProvider.SetError(btnMain, "Pairing failed, please check Spi logs");
                     break;
                 case ButtonCaption.UnPair:
                     txtPosId.Text = "";
                     txtAddress.Text = "";
-                    txtSerialNumber.Text = "";
+
                     SpiClient.Unpair();
                     break;
                 default:
@@ -249,15 +219,6 @@ namespace RamenPos
                 secretsDict.Add("AutoAddressEnabled", AutoAddressEnabled.ToString());
             }
 
-            if (secretsDict.ContainsKey("TestMode"))
-            {
-                secretsDict["TestMode"] = chkTestMode.Checked.ToString();
-            }
-            else
-            {
-                secretsDict.Add("TestMode", chkTestMode.Checked.ToString());
-            }
-
             if (secretsDict.ContainsKey("Secrets"))
             {
                 secretsDict["Secrets"] = Secrets.EncKey + ":" + Secrets.HmacKey;
@@ -275,8 +236,9 @@ namespace RamenPos
         #region SPI Client
         internal void Start()
         {
-            SpiClient = new Spi(PosId, SerialNumber, EftposAddress, Secrets);
-            SpiClient.SetPosInfo("Assembly_Sample_PoS", "2.7");
+
+            SpiClient = new Spi(PosId, EftposAddress, Secrets);
+            SpiClient.SetPosInfo("Sample_PoS", "2.7");
             Options = new TransactionOptions();
 
             SpiClient.DeviceAddressChanged += OnDeviceAddressChanged;
@@ -293,33 +255,17 @@ namespace RamenPos
 
             SpiClient.SetAcquirerCode(AcquirerCode);
             SpiClient.SetDeviceApiKey(ApiKey);
+            SpiClient.SetTestMode(true);
 
             try
             {
                 SpiClient.Start();
 
-                if (IsReconnect)
-                {
-                    txtAddress.Text = secretsDict["EftposAddress"];
-                    txtPosId.Text = secretsDict["PosId"];
-                    txtSerialNumber.Text = secretsDict["SerialNumber"];
-                    SerialNumber = txtSerialNumber.Text;
-                    // auto address
-                    bool.TryParse(secretsDict["AutoAddressEnabled"], out bool autoAddressEnabled);
-                    AutoAddressEnabled = autoAddressEnabled;
-                    cboxAutoAddress.Checked = autoAddressEnabled;
-                    bool.TryParse(secretsDict["TestMode"], out bool testMode);
-                    chkTestMode.Checked = testMode; // test mode not saved
-                    btnMain.Enabled = true;
-                    SpiClient.SetTestMode(chkTestMode.Checked);
-                    SpiClient.SetAutoAddressResolution(cboxAutoAddress.Checked);
-                }
             }
             catch (Exception e)
             {
                 MessageBox.Show($@"SPI check failed: {e.Message}", @"Please ensure you followed all the configuration steps on your machine",
     MessageBoxButtons.OK);
-                grpAutoAddressResolution.Enabled = false;
             }
 
             if (!IsStarted)

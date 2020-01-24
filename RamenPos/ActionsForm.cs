@@ -49,15 +49,12 @@ namespace RamenPos
                     MainForm.btnMain.Text = ButtonCaption.Pair;
                     TransactionForm.lblStatus.BackColor = Color.Red;
                     MainForm.grpSecrets.Enabled = true;
-                    MainForm.grpAutoAddressResolution.Enabled = true;
                     MainForm.grpSettings.Enabled = true;
                     MainForm.cboxSecrets.Checked = false;
                     MainForm.Enabled = true;
                     MainForm.txtPosId.Text = "";
                     MainForm.txtAddress.Text = "";
-                    MainForm.txtSerialNumber.Text = "";
                     TransactionForm.Hide();
-                    MainForm.Start();
                     MainForm.Show();
                     Hide();
                     break;
