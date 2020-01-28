@@ -46,6 +46,7 @@ namespace KebabPos
             _spi.SetPosInfo("KebabPoS", "2.7");
             _spi.SetAcquirerCode("wbc");
             _spi.SetTestMode(true);
+            _spi.SetDeviceApiKey("KebabPos12345");
             _spi.Start();
             _spi.TransactionUpdateMessage = HandleTransactionUpdate;
 
