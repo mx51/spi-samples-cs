@@ -27,4 +27,3 @@ using System.Runtime.CompilerServices;
 
 [assembly: log4net.Config.XmlConfigurator(ConfigFile = "SPIClient.dll.config", Watch = true)]
 [assembly: AssemblyFileVersion("2.7.3")]
-

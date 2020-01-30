@@ -60,15 +60,15 @@ namespace TablePos
             LoadPersistedState();
 
             _spi = new Spi(_posId, _serialNumber, _eftposAddress, _spiSecrets);
+            _spi.SetPosInfo("TablePoS", "2.7");
+            _spi.SetAcquirerCode("wbc");
+            _spi.SetTestMode(true);
+            _spi.SetDeviceApiKey("TablePos12345");
             _spi.StatusChanged += OnSpiStatusChanged;
             _spi.PairingFlowStateChanged += OnPairingFlowStateChanged;
             _spi.SecretsChanged += OnSecretsChanged;
             _spi.TxFlowStateChanged += OnTxFlowStateChanged;
             _spi.DeviceAddressChanged  += OnDeviceAddressChanged;
-            _spi.SetPosInfo("TablePoS", "2.7");
-            _spi.SetAcquirerCode("wbc");
-            _spi.SetTestMode(true);
-            _spi.SetDeviceApiKey("TablePos12345");
 
             _pat = _spi.EnablePayAtTable();
             EnablePayAtTableConfigs();
