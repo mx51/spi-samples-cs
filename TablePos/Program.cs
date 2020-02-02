@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using SPIClient;
+using SPIClient.Service;
 
 namespace TablePos
 {
@@ -59,8 +60,7 @@ namespace TablePos
             LoadPersistedState();
 
             _spi = new Spi(_posId, _serialNumber, _eftposAddress, _spiSecrets);
-            _spi.SetPosInfo("assembly", "2.7.0");
-            _spi.SetPosInfo("KebabPoS", "2.7");
+            _spi.SetPosInfo("TablePoS", "2.7");
             _spi.SetAcquirerCode("wbc");
             _spi.SetTestMode(true);
             _spi.SetDeviceApiKey("TablePos12345");
@@ -68,6 +68,7 @@ namespace TablePos
             _spi.PairingFlowStateChanged += OnPairingFlowStateChanged;
             _spi.SecretsChanged += OnSecretsChanged;
             _spi.TxFlowStateChanged += OnTxFlowStateChanged;
+            _spi.DeviceAddressChanged  += OnDeviceAddressChanged;
 
             _pat = _spi.EnablePayAtTable();
             EnablePayAtTableConfigs();
@@ -110,6 +111,14 @@ namespace TablePos
         }
 
         #region Main Spi Callbacks
+        private void OnDeviceAddressChanged(object sender, DeviceAddressStatus e)
+        {
+            if (e.Address != null)
+            {
+                _eftposAddress = e.Address;
+                PrintPairingStatus();
+            }
+        }
 
         private void OnTxFlowStateChanged(object sender, TransactionFlowState txState)
         {

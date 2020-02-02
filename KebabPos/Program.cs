@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using SPIClient;
+using SPIClient.Service;
 
 namespace KebabPos
 {
@@ -43,6 +44,7 @@ namespace KebabPos
             _spi.PairingFlowStateChanged += OnPairingFlowStateChanged;
             _spi.SecretsChanged += OnSecretsChanged;
             _spi.TxFlowStateChanged += OnTxFlowStateChanged;
+            _spi.DeviceAddressChanged += OnDeviceAddressChanged;
             _spi.SetPosInfo("KebabPoS", "2.7");
             _spi.SetAcquirerCode("wbc");
             _spi.SetTestMode(true);
@@ -55,6 +57,15 @@ namespace KebabPos
             PrintStatusAndActions();
             Console.Write("> ");
             AcceptUserInput();
+        }
+
+        private void OnDeviceAddressChanged(object sender, DeviceAddressStatus e)
+        {
+            if (e.Address != null)
+            {
+                _eftposAddress = e.Address;
+                PrintPairingStatus();
+            }
         }
 
         private void OnTxFlowStateChanged(object sender, TransactionFlowState txState)
