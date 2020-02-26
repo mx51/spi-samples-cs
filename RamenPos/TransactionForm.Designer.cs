@@ -450,7 +450,7 @@
             this.Name = "TransactionForm";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Assembly Payment - RamenPos - Transactions";
+            this.Text = "RamenPos - Transactions";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmMain_FormClosing);
             this.Load += new System.EventHandler(this.TransactionForm_Load);
             this.pnlSettings.ResumeLayout(false);

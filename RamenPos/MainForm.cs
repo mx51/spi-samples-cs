@@ -10,7 +10,7 @@ namespace RamenPos
 {
     public partial class MainForm : RamenForm
     {
-        private const string ApiKey = "RamenPosDeviceAddressApiKey"; // this key needs to be requested from Assembly Payments
+        private const string ApiKey = "RamenPosDeviceAddressApiKey"; // this key needs to be requested from mx51
         private const string AcquirerCode = "wbc";
         public bool IsStarted;
         private Dictionary<string, string> secretsDict = new Dictionary<string, string>();
@@ -287,7 +287,7 @@ namespace RamenPos
         private void Start()
         {
             SpiClient = new Spi(PosId, SerialNumber, EftposAddress, Secrets);
-            SpiClient.SetPosInfo("assembly", "2.6.3");
+            SpiClient.SetPosInfo("mx51", "2.6.7");
             Options = new TransactionOptions();
 
             SpiClient.DeviceAddressChanged += OnDeviceAddressChanged;

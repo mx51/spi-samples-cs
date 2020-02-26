@@ -278,7 +278,7 @@
             this.Name = "ActionsForm";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Assembly Payment - RamenPos - Actions";
+            this.Text = "RamenPos - Actions";
             this.Activated += new System.EventHandler(this.ActionsForm_Activated);
             this.Load += new System.EventHandler(this.FrmActions_Load);
             this.pnlFlow.ResumeLayout(false);
