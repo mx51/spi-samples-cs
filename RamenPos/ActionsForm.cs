@@ -99,8 +99,8 @@ namespace RamenPos
                 case ButtonCaption.Recovery:
                     DoRecovery();
                     break;
-                case ButtonCaption.LastTx:
-                    DoLastTx();
+                case ButtonCaption.GetTx:
+                    DoGetTransaction();
                     break;
                 case ButtonCaption.Set:
                     DoHeaderFooter();
@@ -251,9 +251,9 @@ namespace RamenPos
             }
         }
 
-        private void DoLastTx()
+        private void DoGetTransaction()
         {
-            var coRes = SpiClient.InitiateGetLastTx();
+            var coRes = SpiClient.InitiateGetTx(txtAction1.Text);
 
             if (coRes.Initiated)
             {
