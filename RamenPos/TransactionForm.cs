@@ -101,17 +101,17 @@ namespace RamenPos
             ActionsForm.Show();
         }
 
-        private void btnGetLast_Click(object sender, EventArgs e)
+        private void btnGetTransaction_Click(object sender, EventArgs e)
         {
-            ActionsForm.lblFlowMessage.Text = "Please enter the reference id you would like to match last transaction";
+            ActionsForm.lblFlowMessage.Text = "Please enter the PosRefId for the transaction you wish to retrieve";
             ActionsForm.btnAction1.Enabled = true;
             ActionsForm.btnAction1.Visible = true;
-            ActionsForm.btnAction1.Text = ButtonCaption.LastTx;
+            ActionsForm.btnAction1.Text = ButtonCaption.GetTx;
             ActionsForm.btnAction2.Visible = true;
             ActionsForm.btnAction2.Text = ButtonCaption.Cancel;
             ActionsForm.btnAction3.Visible = false;
             ActionsForm.lblAction1.Visible = true;
-            ActionsForm.lblAction1.Text = LabelCaption.Reference;
+            ActionsForm.lblAction1.Text = LabelCaption.PosRefId;
             ActionsForm.txtAction1.Visible = true;
             ActionsForm.txtAction1.Text = "";
             ActionsForm.lblAction2.Visible = false;
@@ -220,7 +220,7 @@ namespace RamenPos
             ActionsForm.btnAction2.Text = ButtonCaption.Cancel;
             ActionsForm.btnAction3.Visible = false;
             ActionsForm.lblAction1.Visible = true;
-            ActionsForm.lblAction1.Text = LabelCaption.Reference;
+            ActionsForm.lblAction1.Text = LabelCaption.PosRefId;
             ActionsForm.txtAction1.Visible = true;
             ActionsForm.txtAction1.Text = "";
             ActionsForm.lblAction2.Visible = false;

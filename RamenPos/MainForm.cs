@@ -763,7 +763,7 @@ namespace RamenPos
                     ActionsForm.listBoxFlow.Items.Add($"# Attempting to Cancel : {txState.AttemptingToCancel}");
                     ActionsForm.listBoxFlow.Items.Add($"# Finished: {txState.Finished}");
                     ActionsForm.listBoxFlow.Items.Add($"# Success: {txState.Success}");
-                    ActionsForm.listBoxFlow.Items.Add($"# Last GLT Request Id: {txState.LastGltRequestId}");
+                    ActionsForm.listBoxFlow.Items.Add($"# Get Transaction Request Id: {txState.GtRequestId}");
 
                     if (txState.AwaitingSignatureCheck)
                     {
@@ -803,8 +803,8 @@ namespace RamenPos
                                 HandleFinishedSettlementEnquiry(txState);
                                 break;
 
-                            case TransactionType.GetLastTransaction:
-                                HandleFinishedGetLastTransaction(txState);
+                            case TransactionType.GetTransaction:
+                                HandleFinishedGetTransaction(txState);
                                 break;
                             default:
                                 ActionsForm.listBoxFlow.Items.Add($"# CAN'T HANDLE TX TYPE: {txState.Type}");
@@ -1000,24 +1000,10 @@ namespace RamenPos
             }
         }
 
-        private void HandleFinishedGetLastTransaction(TransactionFlowState txState)
+        private void HandleFinishedGetTransaction(TransactionFlowState txState)
         {
             if (txState.Response != null)
             {
-                var gltResponse = new GetLastTransactionResponse(txState.Response);
-
-                // User specified that he intended to retrieve a specific tx by pos_ref_id
-                // This is how you can use a handy function to match it.
-                var success = SpiClient.GltMatch(gltResponse, ActionsForm.txtAction1.Text.Trim());
-                if (success == SPIClient.Message.SuccessState.Unknown)
-                {
-                    ActionsForm.listBoxFlow.Items.Add("# Did not retrieve Expected Transaction. Here is what we got:");
-                }
-                else
-                {
-                    ActionsForm.listBoxFlow.Items.Add("# Tx Matched Expected Purchase Request.");
-                }
-
                 var purchaseResponse = new PurchaseResponse(txState.Response);
                 ActionsForm.listBoxFlow.Items.Add($"# Scheme: {purchaseResponse.SchemeName}");
                 ActionsForm.listBoxFlow.Items.Add($"# Response: {purchaseResponse.GetResponseText()}");
@@ -1029,8 +1015,7 @@ namespace RamenPos
             }
             else
             {
-                // We did not even get a response, like in the case of a time-out.
-                ActionsForm.listBoxFlow.Items.Add("# Could Not Retrieve Last Transaction.");
+                ActionsForm.listBoxFlow.Items.Add("# Could Not Retrieve Transaction.");
             }
         }
 
