@@ -1,4 +1,4 @@
-﻿using SPIClient;
+using SPIClient;
 using SPIClient.Service;
 using System;
 using System.Collections.Generic;
@@ -300,8 +300,7 @@ namespace RamenPos
                             MessageBox.Show("Cannot retrieve address for serial number, please try again", "Device address error");
                             break;
                         case DeviceAddressResponseCode.ADDRESS_NOT_CHANGED:
-                            btnMain.Enabled = true;
-                            MessageBox.Show("The address have not changed!", "Address Has Not Changed");
+                            // do nothing
                             break;
                         case DeviceAddressResponseCode.SERIAL_NUMBER_NOT_CHANGED:
                             btnMain.Enabled = true;
