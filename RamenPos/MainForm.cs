@@ -153,9 +153,6 @@ namespace RamenPos
                         errorProvider.SetError(btnMain, "Pairing failed, please check Spi logs");
                     break;
                 case ButtonCaption.UnPair:
-                    txtPosId.Text = "";
-                    txtAddress.Text = "";
-
                     SpiClient.Unpair();
                     break;
                 default:
@@ -481,11 +478,7 @@ namespace RamenPos
                             transactionsToolStripMenuItem.Visible = false;
                             GetUnvisibleActionComponents();
                             TransactionForm.lblStatus.BackColor = Color.Red;
-                            if (File.Exists("Secrets.bin"))
-                            {
-                                var secretsFile = new FileInfo("Secrets.bin");
-                                File.Delete(secretsFile.FullName);
-                            }
+                            secretsDict["Secrets"] = "";
                             break;
 
                         case SpiFlow.Pairing:
