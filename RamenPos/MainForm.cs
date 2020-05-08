@@ -300,11 +300,10 @@ namespace RamenPos
                             MessageBox.Show("Cannot retrieve address for serial number, please try again", "Device address error");
                             break;
                         case DeviceAddressResponseCode.ADDRESS_NOT_CHANGED:
-                            // do nothing
+                            btnMain.Enabled = true;
                             break;
                         case DeviceAddressResponseCode.SERIAL_NUMBER_NOT_CHANGED:
                             btnMain.Enabled = true;
-                            MessageBox.Show("The serial number have not changed!", "Serial Number not Changed");
                             break;
                         default:
                             break;
