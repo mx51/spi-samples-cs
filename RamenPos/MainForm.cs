@@ -1,4 +1,4 @@
-﻿using SPIClient;
+using SPIClient;
 using SPIClient.Service;
 using System;
 using System.Collections.Generic;
@@ -298,11 +298,9 @@ namespace RamenPos
                             break;
                         case DeviceAddressResponseCode.ADDRESS_NOT_CHANGED:
                             btnMain.Enabled = true;
-                            MessageBox.Show("The address have not changed!", "Address Has Not Changed");
                             break;
                         case DeviceAddressResponseCode.SERIAL_NUMBER_NOT_CHANGED:
                             btnMain.Enabled = true;
-                            MessageBox.Show("The serial number have not changed!", "Serial Number not Changed");
                             break;
                         default:
                             break;
