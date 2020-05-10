@@ -7,7 +7,7 @@
             UnPair = "UnPair",
             ConfirmCode = "Confirm Code",
             OK = "OK",
-            OKUnpaired = "OK-Unpaired",
+            OKUnpaired = "OK Unpaired",
             Retry = "Retry",
             Cancel = "Cancel Transaction",
             CancelPairing = "Cancel Pairing",

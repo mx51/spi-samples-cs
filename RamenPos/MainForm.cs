@@ -153,9 +153,6 @@ namespace RamenPos
                         errorProvider.SetError(btnMain, "Pairing failed, please check Spi logs");
                     break;
                 case ButtonCaption.UnPair:
-                    txtPosId.Text = "";
-                    txtAddress.Text = "";
-
                     SpiClient.Unpair();
                     break;
                 default:
@@ -481,11 +478,7 @@ namespace RamenPos
                             transactionsToolStripMenuItem.Visible = false;
                             GetUnvisibleActionComponents();
                             TransactionForm.lblStatus.BackColor = Color.Red;
-                            if (File.Exists("Secrets.bin"))
-                            {
-                                var secretsFile = new FileInfo("Secrets.bin");
-                                File.Delete(secretsFile.FullName);
-                            }
+                            secretsDict["Secrets"] = "";
                             break;
 
                         case SpiFlow.Pairing:
@@ -493,9 +486,8 @@ namespace RamenPos
                             {
                                 ActionsForm.btnAction1.Enabled = true;
                                 ActionsForm.btnAction1.Visible = true;
-                                ActionsForm.btnAction1.Text = ButtonCaption.ConfirmCode;
-                                ActionsForm.btnAction2.Visible = true;
-                                ActionsForm.btnAction2.Text = ButtonCaption.CancelPairing;
+                                ActionsForm.btnAction1.Text = ButtonCaption.CancelPairing;
+                                ActionsForm.btnAction2.Visible = false;
                                 ActionsForm.btnAction3.Visible = false;
                                 GetUnvisibleActionComponents();
                             }
@@ -748,7 +740,10 @@ namespace RamenPos
                     ActionsForm.listBoxFlow.Items.Add($"# Successful? {pairingState.Successful}");
                     ActionsForm.listBoxFlow.Items.Add($"# Confirmation Code: {pairingState.ConfirmationCode}");
                     ActionsForm.listBoxFlow.Items.Add($"# Waiting Confirm from Eftpos? {pairingState.AwaitingCheckFromEftpos}");
-                    ActionsForm.listBoxFlow.Items.Add($"# Waiting Confirm from POS? {pairingState.AwaitingCheckFromPos}");
+
+                    if (pairingState.AwaitingCheckFromEftpos == true)
+                        ActionsForm.listBoxFlow.Items.Add($"# Please confirm the following code {pairingState.ConfirmationCode} is shown on the EFTPOS terminal");
+
                     break;
 
                 case SpiFlow.Transaction:
