@@ -41,6 +41,11 @@ namespace RamenPos
                     txtPosId.Text = secretsDict["PosId"];
                     btnMain.Enabled = true;
                     cboxSecrets.Checked = true;
+
+                    if (secretsDict.ContainsKey("TestMode"))
+                        chkTestMode.Checked = Convert.ToBoolean(secretsDict["TestMode"]);
+
+                    chkTestMode.Enabled = false;
                     IsReconnect = true;
                 }
             }
@@ -125,6 +130,7 @@ namespace RamenPos
             {
                 btnMain.Text = ButtonCaption.Pair;
                 txtSecrets.Text = "";
+                chkTestMode.Enabled = true;
                 errorProvider.Clear();
             }
         }
@@ -225,6 +231,15 @@ namespace RamenPos
                 secretsDict.Add("Secrets", Secrets.EncKey + ":" + Secrets.HmacKey);
             }
 
+            if (secretsDict.ContainsKey("Secrets"))
+            {
+                secretsDict["TestMode"] = chkTestMode.Checked.ToString();
+            }
+            else
+            {
+                secretsDict.Add("TestMode", chkTestMode.Checked.ToString());
+            }
+
             WriteToBinaryFile("Secrets.bin", secretsDict, false);
         }
 
@@ -252,7 +267,7 @@ namespace RamenPos
 
             SpiClient.SetAcquirerCode(AcquirerCode);
             SpiClient.SetDeviceApiKey(ApiKey);
-            SpiClient.SetTestMode(true);
+            SpiClient.SetTestMode(chkTestMode.Checked);
 
             try
             {
