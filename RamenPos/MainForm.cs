@@ -375,6 +375,11 @@ namespace RamenPos
 
         private void HandleTerminalStatusResponse(SPIClient.Message message)
         {
+            if (ActionsForm.Visible)
+            {
+                return;
+            }
+
             this.Invoke(new MethodInvoker(delegate ()
             {
                 ActionsForm.listBoxFlow.Items.Clear();
@@ -392,6 +397,11 @@ namespace RamenPos
 
         private void HandleTerminalConfigurationResponse(SPIClient.Message message)
         {
+            if (ActionsForm.Visible)
+            {
+                return;
+            }
+
             this.Invoke(new MethodInvoker(delegate ()
             {
                 ActionsForm.listBoxFlow.Items.Clear();
@@ -414,10 +424,14 @@ namespace RamenPos
 
         private void HandleBatteryLevelChanged(SPIClient.Message message)
         {
+            if (ActionsForm.Visible)
+            {
+                return;
+            }
+
             this.Invoke(new MethodInvoker(delegate ()
             {
-                if (!ActionsForm.Visible)
-                {
+
                     ActionsForm.listBoxFlow.Items.Clear();
                     ActionsForm.lblFlowMessage.Text = "# --> Battery Level Changed Successful";
                     var terminalBattery = new TerminalBattery(message);
@@ -425,7 +439,6 @@ namespace RamenPos
                     ActionsForm.listBoxFlow.Items.Add("# Battery Level: " + terminalBattery.BatteryLevel.Replace("d", "") + "%");
                     SpiClient.AckFlowEndedAndBackToIdle();
                     ActionsForm.Show();
-                }
             }));
         }
 
