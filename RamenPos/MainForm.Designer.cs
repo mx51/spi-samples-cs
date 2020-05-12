@@ -45,6 +45,7 @@
             this.grpSettings = new System.Windows.Forms.GroupBox();
             this.grpSecrets = new System.Windows.Forms.GroupBox();
             this.cboxSecrets = new System.Windows.Forms.CheckBox();
+            this.chkTestMode = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pbRamenPos)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -175,13 +176,14 @@
             // 
             // grpSettings
             // 
+            this.grpSettings.Controls.Add(this.chkTestMode);
             this.grpSettings.Controls.Add(this.lblPosId);
             this.grpSettings.Controls.Add(this.txtPosId);
             this.grpSettings.Controls.Add(this.lblEftposAddress);
             this.grpSettings.Controls.Add(this.txtAddress);
             this.grpSettings.Location = new System.Drawing.Point(460, 33);
             this.grpSettings.Name = "grpSettings";
-            this.grpSettings.Size = new System.Drawing.Size(278, 122);
+            this.grpSettings.Size = new System.Drawing.Size(278, 148);
             this.grpSettings.TabIndex = 18;
             this.grpSettings.TabStop = false;
             // 
@@ -206,6 +208,19 @@
             this.cboxSecrets.Text = "Secrets";
             this.cboxSecrets.UseVisualStyleBackColor = true;
             this.cboxSecrets.CheckedChanged += new System.EventHandler(this.cboxSecrets_CheckedChanged);
+            // 
+            // chkTestMode
+            // 
+            this.chkTestMode.AutoSize = true;
+            this.chkTestMode.Checked = true;
+            this.chkTestMode.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkTestMode.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkTestMode.Location = new System.Drawing.Point(6, 122);
+            this.chkTestMode.Name = "chkTestMode";
+            this.chkTestMode.Size = new System.Drawing.Size(87, 20);
+            this.chkTestMode.TabIndex = 20;
+            this.chkTestMode.Text = "Test Mode";
+            this.chkTestMode.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
@@ -260,6 +275,7 @@
         internal System.Windows.Forms.GroupBox grpSettings;
         internal System.Windows.Forms.GroupBox grpSecrets;
         internal System.Windows.Forms.CheckBox cboxSecrets;
+        internal System.Windows.Forms.CheckBox chkTestMode;
     }
 }
 
