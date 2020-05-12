@@ -82,8 +82,10 @@ namespace RamenPos
 
         private void btnSettle_Click(object sender, EventArgs e)
         {
-            ActionsForm.btnAction1.Visible = false;
-            ActionsForm.btnAction2.Visible = false;
+            ActionsForm.btnAction1.Visible = true;
+            ActionsForm.btnAction1.Text = ButtonCaption.Settlement;
+            ActionsForm.btnAction2.Visible = true;
+            ActionsForm.btnAction2.Text = ButtonCaption.Cancel;
             ActionsForm.btnAction3.Visible = false;
             ActionsForm.lblAction1.Visible = false;
             ActionsForm.txtAction1.Visible = false;
@@ -95,9 +97,6 @@ namespace RamenPos
             ActionsForm.txtAction4.Visible = false;
             ActionsForm.cboxAction1.Visible = false;
             TransactionForm.Enabled = false;
-
-            var settleRes = SpiClient.InitiateSettleTx(RequestIdHelper.Id("settle"), Options);
-            ActionsForm.listBoxFlow.Items.Add(settleRes.Initiated ? "# Settle Initiated. Will be updated with Progress." : "# Could not initiate settlement: " + settleRes.Message + ". Please Retry.");
             ActionsForm.Show();
         }
 

@@ -19,6 +19,7 @@
             MOTO = "MOTO",
             Recovery = "Recovery",
             Set = "Set",
+            Settlement = "Settlement",
             Retrieve = "Retrieve",
             Print = "Print",
             Start = "Start",
