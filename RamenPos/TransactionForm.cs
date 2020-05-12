@@ -82,6 +82,7 @@ namespace RamenPos
 
         private void btnSettle_Click(object sender, EventArgs e)
         {
+            ActionsForm.lblFlowMessage.Text = "Please click the Settlement button to initiate settlement";
             ActionsForm.btnAction1.Visible = true;
             ActionsForm.btnAction1.Text = ButtonCaption.Settlement;
             ActionsForm.btnAction2.Visible = true;
