@@ -73,6 +73,9 @@ namespace RamenPos
                         case TransactionType.CashoutOnly:
                             DoCashout();
                             break;
+                        case TransactionType.Settle:
+                            DoSettlement();
+                            break;
                         default:
                             lblFlowMessage.Text = "Retry by selecting from the options below";
                             MainForm.SpiStatusAndActions();
@@ -93,6 +96,9 @@ namespace RamenPos
                     break;
                 case ButtonCaption.Recovery:
                     DoRecovery();
+                    break;
+                case ButtonCaption.Settlement:
+                    DoSettlement();
                     break;
                 case ButtonCaption.GetTx:
                     DoGetTransaction();
@@ -258,6 +264,12 @@ namespace RamenPos
             {
                 Console.WriteLine($"# Could not initiate last transaction: {coRes.Message}. Please Retry.");
             }
+        }
+
+        private void DoSettlement()
+        {
+            var settleRes = SpiClient.InitiateSettleTx(RequestIdHelper.Id("settle"), Options);
+            listBoxFlow.Items.Add(settleRes.Initiated ? "# Settle Initiated. Will be updated with Progress." : "# Could not initiate settlement: " + settleRes.Message + ". Please Retry."); 
         }
 
         private void DoHeaderFooter()
