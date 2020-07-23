@@ -16,8 +16,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TablePos", "TablePos\TableP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RamenPos", "RamenPos\RamenPos.csproj", "{5F996002-5688-46A1-BECC-9FB043239FC0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPIClient", "..\spi-client-windows\SPIClient\SPIClient.csproj", "{3BB60A49-EBA4-4099-8756-95A654A9329E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,10 +38,6 @@ Global
 		{5F996002-5688-46A1-BECC-9FB043239FC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F996002-5688-46A1-BECC-9FB043239FC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F996002-5688-46A1-BECC-9FB043239FC0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3BB60A49-EBA4-4099-8756-95A654A9329E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3BB60A49-EBA4-4099-8756-95A654A9329E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3BB60A49-EBA4-4099-8756-95A654A9329E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3BB60A49-EBA4-4099-8756-95A654A9329E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

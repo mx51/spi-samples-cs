@@ -471,21 +471,6 @@ namespace RamenPos
             }));
         }
 
-        private void HandleTransactionUpdate(SPIClient.Message message)
-        {
-            const string txUpdateText = "# Transaction Update:";
-
-            this.Invoke(new MethodInvoker(delegate ()
-            {
-                if (ActionsForm.Visible)
-                {
-                    var txUpdate = new TransactionUpdate(message);
-
-                    ActionsForm.listBoxFlow.Items.Add(txUpdateText + txUpdate.DisplayMessageText);
-                }
-            }));
-        }
-
         internal void SpiStatusAndActions()
         {
             this.Invoke(new MethodInvoker(delegate ()
