@@ -24,9 +24,6 @@ namespace RamenPos
         {
             switch (btnAction1.Text)
             {
-                case ButtonCaption.ConfirmCode:
-                    SpiClient.PairingConfirmCode();
-                    break;
                 case ButtonCaption.CancelPairing:
                     btnAction1.Enabled = false;
                     SpiClient.PairingCancel();
@@ -78,6 +75,9 @@ namespace RamenPos
                         case TransactionType.CashoutOnly:
                             DoCashout();
                             break;
+                        case TransactionType.Settle:
+                            DoSettlement();
+                            break;
                         default:
                             lblFlowMessage.Text = "Retry by selecting from the options below";
                             MainForm.SpiStatusAndActions();
@@ -99,8 +99,11 @@ namespace RamenPos
                 case ButtonCaption.Recovery:
                     DoRecovery();
                     break;
-                case ButtonCaption.LastTx:
-                    DoLastTx();
+                case ButtonCaption.Settlement:
+                    DoSettlement();
+                    break;
+                case ButtonCaption.GetTx:
+                    DoGetTransaction();
                     break;
                 case ButtonCaption.Set:
                     DoHeaderFooter();
@@ -251,9 +254,9 @@ namespace RamenPos
             }
         }
 
-        private void DoLastTx()
+        private void DoGetTransaction()
         {
-            var coRes = SpiClient.InitiateGetLastTx();
+            var coRes = SpiClient.InitiateGetTx(txtAction1.Text);
 
             if (coRes.Initiated)
             {
@@ -263,6 +266,12 @@ namespace RamenPos
             {
                 Console.WriteLine($"# Could not initiate last transaction: {coRes.Message}. Please Retry.");
             }
+        }
+
+        private void DoSettlement()
+        {
+            var settleRes = SpiClient.InitiateSettleTx(RequestIdHelper.Id("settle"), Options);
+            listBoxFlow.Items.Add(settleRes.Initiated ? "# Settle Initiated. Will be updated with Progress." : "# Could not initiate settlement: " + settleRes.Message + ". Please Retry."); 
         }
 
         private void DoHeaderFooter()

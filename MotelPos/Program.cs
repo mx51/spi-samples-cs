@@ -5,7 +5,7 @@ using SPIClient;
 namespace MotelPos
 {
     /// <summary>
-    /// NOTE: THIS PROJECT USES THE 2.1.x of the SPI Client Library
+    /// NOTE: THIS PROJECT USES THE 2.8.x of the SPI Client Library
     ///  
     /// This specific POS shows you how to integrate the preauth features of the SPI protocol.
     /// If you're just starting, we recommend you start with KebabPos. It goes through the basics.
@@ -32,7 +32,7 @@ namespace MotelPos
             LoadPersistedState();
 
             _spi = new Spi(_posId, _serialNumber, _eftposAddress, _spiSecrets); // It is ok to not have the secrets yet to start with.
-            _spi.SetPosInfo("mx51", "2.6.7");
+            _spi.SetPosInfo("mx51", "2.8.0");
             _spi.StatusChanged += OnSpiStatusChanged;
             _spi.PairingFlowStateChanged += OnPairingFlowStateChanged;
             _spi.SecretsChanged += OnSecretsChanged;
@@ -452,11 +452,6 @@ namespace MotelPos
                 case "unpair":
                     _spi.Unpair();
                     break;
-                case "glt":
-                    var gltres = _spi.InitiateGetLastTx();
-                    Console.WriteLine(gltres.Initiated ? "# GLT Initiated. Will be updated with Progress." : $"# Could not initiate GLT: {gltres.Message}. Please Retry.");
-                    break;
-
                 case "tx_sign_accept":
                     _spi.AcceptSignature(true);
                     break;

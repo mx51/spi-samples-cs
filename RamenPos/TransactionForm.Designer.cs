@@ -38,7 +38,7 @@
             this.btnSettleEnq = new System.Windows.Forms.Button();
             this.btnCashout = new System.Windows.Forms.Button();
             this.btnMoto = new System.Windows.Forms.Button();
-            this.btnLastTrans = new System.Windows.Forms.Button();
+            this.btnGetTransaction = new System.Windows.Forms.Button();
             this.btnSettle = new System.Windows.Forms.Button();
             this.btnRefund = new System.Windows.Forms.Button();
             this.btnPurchase = new System.Windows.Forms.Button();
@@ -86,7 +86,7 @@
             this.cboPrintMerchantCopy.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cboPrintMerchantCopy.Location = new System.Drawing.Point(16, 97);
             this.cboPrintMerchantCopy.Name = "cboPrintMerchantCopy";
-            this.cboPrintMerchantCopy.Size = new System.Drawing.Size(319, 43);
+            this.cboPrintMerchantCopy.Size = new System.Drawing.Size(160, 23);
             this.cboPrintMerchantCopy.TabIndex = 7;
             this.cboPrintMerchantCopy.Text = "Print Merchant Copy";
             this.cboPrintMerchantCopy.UseVisualStyleBackColor = true;
@@ -98,7 +98,7 @@
             this.cboxSignFromEftpos.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cboxSignFromEftpos.Location = new System.Drawing.Point(16, 74);
             this.cboxSignFromEftpos.Name = "cboxSignFromEftpos";
-            this.cboxSignFromEftpos.Size = new System.Drawing.Size(285, 43);
+            this.cboxSignFromEftpos.Size = new System.Drawing.Size(144, 23);
             this.cboxSignFromEftpos.TabIndex = 6;
             this.cboxSignFromEftpos.Text = "Sign From EFTPOS";
             this.cboxSignFromEftpos.UseVisualStyleBackColor = true;
@@ -110,7 +110,7 @@
             this.cboxReceiptFrom.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cboxReceiptFrom.Location = new System.Drawing.Point(16, 51);
             this.cboxReceiptFrom.Name = "cboxReceiptFrom";
-            this.cboxReceiptFrom.Size = new System.Drawing.Size(328, 43);
+            this.cboxReceiptFrom.Size = new System.Drawing.Size(166, 23);
             this.cboxReceiptFrom.TabIndex = 5;
             this.cboxReceiptFrom.Text = "Receipt From EFTPOS";
             this.cboxReceiptFrom.UseVisualStyleBackColor = true;
@@ -135,7 +135,7 @@
             this.pnlTransactions.Controls.Add(this.btnSettleEnq);
             this.pnlTransactions.Controls.Add(this.btnCashout);
             this.pnlTransactions.Controls.Add(this.btnMoto);
-            this.pnlTransactions.Controls.Add(this.btnLastTrans);
+            this.pnlTransactions.Controls.Add(this.btnGetTransaction);
             this.pnlTransactions.Controls.Add(this.btnSettle);
             this.pnlTransactions.Controls.Add(this.btnRefund);
             this.pnlTransactions.Controls.Add(this.btnPurchase);
@@ -194,17 +194,17 @@
             this.btnMoto.UseVisualStyleBackColor = true;
             this.btnMoto.Click += new System.EventHandler(this.btnMoto_Click);
             // 
-            // btnLastTrans
+            // btnGetTransaction
             // 
-            this.btnLastTrans.Font = new System.Drawing.Font("Calibri", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnLastTrans.Location = new System.Drawing.Point(16, 164);
-            this.btnLastTrans.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
-            this.btnLastTrans.Name = "btnLastTrans";
-            this.btnLastTrans.Size = new System.Drawing.Size(95, 35);
-            this.btnLastTrans.TabIndex = 10;
-            this.btnLastTrans.Text = "Last Tx";
-            this.btnLastTrans.UseVisualStyleBackColor = true;
-            this.btnLastTrans.Click += new System.EventHandler(this.btnGetLast_Click);
+            this.btnGetTransaction.Font = new System.Drawing.Font("Calibri", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnGetTransaction.Location = new System.Drawing.Point(16, 164);
+            this.btnGetTransaction.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
+            this.btnGetTransaction.Name = "btnGetTransaction";
+            this.btnGetTransaction.Size = new System.Drawing.Size(95, 35);
+            this.btnGetTransaction.TabIndex = 10;
+            this.btnGetTransaction.Text = "Get Tx";
+            this.btnGetTransaction.UseVisualStyleBackColor = true;
+            this.btnGetTransaction.Click += new System.EventHandler(this.btnGetTransaction_Click);
             // 
             // btnSettle
             // 
@@ -331,7 +331,7 @@
             this.secretsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(535, 49);
+            this.menuStrip1.Size = new System.Drawing.Size(535, 28);
             this.menuStrip1.TabIndex = 8;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -341,7 +341,7 @@
             this.settingsToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.settingsToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(254, 45);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(131, 24);
             this.settingsToolStripMenuItem.Text = "Pairing Settings";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
@@ -351,7 +351,7 @@
             this.secretsToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.secretsToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             this.secretsToolStripMenuItem.Name = "secretsToolStripMenuItem";
-            this.secretsToolStripMenuItem.Size = new System.Drawing.Size(130, 45);
+            this.secretsToolStripMenuItem.Size = new System.Drawing.Size(71, 24);
             this.secretsToolStripMenuItem.Text = "Secrets";
             this.secretsToolStripMenuItem.Click += new System.EventHandler(this.secretsToolStripMenuItem_Click);
             // 
@@ -432,7 +432,7 @@
             // TransactionForm
             // 
             this.AllowDrop = true;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 27F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(535, 611);
             this.Controls.Add(this.pnlOtherTransactions);
@@ -477,7 +477,7 @@
         internal System.Windows.Forms.RichTextBox richtextReceipt;
         internal System.Windows.Forms.Panel pnlReceipt;
         internal System.Windows.Forms.Label lblReceipt;
-        internal System.Windows.Forms.Button btnLastTrans;
+        internal System.Windows.Forms.Button btnGetTransaction;
         internal System.Windows.Forms.Button btnRecovery;
         internal System.Windows.Forms.Button btnSettleEnq;
         internal System.Windows.Forms.Button btnCashout;

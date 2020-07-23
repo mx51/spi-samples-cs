@@ -1,4 +1,4 @@
-﻿using SPIClient;
+using SPIClient;
 using SPIClient.Service;
 using System;
 using System.Collections.Generic;
@@ -41,6 +41,11 @@ namespace RamenPos
                     txtPosId.Text = secretsDict["PosId"];
                     btnMain.Enabled = true;
                     cboxSecrets.Checked = true;
+                    chkTestMode.Enabled = false;
+                    
+                    if (secretsDict.ContainsKey("TestMode"))
+                        chkTestMode.Checked = Convert.ToBoolean(secretsDict["TestMode"]);
+
                     IsReconnect = true;
                 }
             }
@@ -125,6 +130,7 @@ namespace RamenPos
             {
                 btnMain.Text = ButtonCaption.Pair;
                 txtSecrets.Text = "";
+                chkTestMode.Enabled = true;
                 errorProvider.Clear();
             }
         }
@@ -153,9 +159,6 @@ namespace RamenPos
                         errorProvider.SetError(btnMain, "Pairing failed, please check Spi logs");
                     break;
                 case ButtonCaption.UnPair:
-                    txtPosId.Text = "";
-                    txtAddress.Text = "";
-
                     SpiClient.Unpair();
                     break;
                 default:
@@ -228,6 +231,15 @@ namespace RamenPos
                 secretsDict.Add("Secrets", Secrets.EncKey + ":" + Secrets.HmacKey);
             }
 
+            if (secretsDict.ContainsKey("Secrets"))
+            {
+                secretsDict["TestMode"] = chkTestMode.Checked.ToString();
+            }
+            else
+            {
+                secretsDict.Add("TestMode", chkTestMode.Checked.ToString());
+            }
+
             WriteToBinaryFile("Secrets.bin", secretsDict, false);
         }
 
@@ -254,7 +266,7 @@ namespace RamenPos
 
             SpiClient.SetAcquirerCode(AcquirerCode);
             SpiClient.SetDeviceApiKey(ApiKey);
-            SpiClient.SetTestMode(true);
+            SpiClient.SetTestMode(chkTestMode.Checked);
 
             try
             {
@@ -300,11 +312,9 @@ namespace RamenPos
                             break;
                         case DeviceAddressResponseCode.ADDRESS_NOT_CHANGED:
                             btnMain.Enabled = true;
-                            MessageBox.Show("The address have not changed!", "Address Has Not Changed");
                             break;
                         case DeviceAddressResponseCode.SERIAL_NUMBER_NOT_CHANGED:
                             btnMain.Enabled = true;
-                            MessageBox.Show("The serial number have not changed!", "Serial Number not Changed");
                             break;
                         default:
                             break;
@@ -379,6 +389,11 @@ namespace RamenPos
 
         private void HandleTerminalStatusResponse(SPIClient.Message message)
         {
+            if (ActionsForm.Visible)
+            {
+                return;
+            }
+
             this.Invoke(new MethodInvoker(delegate ()
             {
                 ActionsForm.listBoxFlow.Items.Clear();
@@ -396,6 +411,11 @@ namespace RamenPos
 
         private void HandleTerminalConfigurationResponse(SPIClient.Message message)
         {
+            if (ActionsForm.Visible)
+            {
+                return;
+            }
+
             this.Invoke(new MethodInvoker(delegate ()
             {
                 ActionsForm.listBoxFlow.Items.Clear();
@@ -418,10 +438,14 @@ namespace RamenPos
 
         private void HandleBatteryLevelChanged(SPIClient.Message message)
         {
+            if (ActionsForm.Visible)
+            {
+                return;
+            }
+
             this.Invoke(new MethodInvoker(delegate ()
             {
-                if (!ActionsForm.Visible)
-                {
+
                     ActionsForm.listBoxFlow.Items.Clear();
                     ActionsForm.lblFlowMessage.Text = "# --> Battery Level Changed Successful";
                     var terminalBattery = new TerminalBattery(message);
@@ -429,6 +453,20 @@ namespace RamenPos
                     ActionsForm.listBoxFlow.Items.Add("# Battery Level: " + terminalBattery.BatteryLevel.Replace("d", "") + "%");
                     SpiClient.AckFlowEndedAndBackToIdle();
                     ActionsForm.Show();
+            }));
+        }
+
+        private void HandleTransactionUpdate(SPIClient.Message message)
+        {
+            const string txUpdateText = "# Transaction Update:";
+
+            this.Invoke(new MethodInvoker(delegate ()
+            {
+                if (ActionsForm.Visible)
+                {
+                    var txUpdate = new TransactionUpdate(message);
+
+                    ActionsForm.listBoxFlow.Items.Add(txUpdateText + txUpdate.DisplayMessageText);
                 }
             }));
         }
@@ -480,11 +518,7 @@ namespace RamenPos
                             transactionsToolStripMenuItem.Visible = false;
                             GetUnvisibleActionComponents();
                             TransactionForm.lblStatus.BackColor = Color.Red;
-                            if (File.Exists("Secrets.bin"))
-                            {
-                                var secretsFile = new FileInfo("Secrets.bin");
-                                File.Delete(secretsFile.FullName);
-                            }
+                            secretsDict["Secrets"] = "";
                             break;
 
                         case SpiFlow.Pairing:
@@ -492,9 +526,8 @@ namespace RamenPos
                             {
                                 ActionsForm.btnAction1.Enabled = true;
                                 ActionsForm.btnAction1.Visible = true;
-                                ActionsForm.btnAction1.Text = ButtonCaption.ConfirmCode;
-                                ActionsForm.btnAction2.Visible = true;
-                                ActionsForm.btnAction2.Text = ButtonCaption.CancelPairing;
+                                ActionsForm.btnAction1.Text = ButtonCaption.CancelPairing;
+                                ActionsForm.btnAction2.Visible = false;
                                 ActionsForm.btnAction3.Visible = false;
                                 GetUnvisibleActionComponents();
                             }
@@ -747,7 +780,10 @@ namespace RamenPos
                     ActionsForm.listBoxFlow.Items.Add($"# Successful? {pairingState.Successful}");
                     ActionsForm.listBoxFlow.Items.Add($"# Confirmation Code: {pairingState.ConfirmationCode}");
                     ActionsForm.listBoxFlow.Items.Add($"# Waiting Confirm from Eftpos? {pairingState.AwaitingCheckFromEftpos}");
-                    ActionsForm.listBoxFlow.Items.Add($"# Waiting Confirm from POS? {pairingState.AwaitingCheckFromPos}");
+
+                    if (pairingState.AwaitingCheckFromEftpos == true)
+                        ActionsForm.listBoxFlow.Items.Add($"# Please confirm the following code {pairingState.ConfirmationCode} is shown on the EFTPOS terminal");
+
                     break;
 
                 case SpiFlow.Transaction:
@@ -762,7 +798,7 @@ namespace RamenPos
                     ActionsForm.listBoxFlow.Items.Add($"# Attempting to Cancel : {txState.AttemptingToCancel}");
                     ActionsForm.listBoxFlow.Items.Add($"# Finished: {txState.Finished}");
                     ActionsForm.listBoxFlow.Items.Add($"# Success: {txState.Success}");
-                    ActionsForm.listBoxFlow.Items.Add($"# Last GLT Request Id: {txState.LastGltRequestId}");
+                    ActionsForm.listBoxFlow.Items.Add($"# Get Transaction Request Id: {txState.GtRequestId}");
 
                     if (txState.AwaitingSignatureCheck)
                     {
@@ -802,8 +838,8 @@ namespace RamenPos
                                 HandleFinishedSettlementEnquiry(txState);
                                 break;
 
-                            case TransactionType.GetLastTransaction:
-                                HandleFinishedGetLastTransaction(txState);
+                            case TransactionType.GetTransaction:
+                                HandleFinishedGetTransaction(txState);
                                 break;
                             default:
                                 ActionsForm.listBoxFlow.Items.Add($"# CAN'T HANDLE TX TYPE: {txState.Type}");
@@ -999,24 +1035,10 @@ namespace RamenPos
             }
         }
 
-        private void HandleFinishedGetLastTransaction(TransactionFlowState txState)
+        private void HandleFinishedGetTransaction(TransactionFlowState txState)
         {
             if (txState.Response != null)
             {
-                var gltResponse = new GetLastTransactionResponse(txState.Response);
-
-                // User specified that he intended to retrieve a specific tx by pos_ref_id
-                // This is how you can use a handy function to match it.
-                var success = SpiClient.GltMatch(gltResponse, ActionsForm.txtAction1.Text.Trim());
-                if (success == SPIClient.Message.SuccessState.Unknown)
-                {
-                    ActionsForm.listBoxFlow.Items.Add("# Did not retrieve Expected Transaction. Here is what we got:");
-                }
-                else
-                {
-                    ActionsForm.listBoxFlow.Items.Add("# Tx Matched Expected Purchase Request.");
-                }
-
                 var purchaseResponse = new PurchaseResponse(txState.Response);
                 ActionsForm.listBoxFlow.Items.Add($"# Scheme: {purchaseResponse.SchemeName}");
                 ActionsForm.listBoxFlow.Items.Add($"# Response: {purchaseResponse.GetResponseText()}");
@@ -1028,8 +1050,7 @@ namespace RamenPos
             }
             else
             {
-                // We did not even get a response, like in the case of a time-out.
-                ActionsForm.listBoxFlow.Items.Add("# Could Not Retrieve Last Transaction.");
+                ActionsForm.listBoxFlow.Items.Add("# Could Not Retrieve Transaction.");
             }
         }
 

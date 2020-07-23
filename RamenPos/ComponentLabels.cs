@@ -7,7 +7,7 @@
             UnPair = "UnPair",
             ConfirmCode = "Confirm Code",
             OK = "OK",
-            OKUnpaired = "OK-Unpaired",
+            OKUnpaired = "OK Unpaired",
             Retry = "Retry",
             Cancel = "Cancel Transaction",
             CancelPairing = "Cancel Pairing",
@@ -19,10 +19,11 @@
             MOTO = "MOTO",
             Recovery = "Recovery",
             Set = "Set",
+            Settlement = "Settlement",
             Retrieve = "Retrieve",
             Print = "Print",
             Start = "Start",
-            LastTx = "Get Last Tx",
+            GetTx = "Get Transaction",
             UnknownOverrideAsPaid = "Override as Paid",
             UnknownCancel = "Cancel";
     }
@@ -34,11 +35,12 @@
             TipAmount = "Tip Amount (Cents)",
             CashoutAmount = "Cashout Amount (Cents)",
             SurchargeAmount = "Surcharge Amount (Cents)",
-            Reference = "Reference",
+            PosRefId = "PosRefId",
             ReceiptHeader = "Receipt Header",
             ReceiptFooter = "Receipt Footer",
             Key = "Key",
             PrintText = "Print Text";
+            
     }
 
     public static class CheckboxCaption

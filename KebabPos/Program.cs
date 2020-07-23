@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Reflection;
 using SPIClient;
 using SPIClient.Service;
@@ -6,7 +6,7 @@ using SPIClient.Service;
 namespace KebabPos
 {
     /// <summary>
-    /// NOTE: THIS PROJECT USES THE 2.7.x of the SPI Client Library
+    /// NOTE: THIS PROJECT USES THE 2.8.x of the SPI Client Library
     ///  
     /// This is your POS. To integrate with SPI, you need to instantiate a Spi object
     /// and interact with it.
@@ -45,10 +45,10 @@ namespace KebabPos
             _spi.SecretsChanged += OnSecretsChanged;
             _spi.TxFlowStateChanged += OnTxFlowStateChanged;
             _spi.DeviceAddressChanged += OnDeviceAddressChanged;
-            _spi.SetPosInfo("KebabPoS", "2.7");
+            _spi.SetPosInfo("mx51", "2.8.0");
             _spi.SetAcquirerCode("wbc");
             _spi.SetTestMode(true);
-            _spi.SetDeviceApiKey("KebabPos12345");
+            _spi.SetDeviceApiKey("KebabPos");
             _spi.Start();
             _spi.TransactionUpdateMessage = HandleTransactionUpdate;
 
@@ -176,9 +176,8 @@ namespace KebabPos
                             case TransactionType.SettlementEnquiry:
                                 HandleFinishedSettlementEnquiry(txState);
                                 break;
-
-                            case TransactionType.GetLastTransaction:
-                                HandleFinishedGetLastTransaction(txState);
+                            case TransactionType.GetTransaction:
+                                HandleFinishedGetTransaction(txState);
                                 break;
                             default:
                                 Console.WriteLine($"# CAN'T HANDLE TX TYPE: {txState.Type}");
@@ -366,25 +365,12 @@ namespace KebabPos
             }
         }
 
-        private void HandleFinishedGetLastTransaction(TransactionFlowState txState)
+        private void HandleFinishedGetTransaction(TransactionFlowState txState)
         {
             if (txState.Response != null)
             {
-                var gltResponse = new GetLastTransactionResponse(txState.Response);
-
-                if (_lastCmd.Length > 1) {
-                    // User specified that he intended to retrieve a specific tx by pos_ref_id
-                    // This is how you can use a handy function to match it.
-                    var success = _spi.GltMatch(gltResponse, _lastCmd[1]);
-                    if (success == Message.SuccessState.Unknown)
-                    {
-                        Console.WriteLine("# Did not retrieve Expected Transaction. Here is what we got:");
-                    } else {
-                        Console.WriteLine("# Tx Matched Expected Purchase Request.");
-                    }
-                }
-
                 var purchaseResponse = new PurchaseResponse(txState.Response);
+
                 Console.WriteLine("# Scheme: {0}", purchaseResponse.SchemeName);
                 Console.WriteLine("# Response: {0}", purchaseResponse.GetResponseText());
                 Console.WriteLine("# RRN: {0}", purchaseResponse.GetRRN());
@@ -395,7 +381,7 @@ namespace KebabPos
             else
             {
                 // We did not even get a response, like in the case of a time-out.
-                Console.WriteLine("# Could Not Retrieve Last Transaction.");
+                Console.WriteLine("# Could Not Retrieve Transaction.");
             }
         }
 
@@ -510,7 +496,7 @@ namespace KebabPos
                 Console.WriteLine("# [settle_enq] - Settlment Enquiry");
                 Console.WriteLine("#");
                 Console.WriteLine("# [recover:prchs1] - Attempt State Recovery for pos_ref_id 'prchs1'");
-                Console.WriteLine("# [glt:prchs1] - Get Last Transaction - Expect it to be posRefId 'prchs1'");
+                Console.WriteLine("# [gt:prchs1] - Get Transaction of posRefId 'prchs1'");
                 Console.WriteLine("#");
                 Console.WriteLine("# [rcpt_from_eftpos:true] - Offer Customer Receipt From Eftpos");
                 Console.WriteLine("# [sig_flow_from_eftpos:true] - Signature Flow to be handled by Eftpos");
@@ -759,9 +745,9 @@ namespace KebabPos
                     }
                     break;
 
-                case "glt":
-                    var gltres = _spi.InitiateGetLastTx();
-                    Console.WriteLine(gltres.Initiated ? "# GLT Initiated. Will be updated with Progress." : $"# Could not initiate GLT: {gltres.Message}. Please Retry.");
+                case "gt":
+                    var gtres = _spi.InitiateGetTx(spInput[1]);
+                    Console.WriteLine(gtres.Initiated ? "# GT Initiated. Will be updated with Progress." : $"# Could not initiate GT: {gtres.Message}. Please Retry.");
                     break;
 
                 case "status":
