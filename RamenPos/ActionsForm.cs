@@ -49,6 +49,8 @@ namespace RamenPos
                     MainForm.grpSettings.Enabled = true;
                     MainForm.cboxSecrets.Checked = false;
                     MainForm.Enabled = true;
+                    MainForm.txtPosId.Text = "";
+                    MainForm.txtAddress.Text = "";
                     TransactionForm.Hide();
                     MainForm.Show();
                     Hide();

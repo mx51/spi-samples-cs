@@ -10,7 +10,7 @@ namespace RamenPos
 {
     public partial class MainForm : RamenForm
     {
-        private const string ApiKey = "RamenPosDeviceAddressApiKey"; // this key needs to be requested from Assembly Payments
+        private const string ApiKey = "RamenPosDeviceAddressApiKey"; // this key needs to be requested from mx51
         private const string AcquirerCode = "wbc";
         public bool IsStarted;
         private Dictionary<string, string> secretsDict = new Dictionary<string, string>();
@@ -41,11 +41,11 @@ namespace RamenPos
                     txtPosId.Text = secretsDict["PosId"];
                     btnMain.Enabled = true;
                     cboxSecrets.Checked = true;
-
+                    chkTestMode.Enabled = false;
+                    
                     if (secretsDict.ContainsKey("TestMode"))
                         chkTestMode.Checked = Convert.ToBoolean(secretsDict["TestMode"]);
 
-                    chkTestMode.Enabled = false;
                     IsReconnect = true;
                 }
             }
@@ -248,7 +248,6 @@ namespace RamenPos
         #region SPI Client
         internal void Start()
         {
-
             SpiClient = new Spi(PosId, EftposAddress, Secrets);
             SpiClient.SetPosInfo("Sample_PoS", "2.7");
             Options = new TransactionOptions();
@@ -454,6 +453,21 @@ namespace RamenPos
                     ActionsForm.listBoxFlow.Items.Add("# Battery Level: " + terminalBattery.BatteryLevel.Replace("d", "") + "%");
                     SpiClient.AckFlowEndedAndBackToIdle();
                     ActionsForm.Show();
+            }));
+        }
+
+        private void HandleTransactionUpdate(SPIClient.Message message)
+        {
+            const string txUpdateText = "# Transaction Update:";
+
+            this.Invoke(new MethodInvoker(delegate ()
+            {
+                if (ActionsForm.Visible)
+                {
+                    var txUpdate = new TransactionUpdate(message);
+
+                    ActionsForm.listBoxFlow.Items.Add(txUpdateText + txUpdate.DisplayMessageText);
+                }
             }));
         }
 
