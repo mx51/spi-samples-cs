@@ -106,7 +106,6 @@
     <EmbeddedResource Include="TransactionForm.resx">
       <DependentUpon>TransactionForm.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="App.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -119,8 +118,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Readme.md" />
     <None Include="Resources\450191.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\spi-client-windows\SPIClient\SPIClient.csproj">
+      <Project>{3bb60a49-eba4-4099-8756-95a654a9329e}</Project>
+      <Name>SPIClient</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

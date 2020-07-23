@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using SPIClient;
+using SPIClient.Service;
 
 namespace TablePos
 {
@@ -59,11 +60,15 @@ namespace TablePos
             LoadPersistedState();
 
             _spi = new Spi(_posId, _serialNumber, _eftposAddress, _spiSecrets);
-            _spi.SetPosInfo("mx51", "2.6.7");
+            _spi.SetPosInfo("TablePoS", "2.7");
+            _spi.SetAcquirerCode("wbc");
+            _spi.SetTestMode(true);
+            _spi.SetDeviceApiKey("TablePos12345");
             _spi.StatusChanged += OnSpiStatusChanged;
             _spi.PairingFlowStateChanged += OnPairingFlowStateChanged;
             _spi.SecretsChanged += OnSecretsChanged;
             _spi.TxFlowStateChanged += OnTxFlowStateChanged;
+            _spi.DeviceAddressChanged  += OnDeviceAddressChanged;
 
             _pat = _spi.EnablePayAtTable();
             EnablePayAtTableConfigs();
@@ -71,6 +76,8 @@ namespace TablePos
             _pat.BillPaymentReceived = PayAtTableBillPaymentReceived;
             _pat.BillPaymentFlowEnded = PayAtTableBillPaymentFlowEnded;
             _pat.GetOpenTables = PayAtTableGetOpenTables;
+
+            _spi.TransactionUpdateMessage = HandleTransactionUpdate;
 
             try
             {
@@ -104,6 +111,14 @@ namespace TablePos
         }
 
         #region Main Spi Callbacks
+        private void OnDeviceAddressChanged(object sender, DeviceAddressStatus e)
+        {
+            if (e.Address != null)
+            {
+                _eftposAddress = e.Address;
+                PrintPairingStatus();
+            }
+        }
 
         private void OnTxFlowStateChanged(object sender, TransactionFlowState txState)
         {
@@ -138,6 +153,12 @@ namespace TablePos
             Console.WriteLine($"# --> SPI Status Changed: {status.SpiStatus}");
             PrintStatusAndActions();
             Console.Write("> ");
+        }
+
+        private void HandleTransactionUpdate(Message message)
+        {
+            var txUpdate = new TransactionUpdate(message);
+            Console.WriteLine("# Transaction Update:" + txUpdate.DisplayMessageText);
         }
 
         #endregion
@@ -245,7 +266,7 @@ namespace TablePos
         {
             var billPaymentFlowEndedResponse = new BillPaymentFlowEndedResponse(message);
 
-            if (!billsStore.ContainsKey(billPaymentFlowEndedResponse.TableId))
+            if (!billsStore.ContainsKey(billPaymentFlowEndedResponse.BillId))
             {
                 // We cannot find this table id.
                 return;
@@ -466,6 +487,7 @@ namespace TablePos
             Console.WriteLine("# [tables]                   - list open tables");
             Console.WriteLine("# [table:12]                 - print current bill for table 12");
             Console.WriteLine("# [bill:9876789876]          - print bill with ID 9876789876");
+            Console.WriteLine("# [bill_ack:9876789876]      - Acknowledge that you have received the bill payment ended message for bill 9876789876");
             Console.WriteLine("#");
 
             if (_spi.CurrentFlow == SpiFlow.Idle)
@@ -513,7 +535,8 @@ namespace TablePos
             Console.WriteLine("# ----------- FLOW ACTIONS ------------");
             if (_spi.CurrentFlow == SpiFlow.Pairing)
             {
-                Console.WriteLine("# [pair_cancel] - Cancel Pairing");
+                if (!_spi.CurrentPairingFlowState.Finished)
+                    Console.WriteLine("# [pair_cancel] - Cancel Pairing");
 
                 if (_spi.CurrentPairingFlowState.AwaitingCheckFromPos)
                     Console.WriteLine("# [pair_confirm] - Confirm Pairing Code");
@@ -619,7 +642,7 @@ namespace TablePos
                         break;
                     case "refund":
                     case "yuck":
-                        var yuckres = _spi.InitiateRefundTx("yuck-" + DateTime.Now.ToString("o"), 1000);
+                        var yuckres = _spi.InitiateRefundTx("yuck-" + DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss"), int.Parse(spInput[1]));
                         if (!yuckres.Initiated)
                         {
                             Console.WriteLine($"# Could not initiate refund: {yuckres.Message}. Please Retry.");

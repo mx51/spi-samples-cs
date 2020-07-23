@@ -33,17 +33,11 @@
             this.pbRamenPos = new System.Windows.Forms.PictureBox();
             this.lblPosId = new System.Windows.Forms.Label();
             this.txtPosId = new System.Windows.Forms.TextBox();
-            this.txtSerialNumber = new System.Windows.Forms.TextBox();
-            this.lblSerialNumber = new System.Windows.Forms.Label();
             this.lblEftposAddress = new System.Windows.Forms.Label();
-            this.cboxAutoAddress = new System.Windows.Forms.CheckBox();
             this.txtAddress = new System.Windows.Forms.TextBox();
             this.btnMain = new System.Windows.Forms.Button();
             this.lblDescription = new System.Windows.Forms.Label();
             this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
-            this.btnSave = new System.Windows.Forms.Button();
-            this.grpAutoAddressResolution = new System.Windows.Forms.GroupBox();
-            this.chkTestMode = new System.Windows.Forms.CheckBox();
             this.lblPairingStatus = new System.Windows.Forms.Label();
             this.txtSecrets = new System.Windows.Forms.TextBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -53,7 +47,6 @@
             this.cboxSecrets = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pbRamenPos)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
-            this.grpAutoAddressResolution.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.grpSettings.SuspendLayout();
             this.grpSecrets.SuspendLayout();
@@ -88,54 +81,21 @@
             this.txtPosId.Size = new System.Drawing.Size(250, 22);
             this.txtPosId.TabIndex = 2;
             // 
-            // txtSerialNumber
-            // 
-            this.txtSerialNumber.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtSerialNumber.Location = new System.Drawing.Point(6, 85);
-            this.txtSerialNumber.MaxLength = 20;
-            this.txtSerialNumber.Name = "txtSerialNumber";
-            this.txtSerialNumber.Size = new System.Drawing.Size(250, 22);
-            this.txtSerialNumber.TabIndex = 3;
-            // 
-            // lblSerialNumber
-            // 
-            this.lblSerialNumber.AutoSize = true;
-            this.lblSerialNumber.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblSerialNumber.Location = new System.Drawing.Point(6, 63);
-            this.lblSerialNumber.Name = "lblSerialNumber";
-            this.lblSerialNumber.Size = new System.Drawing.Size(114, 16);
-            this.lblSerialNumber.TabIndex = 4;
-            this.lblSerialNumber.Text = "SERIAL NUMBER";
-            // 
             // lblEftposAddress
             // 
             this.lblEftposAddress.AutoSize = true;
             this.lblEftposAddress.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblEftposAddress.Location = new System.Drawing.Point(6, 109);
+            this.lblEftposAddress.Location = new System.Drawing.Point(6, 63);
             this.lblEftposAddress.Name = "lblEftposAddress";
             this.lblEftposAddress.Size = new System.Drawing.Size(122, 16);
             this.lblEftposAddress.TabIndex = 5;
             this.lblEftposAddress.Text = "DEVICE ADDRESS";
             // 
-            // cboxAutoAddress
-            // 
-            this.cboxAutoAddress.AutoSize = true;
-            this.cboxAutoAddress.Checked = true;
-            this.cboxAutoAddress.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cboxAutoAddress.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cboxAutoAddress.Location = new System.Drawing.Point(109, 24);
-            this.cboxAutoAddress.Name = "cboxAutoAddress";
-            this.cboxAutoAddress.Size = new System.Drawing.Size(54, 20);
-            this.cboxAutoAddress.TabIndex = 6;
-            this.cboxAutoAddress.Text = "Auto";
-            this.cboxAutoAddress.UseVisualStyleBackColor = true;
-            this.cboxAutoAddress.CheckedChanged += new System.EventHandler(this.cboxAutoIpAddress_CheckedChanged);
-            // 
             // txtAddress
             // 
             this.txtAddress.BackColor = System.Drawing.SystemColors.Window;
             this.txtAddress.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtAddress.Location = new System.Drawing.Point(6, 131);
+            this.txtAddress.Location = new System.Drawing.Point(6, 85);
             this.txtAddress.MaxLength = 20;
             this.txtAddress.Name = "txtAddress";
             this.txtAddress.Size = new System.Drawing.Size(250, 22);
@@ -144,7 +104,6 @@
             // btnMain
             // 
             this.btnMain.BackColor = System.Drawing.Color.LightCyan;
-            this.btnMain.Enabled = false;
             this.btnMain.FlatAppearance.BorderColor = System.Drawing.Color.PowderBlue;
             this.btnMain.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnMain.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -173,43 +132,6 @@
             this.errorProvider.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
             this.errorProvider.ContainerControl = this;
             // 
-            // btnSave
-            // 
-            this.btnSave.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.btnSave.Font = new System.Drawing.Font("Arial", 8F);
-            this.btnSave.Location = new System.Drawing.Point(180, 19);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(64, 31);
-            this.btnSave.TabIndex = 10;
-            this.btnSave.Text = "Save";
-            this.btnSave.UseVisualStyleBackColor = false;
-            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
-            // 
-            // grpAutoAddressResolution
-            // 
-            this.grpAutoAddressResolution.Controls.Add(this.chkTestMode);
-            this.grpAutoAddressResolution.Controls.Add(this.cboxAutoAddress);
-            this.grpAutoAddressResolution.Controls.Add(this.btnSave);
-            this.grpAutoAddressResolution.Location = new System.Drawing.Point(460, 203);
-            this.grpAutoAddressResolution.Name = "grpAutoAddressResolution";
-            this.grpAutoAddressResolution.Size = new System.Drawing.Size(274, 65);
-            this.grpAutoAddressResolution.TabIndex = 11;
-            this.grpAutoAddressResolution.TabStop = false;
-            this.grpAutoAddressResolution.Text = "Auto Address Resolution";
-            // 
-            // chkTestMode
-            // 
-            this.chkTestMode.AutoSize = true;
-            this.chkTestMode.Checked = true;
-            this.chkTestMode.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkTestMode.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkTestMode.Location = new System.Drawing.Point(6, 24);
-            this.chkTestMode.Name = "chkTestMode";
-            this.chkTestMode.Size = new System.Drawing.Size(87, 20);
-            this.chkTestMode.TabIndex = 12;
-            this.chkTestMode.Text = "Test Mode";
-            this.chkTestMode.UseVisualStyleBackColor = true;
-            // 
             // lblPairingStatus
             // 
             this.lblPairingStatus.AutoSize = true;
@@ -237,7 +159,7 @@
             this.transactionsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(738, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(750, 24);
             this.menuStrip1.TabIndex = 15;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -255,13 +177,11 @@
             // 
             this.grpSettings.Controls.Add(this.lblPosId);
             this.grpSettings.Controls.Add(this.txtPosId);
-            this.grpSettings.Controls.Add(this.txtSerialNumber);
-            this.grpSettings.Controls.Add(this.lblSerialNumber);
             this.grpSettings.Controls.Add(this.lblEftposAddress);
             this.grpSettings.Controls.Add(this.txtAddress);
             this.grpSettings.Location = new System.Drawing.Point(460, 33);
             this.grpSettings.Name = "grpSettings";
-            this.grpSettings.Size = new System.Drawing.Size(274, 164);
+            this.grpSettings.Size = new System.Drawing.Size(278, 122);
             this.grpSettings.TabIndex = 18;
             this.grpSettings.TabStop = false;
             // 
@@ -271,7 +191,7 @@
             this.grpSecrets.Controls.Add(this.txtSecrets);
             this.grpSecrets.Location = new System.Drawing.Point(460, 274);
             this.grpSecrets.Name = "grpSecrets";
-            this.grpSecrets.Size = new System.Drawing.Size(274, 83);
+            this.grpSecrets.Size = new System.Drawing.Size(278, 83);
             this.grpSecrets.TabIndex = 19;
             this.grpSecrets.TabStop = false;
             // 
@@ -292,11 +212,10 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(738, 467);
+            this.ClientSize = new System.Drawing.Size(750, 467);
             this.Controls.Add(this.grpSecrets);
             this.Controls.Add(this.grpSettings);
             this.Controls.Add(this.lblPairingStatus);
-            this.Controls.Add(this.grpAutoAddressResolution);
             this.Controls.Add(this.lblDescription);
             this.Controls.Add(this.btnMain);
             this.Controls.Add(this.pbRamenPos);
@@ -313,8 +232,6 @@
             this.Load += new System.EventHandler(this.RamenPos_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pbRamenPos)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
-            this.grpAutoAddressResolution.ResumeLayout(false);
-            this.grpAutoAddressResolution.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.grpSettings.ResumeLayout(false);
@@ -331,18 +248,12 @@
         internal System.Windows.Forms.PictureBox pbRamenPos;
         internal System.Windows.Forms.Label lblPosId;
         internal System.Windows.Forms.TextBox txtPosId;
-        internal System.Windows.Forms.TextBox txtSerialNumber;
-        internal System.Windows.Forms.Label lblSerialNumber;
         internal System.Windows.Forms.Label lblEftposAddress;
-        internal System.Windows.Forms.CheckBox cboxAutoAddress;
         internal System.Windows.Forms.TextBox txtAddress;
         internal System.Windows.Forms.Button btnMain;
         internal System.Windows.Forms.Label lblDescription;
         internal System.Windows.Forms.ErrorProvider errorProvider;
-        internal System.Windows.Forms.Button btnSave;
-        internal System.Windows.Forms.GroupBox grpAutoAddressResolution;
         internal System.Windows.Forms.Label lblPairingStatus;
-        internal System.Windows.Forms.CheckBox chkTestMode;
         internal System.Windows.Forms.TextBox txtSecrets;
         internal System.Windows.Forms.MenuStrip menuStrip1;
         internal System.Windows.Forms.ToolStripMenuItem transactionsToolStripMenuItem;

@@ -14,6 +14,7 @@ namespace RamenPos
         private const string AcquirerCode = "wbc";
         public bool IsStarted;
         private Dictionary<string, string> secretsDict = new Dictionary<string, string>();
+        private bool IsReconnect;
 
         public MainForm()
         {
@@ -33,58 +34,26 @@ namespace RamenPos
             {
                 secretsDict = ReadFromBinaryFile<Dictionary<string, string>>("Secrets.bin");
 
-                if (secretsDict.Count > 0)
+                if (secretsDict?.Count > 0)
                 {
+                    txtSecrets.Text = secretsDict["Secrets"];
                     txtAddress.Text = secretsDict["EftposAddress"];
                     txtPosId.Text = secretsDict["PosId"];
-                    txtSecrets.Text = secretsDict["Secrets"];
-                    cboxSecrets.Checked = true;
-                    txtSerialNumber.Text = secretsDict["SerialNumber"];
-                    SerialNumber = secretsDict["SerialNumber"];
-                    bool.TryParse(secretsDict["AutoAddressEnabled"], out bool autoAddressEnabled);
-                    AutoAddressEnabled = autoAddressEnabled;
-                    cboxAutoAddress.Checked = autoAddressEnabled;
-                    bool.TryParse(secretsDict["TestMode"], out bool testMode);
-                    chkTestMode.Checked = testMode;
                     btnMain.Enabled = true;
+                    cboxSecrets.Checked = true;
+                    IsReconnect = true;
                 }
             }
 
             IsStarted = true;
-            Start();
-        }
-
-        /// <summary>
-        /// This will trigger auto address resolution
-        /// </summary>
-        private void btnSave_Click(object sender, EventArgs e)
-        {
-            if (!AreControlsValid(false))
-                return;
-
-            SpiClient.SetTestMode(chkTestMode.Checked);
-            SpiClient.SetAutoAddressResolution(AutoAddressEnabled); // trigger auto address             
-            SpiClient.SetSerialNumber(SerialNumber); // trigger auto address
-        }
-
-        private void cboxAutoIpAddress_CheckedChanged(object sender, EventArgs e)
-        {
-            btnMain.Enabled = true;
-            btnSave.Enabled = cboxAutoAddress.Checked;
-            chkTestMode.Checked = cboxAutoAddress.Checked;
-            chkTestMode.Enabled = cboxAutoAddress.Checked;
-            txtSerialNumber.Enabled = true;
         }
 
         private bool AreControlsValid(bool isPairing)
         {
             var valid = true;
 
-            AutoAddressEnabled = cboxAutoAddress.Checked;
             PosId = txtPosId.Text;
             EftposAddress = txtAddress.Text;
-            SerialNumber = txtSerialNumber.Text;
-
             errorProvider.Clear();
 
             if (isPairing && string.IsNullOrWhiteSpace(EftposAddress))
@@ -96,12 +65,6 @@ namespace RamenPos
             if (string.IsNullOrWhiteSpace(PosId))
             {
                 errorProvider.SetError(txtPosId, "Please provide a Pos Id");
-                valid = false;
-            }
-
-            if (!isPairing && cboxAutoAddress.Checked && string.IsNullOrWhiteSpace(SerialNumber))
-            {
-                errorProvider.SetError(txtSerialNumber, "Please provide a Serial Number");
                 valid = false;
             }
 
@@ -146,7 +109,6 @@ namespace RamenPos
         {
             Hide();
             MainForm.grpSecrets.Enabled = false;
-            MainForm.grpAutoAddressResolution.Enabled = false;
             MainForm.grpSettings.Enabled = false;
             TransactionForm.Show();
         }
@@ -154,7 +116,6 @@ namespace RamenPos
         private void cboxSecrets_CheckedChanged(object sender, EventArgs e)
         {
             txtSecrets.Enabled = cboxSecrets.Checked;
-            grpAutoAddressResolution.Enabled = !cboxSecrets.Checked;
 
             if (cboxSecrets.Checked)
             {
@@ -184,20 +145,18 @@ namespace RamenPos
                     if (!AreControlsValid(true))
                         return;
 
-                    SpiClient.SetAutoAddressResolution(AutoAddressEnabled);
-                    SpiClient.SetPosId(PosId);
-                    SpiClient.SetEftposAddress(EftposAddress);
-                    SpiClient.Pair();
+                    PosId = txtPosId.Text;
+                    EftposAddress = txtAddress.Text;
+                    Start();
+
+                    if (!SpiClient.Pair())
+                        errorProvider.SetError(btnMain, "Pairing failed, please check Spi logs");
                     break;
                 case ButtonCaption.UnPair:
                     txtPosId.Text = "";
                     txtAddress.Text = "";
-                    txtSerialNumber.Text = "";
+
                     SpiClient.Unpair();
-                    if (AutoAddressEnabled)
-                    {
-                        SpiClient.SetSerialNumber("");
-                    }
                     break;
                 default:
                     break;
@@ -260,15 +219,6 @@ namespace RamenPos
                 secretsDict.Add("AutoAddressEnabled", AutoAddressEnabled.ToString());
             }
 
-            if (secretsDict.ContainsKey("TestMode"))
-            {
-                secretsDict["TestMode"] = chkTestMode.Checked.ToString();
-            }
-            else
-            {
-                secretsDict.Add("TestMode", chkTestMode.Checked.ToString());
-            }
-
             if (secretsDict.ContainsKey("Secrets"))
             {
                 secretsDict["Secrets"] = Secrets.EncKey + ":" + Secrets.HmacKey;
@@ -284,10 +234,10 @@ namespace RamenPos
         #endregion
 
         #region SPI Client
-        private void Start()
+        internal void Start()
         {
-            SpiClient = new Spi(PosId, SerialNumber, EftposAddress, Secrets);
-            SpiClient.SetPosInfo("mx51", "2.6.7");
+            SpiClient = new Spi(PosId, EftposAddress, Secrets);
+            SpiClient.SetPosInfo("Sample_PoS", "2.7");
             Options = new TransactionOptions();
 
             SpiClient.DeviceAddressChanged += OnDeviceAddressChanged;
@@ -300,20 +250,21 @@ namespace RamenPos
             SpiClient.TerminalStatusResponse = HandleTerminalStatusResponse;
             SpiClient.TerminalConfigurationResponse = HandleTerminalConfigurationResponse;
             SpiClient.BatteryLevelChanged = HandleBatteryLevelChanged;
+            SpiClient.TransactionUpdateMessage = HandleTransactionUpdate;
 
-            // initialise auto ip
             SpiClient.SetAcquirerCode(AcquirerCode);
             SpiClient.SetDeviceApiKey(ApiKey);
+            SpiClient.SetTestMode(true);
 
             try
             {
                 SpiClient.Start();
+
             }
             catch (Exception e)
             {
                 MessageBox.Show($@"SPI check failed: {e.Message}", @"Please ensure you followed all the configuration steps on your machine",
     MessageBoxButtons.OK);
-                grpAutoAddressResolution.Enabled = false;
             }
 
             if (!IsStarted)
@@ -337,26 +288,25 @@ namespace RamenPos
                         case DeviceAddressResponseCode.SUCCESS:
                             txtAddress.Text = e.Address;
                             btnMain.Enabled = true;
-                            MessageBox.Show($@"Device Address has been updated to {e.Address}", @"DEVICE ADRESS UPDATED");
+                            MessageBox.Show($@"Address has been updated to {e.Address}", "Address updated");
                             break;
                         case DeviceAddressResponseCode.INVALID_SERIAL_NUMBER:
                             txtAddress.Text = "";
-                            MessageBox.Show("The serial number is invalid: " + e.ResponseStatusDescription + " : " + e.ResponseMessage, "DEVICE ADRESS ERROR");
+                            MessageBox.Show("The serial number is invalid", "Serial Number Invalid");
                             break;
                         case DeviceAddressResponseCode.DEVICE_SERVICE_ERROR:
                             txtAddress.Text = "";
-                            MessageBox.Show("The device service error: " + e.ResponseStatusDescription + " : " + e.ResponseMessage, "DEVICE ADRESS ERROR");
+                            MessageBox.Show("Cannot retrieve address for serial number, please try again", "Device address error");
                             break;
                         case DeviceAddressResponseCode.ADDRESS_NOT_CHANGED:
                             btnMain.Enabled = true;
-                            MessageBox.Show("The IP address have not changed!", "DEVICE ADRESS ERROR");
+                            MessageBox.Show("The address have not changed!", "Address Has Not Changed");
                             break;
                         case DeviceAddressResponseCode.SERIAL_NUMBER_NOT_CHANGED:
                             btnMain.Enabled = true;
-                            MessageBox.Show("The serial number have not changed!", "DEVICE ADRESS ERROR");
+                            MessageBox.Show("The serial number have not changed!", "Serial Number not Changed");
                             break;
                         default:
-                            MessageBox.Show("The serial number is invalid! or The IP address have not changed!", "DEVICE ADRESS ERROR");
                             break;
                     }
                 }
@@ -479,6 +429,21 @@ namespace RamenPos
                     ActionsForm.listBoxFlow.Items.Add("# Battery Level: " + terminalBattery.BatteryLevel.Replace("d", "") + "%");
                     SpiClient.AckFlowEndedAndBackToIdle();
                     ActionsForm.Show();
+                }
+            }));
+        }
+
+        private void HandleTransactionUpdate(SPIClient.Message message)
+        {
+            const string txUpdateText = "# Transaction Update:";
+
+            this.Invoke(new MethodInvoker(delegate ()
+            {
+                if (ActionsForm.Visible)
+                {
+                    var txUpdate = new TransactionUpdate(message);
+
+                    ActionsForm.listBoxFlow.Items.Add(txUpdateText + txUpdate.DisplayMessageText);
                 }
             }));
         }
@@ -632,8 +597,15 @@ namespace RamenPos
                                         break;
 
                                     case SPIClient.Message.SuccessState.Unknown:
-                                        GetOKActionComponents();
+                                        //GetOKActionComponents();
                                         ActionsForm.listBoxFlow.Items.Add("# .. Unexpected Flow .. " + SpiClient.CurrentFlow);
+                                        ActionsForm.btnAction1.Enabled = true;
+                                        ActionsForm.btnAction1.Visible = true;
+                                        ActionsForm.btnAction1.Text = ButtonCaption.Retry;
+                                        ActionsForm.btnAction2.Visible = true;
+                                        ActionsForm.btnAction2.Text = ButtonCaption.UnknownOverrideAsPaid;
+                                        ActionsForm.btnAction3.Visible = true;
+                                        ActionsForm.btnAction3.Text = ButtonCaption.UnknownCancel;
                                         break;
                                     default:
                                         break;
@@ -730,7 +702,14 @@ namespace RamenPos
                                         break;
 
                                     case SPIClient.Message.SuccessState.Unknown:
-                                        GetOKActionComponents();
+                                        ActionsForm.listBoxFlow.Items.Add("# .. Unexpected Flow .. " + SpiClient.CurrentFlow);
+                                        ActionsForm.btnAction1.Enabled = true;
+                                        ActionsForm.btnAction1.Visible = true;
+                                        ActionsForm.btnAction1.Text = ButtonCaption.Retry;
+                                        ActionsForm.btnAction2.Visible = true;
+                                        ActionsForm.btnAction2.Text = ButtonCaption.UnknownOverrideAsPaid;
+                                        ActionsForm.btnAction3.Visible = true;
+                                        ActionsForm.btnAction3.Text = ButtonCaption.UnknownCancel;
                                         break;
                                     default:
                                         break;

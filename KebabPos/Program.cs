@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Reflection;
 using SPIClient;
+using SPIClient.Service;
 
 namespace KebabPos
 {
     /// <summary>
-    /// NOTE: THIS PROJECT USES THE 2.1.x of the SPI Client Library
+    /// NOTE: THIS PROJECT USES THE 2.7.x of the SPI Client Library
     ///  
     /// This is your POS. To integrate with SPI, you need to instantiate a Spi object
     /// and interact with it.
@@ -43,13 +44,28 @@ namespace KebabPos
             _spi.PairingFlowStateChanged += OnPairingFlowStateChanged;
             _spi.SecretsChanged += OnSecretsChanged;
             _spi.TxFlowStateChanged += OnTxFlowStateChanged;
+            _spi.DeviceAddressChanged += OnDeviceAddressChanged;
+            _spi.SetPosInfo("KebabPoS", "2.7");
+            _spi.SetAcquirerCode("wbc");
+            _spi.SetTestMode(true);
+            _spi.SetDeviceApiKey("KebabPos12345");
             _spi.Start();
+            _spi.TransactionUpdateMessage = HandleTransactionUpdate;
 
             Console.Clear();
             Console.WriteLine("# Welcome to KebabPos !");
             PrintStatusAndActions();
             Console.Write("> ");
             AcceptUserInput();
+        }
+
+        private void OnDeviceAddressChanged(object sender, DeviceAddressStatus e)
+        {
+            if (e.Address != null)
+            {
+                _eftposAddress = e.Address;
+                PrintPairingStatus();
+            }
         }
 
         private void OnTxFlowStateChanged(object sender, TransactionFlowState txState)
@@ -566,6 +582,12 @@ namespace KebabPos
             }
 
             Console.WriteLine();
+        }
+
+        private void HandleTransactionUpdate(Message message)
+        {
+            var txUpdate = new TransactionUpdate(message);
+            Console.WriteLine("# Transaction Update:" + txUpdate.DisplayMessageText);
         }
 
         private bool IsUnknownStatus()

@@ -9,7 +9,7 @@
             OK = "OK",
             OKUnpaired = "OK-Unpaired",
             Retry = "Retry",
-            Cancel = "Cancel",
+            Cancel = "Cancel Transaction",
             CancelPairing = "Cancel Pairing",
             AcceptSignature = "Accept Signature",
             DeclineSignature = "Decline Signature",
@@ -22,7 +22,9 @@
             Retrieve = "Retrieve",
             Print = "Print",
             Start = "Start",
-            LastTx = "Get Last Tx";
+            LastTx = "Get Last Tx",
+            UnknownOverrideAsPaid = "Override as Paid",
+            UnknownCancel = "Cancel";
     }
 
     public static class LabelCaption
