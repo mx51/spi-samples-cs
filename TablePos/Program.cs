@@ -40,12 +40,12 @@ namespace TablePos
 
 
         /// <summary>
-        /// Assembly Payments Integration asks us to persist some data on their behalf
+        /// mx51 Integration asks us to persist some data on their behalf
         /// So that the eftpos terminal can recover state.
         /// Key = BillId
-        /// Value = Assembly Payments Bill Data
+        /// Value = mx51 Payments Bill Data
         /// </summary>
-        private Dictionary<string, string> assemblyBillDataStore = new Dictionary<string, string>();
+        private Dictionary<string, string> mx51BillDataStore = new Dictionary<string, string>();
 
         private Spi _spi;
         private SpiPayAtTable _pat;
@@ -219,7 +219,7 @@ namespace TablePos
                 TotalAmount = myBill.TotalAmount,
                 OutstandingAmount = myBill.OutstandingAmount
             };
-            assemblyBillDataStore.TryGetValue(billId, out var billData);
+            mx51BillDataStore.TryGetValue(billId, out var billData);
             response.BillData = billData;
             return response;
         }
@@ -252,7 +252,7 @@ namespace TablePos
             // billPayment.PurchaseResponse.GetMerchantReceipt();
 
             // It is important that we persist this data on behalf of assembly.
-            assemblyBillDataStore[billPayment.BillId] = updatedBillData;
+            mx51BillDataStore[billPayment.BillId] = updatedBillData;
 
             return new BillStatusResponse
             {
@@ -576,7 +576,7 @@ namespace TablePos
             Console.WriteLine("# ----------------TABLES-------------------");
             Console.WriteLine($"# Open Tables   : {tableToBillMapping.Count}");
             Console.WriteLine($"# Bills in Store: {billsStore.Count}");
-            Console.WriteLine($"# Assembly Bills: {assemblyBillDataStore.Count}");
+            Console.WriteLine($"# mx51 Bills: {mx51BillDataStore.Count}");
             Console.WriteLine($"# -----------------------------------------");
             Console.WriteLine($"# POS: v{_version} Spi: v{Spi.GetVersion()}");
         }
@@ -933,7 +933,7 @@ namespace TablePos
                 return;
             }
             tableToBillMapping.Remove(tableId);
-            assemblyBillDataStore.Remove(bill.BillId);
+            mx51BillDataStore.Remove(bill.BillId);
             Console.WriteLine($"Closed: {bill}");
         }
 
@@ -984,9 +984,9 @@ namespace TablePos
                 Console.WriteLine("# My Bills Store: " + billsStore.Keys.Aggregate((i, j) => i + "," + j));
             }
 
-            if (assemblyBillDataStore.Count > 0)
+            if (mx51BillDataStore.Count > 0)
             {
-                Console.WriteLine("# Assembly Bills Data: " + assemblyBillDataStore.Keys.Aggregate((i, j) => i + "," + j));
+                Console.WriteLine("# mx51 Bills Data: " + mx51BillDataStore.Keys.Aggregate((i, j) => i + "," + j));
             }
         }
 
@@ -1026,7 +1026,7 @@ namespace TablePos
             {
                 tableToBillMapping = ReadFromBinaryFile<Dictionary<string, string>>("tableToBillMapping.bin");
                 billsStore = ReadFromBinaryFile<Dictionary<string, Bill>>("billsStore.bin");
-                assemblyBillDataStore = ReadFromBinaryFile<Dictionary<string, string>>("assemblyBillDataStore.bin");
+                mx51BillDataStore = ReadFromBinaryFile<Dictionary<string, string>>("mx51BillDataStore.bin");
             }
         }
 
@@ -1034,7 +1034,7 @@ namespace TablePos
         {
             WriteToBinaryFile("tableToBillMapping.bin", tableToBillMapping);
             WriteToBinaryFile("billsStore.bin", billsStore);
-            WriteToBinaryFile("assemblyBillDataStore.bin", assemblyBillDataStore);
+            WriteToBinaryFile("mx51BillDataStore.bin", mx51BillDataStore);
         }
 
         private static void WriteToBinaryFile<T>(string filePath, T objectToWrite, bool append = false)
