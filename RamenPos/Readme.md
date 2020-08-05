@@ -1,4 +1,4 @@
-# Disclaimer
+﻿# Disclaimer
 
 This source code is provided “as is” or “as available” and mx51 makes no representations or warranties, express or implied, regarding the source code, that the source code will meet your requirements, or that this source code will be error-free. mx51 expressly disclaims any and all express and implied warranties, including, but not limited to, the implied warranties of merchantability, fitness for a particular purpose, and non-infringement. Without limiting the generality of the foregoing, mx51 does not warrant, endorse, guarantee, or assume responsibility for this source code.   
 
