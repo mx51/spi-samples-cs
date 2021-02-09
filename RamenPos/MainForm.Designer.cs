@@ -43,14 +43,18 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.transactionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.grpSettings = new System.Windows.Forms.GroupBox();
-            this.grpSecrets = new System.Windows.Forms.GroupBox();
-            this.cboxSecrets = new System.Windows.Forms.CheckBox();
             this.chkTestMode = new System.Windows.Forms.CheckBox();
+            this.grpSecrets = new System.Windows.Forms.GroupBox();
+            this.chkSecrets = new System.Windows.Forms.CheckBox();
+            this.grpPaymentProvider = new System.Windows.Forms.GroupBox();
+            this.lblPaymentProviderSelected = new System.Windows.Forms.Label();
+            this.btnPaymentProvider = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pbRamenPos)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.grpSettings.SuspendLayout();
             this.grpSecrets.SuspendLayout();
+            this.grpPaymentProvider.SuspendLayout();
             this.SuspendLayout();
             // 
             // pbRamenPos
@@ -76,10 +80,10 @@
             // txtPosId
             // 
             this.txtPosId.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtPosId.Location = new System.Drawing.Point(6, 38);
+            this.txtPosId.Location = new System.Drawing.Point(11, 38);
             this.txtPosId.MaxLength = 20;
             this.txtPosId.Name = "txtPosId";
-            this.txtPosId.Size = new System.Drawing.Size(250, 22);
+            this.txtPosId.Size = new System.Drawing.Size(245, 22);
             this.txtPosId.TabIndex = 2;
             // 
             // lblEftposAddress
@@ -96,10 +100,10 @@
             // 
             this.txtAddress.BackColor = System.Drawing.SystemColors.Window;
             this.txtAddress.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtAddress.Location = new System.Drawing.Point(6, 85);
+            this.txtAddress.Location = new System.Drawing.Point(11, 85);
             this.txtAddress.MaxLength = 20;
             this.txtAddress.Name = "txtAddress";
-            this.txtAddress.Size = new System.Drawing.Size(250, 22);
+            this.txtAddress.Size = new System.Drawing.Size(245, 22);
             this.txtAddress.TabIndex = 7;
             // 
             // btnMain
@@ -108,7 +112,7 @@
             this.btnMain.FlatAppearance.BorderColor = System.Drawing.Color.PowderBlue;
             this.btnMain.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnMain.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnMain.Location = new System.Drawing.Point(610, 413);
+            this.btnMain.Location = new System.Drawing.Point(626, 413);
             this.btnMain.Name = "btnMain";
             this.btnMain.Size = new System.Drawing.Size(108, 42);
             this.btnMain.TabIndex = 8;
@@ -148,9 +152,9 @@
             this.txtSecrets.BackColor = System.Drawing.SystemColors.Window;
             this.txtSecrets.Enabled = false;
             this.txtSecrets.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtSecrets.Location = new System.Drawing.Point(6, 45);
+            this.txtSecrets.Location = new System.Drawing.Point(11, 45);
             this.txtSecrets.Name = "txtSecrets";
-            this.txtSecrets.Size = new System.Drawing.Size(250, 22);
+            this.txtSecrets.Size = new System.Drawing.Size(245, 22);
             this.txtSecrets.TabIndex = 14;
             // 
             // menuStrip1
@@ -160,7 +164,8 @@
             this.transactionsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(750, 24);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
+            this.menuStrip1.Size = new System.Drawing.Size(761, 24);
             this.menuStrip1.TabIndex = 15;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -181,33 +186,11 @@
             this.grpSettings.Controls.Add(this.txtPosId);
             this.grpSettings.Controls.Add(this.lblEftposAddress);
             this.grpSettings.Controls.Add(this.txtAddress);
-            this.grpSettings.Location = new System.Drawing.Point(460, 33);
+            this.grpSettings.Location = new System.Drawing.Point(454, 141);
             this.grpSettings.Name = "grpSettings";
-            this.grpSettings.Size = new System.Drawing.Size(278, 148);
+            this.grpSettings.Size = new System.Drawing.Size(280, 148);
             this.grpSettings.TabIndex = 18;
             this.grpSettings.TabStop = false;
-            // 
-            // grpSecrets
-            // 
-            this.grpSecrets.Controls.Add(this.cboxSecrets);
-            this.grpSecrets.Controls.Add(this.txtSecrets);
-            this.grpSecrets.Location = new System.Drawing.Point(460, 274);
-            this.grpSecrets.Name = "grpSecrets";
-            this.grpSecrets.Size = new System.Drawing.Size(278, 83);
-            this.grpSecrets.TabIndex = 19;
-            this.grpSecrets.TabStop = false;
-            // 
-            // cboxSecrets
-            // 
-            this.cboxSecrets.AutoSize = true;
-            this.cboxSecrets.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cboxSecrets.Location = new System.Drawing.Point(6, 19);
-            this.cboxSecrets.Name = "cboxSecrets";
-            this.cboxSecrets.Size = new System.Drawing.Size(72, 20);
-            this.cboxSecrets.TabIndex = 15;
-            this.cboxSecrets.Text = "Secrets";
-            this.cboxSecrets.UseVisualStyleBackColor = true;
-            this.cboxSecrets.CheckedChanged += new System.EventHandler(this.cboxSecrets_CheckedChanged);
             // 
             // chkTestMode
             // 
@@ -215,19 +198,71 @@
             this.chkTestMode.Checked = true;
             this.chkTestMode.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkTestMode.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkTestMode.Location = new System.Drawing.Point(6, 122);
+            this.chkTestMode.Location = new System.Drawing.Point(11, 122);
             this.chkTestMode.Name = "chkTestMode";
             this.chkTestMode.Size = new System.Drawing.Size(87, 20);
             this.chkTestMode.TabIndex = 20;
             this.chkTestMode.Text = "Test Mode";
             this.chkTestMode.UseVisualStyleBackColor = true;
             // 
+            // grpSecrets
+            // 
+            this.grpSecrets.Controls.Add(this.chkSecrets);
+            this.grpSecrets.Controls.Add(this.txtSecrets);
+            this.grpSecrets.Location = new System.Drawing.Point(454, 295);
+            this.grpSecrets.Name = "grpSecrets";
+            this.grpSecrets.Size = new System.Drawing.Size(280, 83);
+            this.grpSecrets.TabIndex = 19;
+            this.grpSecrets.TabStop = false;
+            // 
+            // chkSecrets
+            // 
+            this.chkSecrets.AutoSize = true;
+            this.chkSecrets.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkSecrets.Location = new System.Drawing.Point(9, 19);
+            this.chkSecrets.Name = "chkSecrets";
+            this.chkSecrets.Size = new System.Drawing.Size(72, 20);
+            this.chkSecrets.TabIndex = 15;
+            this.chkSecrets.Text = "Secrets";
+            this.chkSecrets.UseVisualStyleBackColor = true;
+            this.chkSecrets.CheckedChanged += new System.EventHandler(this.chkSecrets_CheckedChanged);
+            // 
+            // grpPaymentProvider
+            // 
+            this.grpPaymentProvider.Controls.Add(this.lblPaymentProviderSelected);
+            this.grpPaymentProvider.Controls.Add(this.btnPaymentProvider);
+            this.grpPaymentProvider.Location = new System.Drawing.Point(456, 33);
+            this.grpPaymentProvider.Name = "grpPaymentProvider";
+            this.grpPaymentProvider.Size = new System.Drawing.Size(278, 102);
+            this.grpPaymentProvider.TabIndex = 20;
+            this.grpPaymentProvider.TabStop = false;
+            // 
+            // lblPaymentProviderSelected
+            // 
+            this.lblPaymentProviderSelected.AutoSize = true;
+            this.lblPaymentProviderSelected.Location = new System.Drawing.Point(9, 78);
+            this.lblPaymentProviderSelected.Name = "lblPaymentProviderSelected";
+            this.lblPaymentProviderSelected.Size = new System.Drawing.Size(0, 13);
+            this.lblPaymentProviderSelected.TabIndex = 1;
+            // 
+            // btnPaymentProvider
+            // 
+            this.btnPaymentProvider.BackColor = System.Drawing.Color.LightCyan;
+            this.btnPaymentProvider.Location = new System.Drawing.Point(7, 11);
+            this.btnPaymentProvider.Name = "btnPaymentProvider";
+            this.btnPaymentProvider.Size = new System.Drawing.Size(265, 60);
+            this.btnPaymentProvider.TabIndex = 0;
+            this.btnPaymentProvider.Text = "Payment Provider";
+            this.btnPaymentProvider.UseVisualStyleBackColor = false;
+            this.btnPaymentProvider.Click += new System.EventHandler(this.btnPaymentProvider_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(750, 467);
+            this.ClientSize = new System.Drawing.Size(761, 467);
+            this.Controls.Add(this.grpPaymentProvider);
             this.Controls.Add(this.grpSecrets);
             this.Controls.Add(this.grpSettings);
             this.Controls.Add(this.lblPairingStatus);
@@ -253,6 +288,8 @@
             this.grpSettings.PerformLayout();
             this.grpSecrets.ResumeLayout(false);
             this.grpSecrets.PerformLayout();
+            this.grpPaymentProvider.ResumeLayout(false);
+            this.grpPaymentProvider.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -274,8 +311,11 @@
         internal System.Windows.Forms.ToolStripMenuItem transactionsToolStripMenuItem;
         internal System.Windows.Forms.GroupBox grpSettings;
         internal System.Windows.Forms.GroupBox grpSecrets;
-        internal System.Windows.Forms.CheckBox cboxSecrets;
+        internal System.Windows.Forms.CheckBox chkSecrets;
         internal System.Windows.Forms.CheckBox chkTestMode;
+        internal System.Windows.Forms.GroupBox grpPaymentProvider;
+        internal System.Windows.Forms.Button btnPaymentProvider;
+        private System.Windows.Forms.Label lblPaymentProviderSelected;
     }
 }
 

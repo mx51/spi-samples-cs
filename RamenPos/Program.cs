@@ -27,6 +27,8 @@ namespace RamenPos
         internal static Spi SpiClient { get; set; }
         internal static string PosId { get; set; }
         internal static string EftposAddress { get; set; }
+        internal static string TenantCode { get; set; } = "";
+        internal static string TenantName { get; set; } = "";
         internal static Secrets Secrets { get; set; }
         internal static string SerialNumber { get; set; }
         internal static bool AutoAddressEnabled { get; set; }
@@ -34,5 +36,6 @@ namespace RamenPos
         internal static MainForm MainForm { get; set; }
         internal static TransactionForm TransactionForm { get; set; }
         internal static ActionsForm ActionsForm { get; set; }
+        internal static PaymentProviderForm PaymentProviderForm { get; set; }
     }
 }
