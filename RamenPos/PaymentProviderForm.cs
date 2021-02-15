@@ -49,7 +49,7 @@ namespace RamenPos
 
         private void btnSelect_Click(object sender, EventArgs e)
         {
-            if (rbOtherPaymentProvider.Checked)
+            if (rbOtherPaymentProvider.Checked && txtOtherPaymentProvider.Text != "")
             {
                 TenantCode = txtOtherPaymentProvider.Text;
                 TenantName = "Other";
