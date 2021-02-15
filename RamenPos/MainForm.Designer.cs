@@ -127,9 +127,9 @@
             this.lblDescription.ForeColor = System.Drawing.SystemColors.GrayText;
             this.lblDescription.Location = new System.Drawing.Point(27, 33);
             this.lblDescription.Name = "lblDescription";
-            this.lblDescription.Size = new System.Drawing.Size(416, 16);
+            this.lblDescription.Size = new System.Drawing.Size(352, 16);
             this.lblDescription.TabIndex = 9;
-            this.lblDescription.Text = "To begin, press PAIR on your terminal and then the PAIR button below";
+            this.lblDescription.Text = "Please select Payment Provider and then Pair your terminal";
             // 
             // errorProvider
             // 

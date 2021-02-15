@@ -37,5 +37,8 @@ namespace RamenPos
         internal static TransactionForm TransactionForm { get; set; }
         internal static ActionsForm ActionsForm { get; set; }
         internal static PaymentProviderForm PaymentProviderForm { get; set; }
+        internal const string ApiKey = "RamenPosApiKey"; // this key needs to be requested from mx51
+        internal const string PosVendorId = "RamenPOS"; // this is your pos vendor Id
+        internal const string PosVersionInfo = "2.8"; // this is your pos version
     }
 }

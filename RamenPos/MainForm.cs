@@ -21,7 +21,6 @@ namespace RamenPos
         }
 
         #region Form Controls
-
         private void RamenPos_Load(object sender, EventArgs e)
         {
             MainForm = this;
@@ -43,6 +42,8 @@ namespace RamenPos
                     txtAddress.Text = GetKey(secretsDict, "EftposAddress");
                     txtPosId.Text = GetKey(secretsDict, "PosId");
                     TenantCode = GetKey(secretsDict, "TenantCode");
+                    TenantName = GetKey(secretsDict, "TenantName");
+                    DisplayTenant();
 
                     if (secretsDict.ContainsKey("TestMode"))
                         chkTestMode.Checked = Convert.ToBoolean(secretsDict["TestMode"]);
@@ -53,7 +54,78 @@ namespace RamenPos
             IsStarted = true;
         }
 
-        #region controls
+        private void transactionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Hide();
+            MainForm.grpSecrets.Enabled = false;
+            MainForm.grpSettings.Enabled = false;
+            TransactionForm.Show();
+        }
+
+        private void chkSecrets_CheckedChanged(object sender, EventArgs e)
+        {
+            ControlsForSecretEnabled(chkSecrets.Checked);
+        }
+
+        private void btnMain_Click(object sender, EventArgs e)
+        {
+            switch (btnMain.Text)
+            {
+                case ButtonCaption.Start:
+                    if (!AreInputsValidForSecrets())
+                        return;
+
+                    IsStarted = false;
+                    Secrets = new Secrets(txtSecrets.Text.Split(':')[0], txtSecrets.Text.Split(':')[1]);
+                    Start();
+                    break;
+                case ButtonCaption.Pair:
+                    if (!AreInputsValid(true))
+                        return;
+
+                    PosId = txtPosId.Text;
+                    EftposAddress = txtAddress.Text;
+                    Start();
+
+                    if (!SpiClient.Pair())
+                        errorProvider.SetError(btnMain, "Pairing failed, please check Spi logs");
+                    break;
+                case ButtonCaption.UnPair:
+                    SpiClient.Unpair();
+                    DestroyBinaryFile(secretFileName);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void MainForm_Activated(object sender, EventArgs e)
+        {
+            this.Enabled = true;
+        }
+
+        private void btnPaymentProvider_Click(object sender, EventArgs e)
+        {
+            using (PaymentProviderForm frm = new PaymentProviderForm())
+            {
+                frm.StartPosition = FormStartPosition.CenterParent;
+                frm.ShowDialog();
+            }
+
+            ControlsForPaymentProvider();
+        }
+
+        #endregion
+
+        #region Controls
+        private void DisplayTenant()
+        {
+            lblPaymentProviderSelected.Text = "";
+
+            if (TenantCode != "" && TenantName != "")
+                lblPaymentProviderSelected.Text = TenantName + ": " + TenantCode;
+        }
+
         private void ControlsForSecretEnabled(bool enabled)
         {
             chkSecrets.Checked = enabled;
@@ -73,14 +145,13 @@ namespace RamenPos
             if (TenantCode != "")
             {
                 btnMain.Enabled = true;
-                lblPaymentProviderSelected.Text = TenantName;
+                DisplayTenant();
             }
             else
             {
                 btnMain.Enabled = false;
             }
         }
-        #endregion
 
         private bool AreInputsValid(bool isPairing)
         {
@@ -139,51 +210,39 @@ namespace RamenPos
             return true;
         }
 
-        private void transactionsToolStripMenuItem_Click(object sender, EventArgs e)
+        public void GetOKActionComponents()
         {
-            Hide();
-            MainForm.grpSecrets.Enabled = false;
-            MainForm.grpSettings.Enabled = false;
-            TransactionForm.Show();
+            ActionsForm.btnAction1.Enabled = true;
+            ActionsForm.btnAction1.Visible = true;
+            ActionsForm.btnAction1.Text = ButtonCaption.OK;
+            ActionsForm.btnAction2.Visible = false;
+            ActionsForm.btnAction3.Visible = false;
+            GetUnvisibleActionComponents();
         }
 
-        private void chkSecrets_CheckedChanged(object sender, EventArgs e)
+        private void GetUnvisibleActionComponents()
         {
-            ControlsForSecretEnabled(chkSecrets.Checked);
+            ActionsForm.lblAction1.Visible = false;
+            ActionsForm.lblAction2.Visible = false;
+            ActionsForm.lblAction3.Visible = false;
+            ActionsForm.lblAction4.Visible = false;
+            ActionsForm.txtAction1.Visible = false;
+            ActionsForm.txtAction2.Visible = false;
+            ActionsForm.txtAction3.Visible = false;
+            ActionsForm.txtAction4.Visible = false;
+            ActionsForm.cboxAction1.Visible = false;
         }
 
-        private void btnMain_Click(object sender, EventArgs e)
+        public bool IsFormOpen(Type formType)
         {
-            switch (btnMain.Text)
-            {
-                case ButtonCaption.Start:
-                    if (!AreInputsValidForSecrets())
-                        return;
-
-                    IsStarted = false;
-                    Secrets = new Secrets(txtSecrets.Text.Split(':')[0], txtSecrets.Text.Split(':')[1]);
-                    Start();
-                    break;
-                case ButtonCaption.Pair:
-                    if (!AreInputsValid(true))
-                        return;
-
-                    PosId = txtPosId.Text;
-                    EftposAddress = txtAddress.Text;
-                    Start();
-
-                    if (!SpiClient.Pair())
-                        errorProvider.SetError(btnMain, "Pairing failed, please check Spi logs");
-                    break;
-                case ButtonCaption.UnPair:
-                    SpiClient.Unpair();
-                    DestroyBinaryFile(secretFileName);
-                    break;
-                default:
-                    break;
-            }
+            foreach (Form form in Application.OpenForms)
+                if (form.GetType().Name == form.Name)
+                    return true;
+            return false;
         }
+        #endregion
 
+        #region Secrets
         private static T ReadFromBinaryFile<T>(string filePath)
         {
             using (Stream stream = File.Open(filePath, FileMode.Open))
@@ -254,6 +313,14 @@ namespace RamenPos
                 secretsDict.Add("TenantCode", TenantCode);
             }
 
+            if (secretsDict.ContainsKey("TenantName"))
+            {
+                secretsDict["TenantName"] = TenantName;
+            }
+            else
+            {
+                secretsDict.Add("TenantName", TenantName);
+            }
 
             if (secretsDict.ContainsKey("Secrets"))
             {
@@ -286,7 +353,7 @@ namespace RamenPos
         internal void Start()
         {
             SpiClient = new Spi(PosId, EftposAddress, Secrets);
-            SpiClient.SetPosInfo("RamenPOS", "2.8");
+            SpiClient.SetPosInfo(PosVendorId, PosVersionInfo);
             Options = new TransactionOptions();
 
             SpiClient.DeviceAddressChanged += OnDeviceAddressChanged;
@@ -1182,53 +1249,6 @@ namespace RamenPos
             Invoke(new Action(() => lblPairingStatus.Text = SpiClient.CurrentStatus.ToString()));
         }
 
-        public void GetOKActionComponents()
-        {
-            ActionsForm.btnAction1.Enabled = true;
-            ActionsForm.btnAction1.Visible = true;
-            ActionsForm.btnAction1.Text = ButtonCaption.OK;
-            ActionsForm.btnAction2.Visible = false;
-            ActionsForm.btnAction3.Visible = false;
-            GetUnvisibleActionComponents();
-        }
-
-        private void GetUnvisibleActionComponents()
-        {
-            ActionsForm.lblAction1.Visible = false;
-            ActionsForm.lblAction2.Visible = false;
-            ActionsForm.lblAction3.Visible = false;
-            ActionsForm.lblAction4.Visible = false;
-            ActionsForm.txtAction1.Visible = false;
-            ActionsForm.txtAction2.Visible = false;
-            ActionsForm.txtAction3.Visible = false;
-            ActionsForm.txtAction4.Visible = false;
-            ActionsForm.cboxAction1.Visible = false;
-        }
-
-        public bool IsFormOpen(Type formType)
-        {
-            foreach (Form form in Application.OpenForms)
-                if (form.GetType().Name == form.Name)
-                    return true;
-            return false;
-        }
-
         #endregion
-
-        private void MainForm_Activated(object sender, EventArgs e)
-        {
-            this.Enabled = true;
-        }
-
-        private void btnPaymentProvider_Click(object sender, EventArgs e)
-        {
-            using (PaymentProviderForm frm = new PaymentProviderForm())
-            {
-                frm.StartPosition = FormStartPosition.CenterParent;
-                frm.ShowDialog();
-            }
-
-            ControlsForPaymentProvider();
-        }
     }
 }

@@ -18,10 +18,15 @@ namespace RamenPos
 
         private async void LoadPaymentProviders()
         {
-            var tenants = await Spi.GetAvailableTenants("123", "123", "AU");
-            lbPaymentProviders.DataSource = tenants.Data;
-            lbPaymentProviders.DisplayMember = "Name";
-            lbPaymentProviders.ValueMember = "Code";
+            var tenants = await Spi.GetAvailableTenants(PosVendorId, ApiKey, "AU");
+           
+            if (tenants != null)
+            {
+                lbPaymentProviders.DataSource = tenants.Data;
+                lbPaymentProviders.DisplayMember = "Name";
+                lbPaymentProviders.ValueMember = "Code";
+                lbPaymentProviders.ClearSelected();
+            }
         }
 
         private void rbOtherPaymentProvider_CheckedChanged(object sender, EventArgs e)
@@ -49,10 +54,15 @@ namespace RamenPos
                 TenantCode = txtOtherPaymentProvider.Text;
                 TenantName = "Other";
             }
-            else
+            else if (lbPaymentProviders.SelectedIndex > 0)
             {
                 TenantCode = lbPaymentProviders.SelectedValue.ToString();
                 TenantName = lbPaymentProviders.Text;
+            }
+            else
+            {
+                MessageBox.Show("Please select a payment provider or enter in other value", "Payment Provider Missing");
+                return;
             }
 
             this.Close();
