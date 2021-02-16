@@ -10,7 +10,6 @@ namespace RamenPos
 {
     public partial class MainForm : RamenForm
     {
-        private const string ApiKey = "RamenPosApiKey"; // this key needs to be requested from mx51
         private Dictionary<string, string> secretsDict = new Dictionary<string, string>();
         public bool IsStarted;
         private string secretFileName = "Secrets.bin";
