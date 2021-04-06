@@ -45,9 +45,10 @@ namespace RamenPos
                     SpiClient.AckFlowEndedAndBackToIdle();
                     MainForm.btnMain.Text = ButtonCaption.Pair;
                     TransactionForm.lblStatus.BackColor = Color.Red;
-                    MainForm.grpSecrets.Enabled = true;
+                    MainForm.grpSecrets.Enabled = false; // secrets have been destroyed
+                    MainForm.btnPaymentProvider.Enabled = true;
+                    MainForm.chkSecrets.Checked = false;
                     MainForm.grpSettings.Enabled = true;
-                    MainForm.cboxSecrets.Checked = false;
                     MainForm.Enabled = true;
                     MainForm.txtPosId.Text = "";
                     MainForm.txtAddress.Text = "";
