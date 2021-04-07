@@ -367,7 +367,7 @@ namespace RamenPos
             SpiClient.BatteryLevelChanged = HandleBatteryLevelChanged;
             SpiClient.TransactionUpdateMessage = HandleTransactionUpdate;
 
-            SpiClient.SetAcquirerCode(TenantCode);
+            SpiClient.SetTenantCode(TenantCode);
             SpiClient.SetDeviceApiKey(ApiKey);
             SpiClient.SetTestMode(chkTestMode.Checked);
 

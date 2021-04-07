@@ -54,7 +54,7 @@ namespace RamenPos
                 TenantCode = txtOtherPaymentProvider.Text;
                 TenantName = "Other";
             }
-            else if (lbPaymentProviders.SelectedIndex > 0)
+            else if (lbPaymentProviders.SelectedIndex >= 0)
             {
                 TenantCode = lbPaymentProviders.SelectedValue.ToString();
                 TenantName = lbPaymentProviders.Text;
