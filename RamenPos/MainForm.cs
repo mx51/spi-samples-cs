@@ -10,11 +10,9 @@ namespace RamenPos
 {
     public partial class MainForm : RamenForm
     {
-        private const string ApiKey = "RamenPosDeviceAddressApiKey"; // this key needs to be requested from mx51
-        private const string AcquirerCode = "wbc";
-        public bool IsStarted;
         private Dictionary<string, string> secretsDict = new Dictionary<string, string>();
-        private bool IsReconnect;
+        public bool IsStarted;
+        private string secretFileName = "Secrets.bin";
 
         public MainForm()
         {
@@ -22,38 +20,139 @@ namespace RamenPos
         }
 
         #region Form Controls
-
         private void RamenPos_Load(object sender, EventArgs e)
         {
             MainForm = this;
             TransactionForm = new TransactionForm();
             ActionsForm = new ActionsForm();
+            PaymentProviderForm = new PaymentProviderForm();
             btnMain.Text = ButtonCaption.Pair;
 
-            if (File.Exists("Secrets.bin"))
+            if (File.Exists(secretFileName))
             {
-                secretsDict = ReadFromBinaryFile<Dictionary<string, string>>("Secrets.bin");
+                secretsDict = ReadFromBinaryFile<Dictionary<string, string>>(secretFileName);
 
                 if (secretsDict?.Count > 0)
                 {
-                    txtSecrets.Text = secretsDict["Secrets"];
-                    txtAddress.Text = secretsDict["EftposAddress"];
-                    txtPosId.Text = secretsDict["PosId"];
-                    btnMain.Enabled = true;
-                    cboxSecrets.Checked = true;
-                    chkTestMode.Enabled = false;
+                    grpSettings.Enabled = true;
+                    ControlsForSecretEnabled(true);
                     
+                    txtSecrets.Text = GetKey(secretsDict, "Secrets");
+                    txtAddress.Text = GetKey(secretsDict, "EftposAddress");
+                    txtPosId.Text = GetKey(secretsDict, "PosId");
+                    TenantCode = GetKey(secretsDict, "TenantCode");
+                    TenantName = GetKey(secretsDict, "TenantName");
+                    DisplayTenant();
+
                     if (secretsDict.ContainsKey("TestMode"))
                         chkTestMode.Checked = Convert.ToBoolean(secretsDict["TestMode"]);
-
-                    IsReconnect = true;
                 }
             }
 
+            ControlsForPaymentProvider();
             IsStarted = true;
         }
 
-        private bool AreControlsValid(bool isPairing)
+        private void transactionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Hide();
+            MainForm.grpSecrets.Enabled = false;
+            MainForm.grpSettings.Enabled = false;
+            TransactionForm.Show();
+        }
+
+        private void chkSecrets_CheckedChanged(object sender, EventArgs e)
+        {
+            ControlsForSecretEnabled(chkSecrets.Checked);
+        }
+
+        private void btnMain_Click(object sender, EventArgs e)
+        {
+            switch (btnMain.Text)
+            {
+                case ButtonCaption.Start:
+                    if (!AreInputsValidForSecrets())
+                        return;
+
+                    IsStarted = false;
+                    Secrets = new Secrets(txtSecrets.Text.Split(':')[0], txtSecrets.Text.Split(':')[1]);
+                    Start();
+                    break;
+                case ButtonCaption.Pair:
+                    if (!AreInputsValid(true))
+                        return;
+
+                    PosId = txtPosId.Text;
+                    EftposAddress = txtAddress.Text;
+                    Start();
+
+                    if (!SpiClient.Pair())
+                        errorProvider.SetError(btnMain, "Pairing failed, please check Spi logs");
+                    break;
+                case ButtonCaption.UnPair:
+                    SpiClient.Unpair();
+                    DestroyBinaryFile(secretFileName);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void MainForm_Activated(object sender, EventArgs e)
+        {
+            this.Enabled = true;
+        }
+
+        private void btnPaymentProvider_Click(object sender, EventArgs e)
+        {
+            using (PaymentProviderForm frm = new PaymentProviderForm())
+            {
+                frm.StartPosition = FormStartPosition.CenterParent;
+                frm.ShowDialog();
+            }
+
+            ControlsForPaymentProvider();
+        }
+
+        #endregion
+
+        #region Controls
+        private void DisplayTenant()
+        {
+            lblPaymentProviderSelected.Text = "";
+
+            if (TenantCode != "" && TenantName != "")
+                lblPaymentProviderSelected.Text = TenantName + ": " + TenantCode;
+        }
+
+        private void ControlsForSecretEnabled(bool enabled)
+        {
+            chkSecrets.Checked = enabled;
+            txtSecrets.Enabled = enabled;
+
+            if (!enabled)
+            {
+                txtSecrets.Text = "";
+                btnMain.Text = ButtonCaption.Pair;
+            }
+            else
+                btnMain.Text = ButtonCaption.Start;
+        }
+
+        private void ControlsForPaymentProvider()
+        {
+            if (TenantCode != "")
+            {
+                btnMain.Enabled = true;
+                DisplayTenant();
+            }
+            else
+            {
+                btnMain.Enabled = false;
+            }
+        }
+
+        private bool AreInputsValid(bool isPairing)
         {
             var valid = true;
 
@@ -76,12 +175,12 @@ namespace RamenPos
             return valid;
         }
 
-        private bool AreControlsValidForSecrets()
+        private bool AreInputsValidForSecrets()
         {
+            errorProvider.Clear();
+
             PosId = txtPosId.Text;
             EftposAddress = txtAddress.Text;
-
-            errorProvider.Clear();
 
             if (string.IsNullOrWhiteSpace(EftposAddress))
             {
@@ -110,62 +209,39 @@ namespace RamenPos
             return true;
         }
 
-        private void transactionsToolStripMenuItem_Click(object sender, EventArgs e)
+        public void GetOKActionComponents()
         {
-            Hide();
-            MainForm.grpSecrets.Enabled = false;
-            MainForm.grpSettings.Enabled = false;
-            TransactionForm.Show();
+            ActionsForm.btnAction1.Enabled = true;
+            ActionsForm.btnAction1.Visible = true;
+            ActionsForm.btnAction1.Text = ButtonCaption.OK;
+            ActionsForm.btnAction2.Visible = false;
+            ActionsForm.btnAction3.Visible = false;
+            GetUnvisibleActionComponents();
         }
 
-        private void cboxSecrets_CheckedChanged(object sender, EventArgs e)
+        private void GetUnvisibleActionComponents()
         {
-            txtSecrets.Enabled = cboxSecrets.Checked;
-
-            if (cboxSecrets.Checked)
-            {
-                btnMain.Text = ButtonCaption.Start;
-            }
-            else
-            {
-                btnMain.Text = ButtonCaption.Pair;
-                txtSecrets.Text = "";
-                chkTestMode.Enabled = true;
-                errorProvider.Clear();
-            }
+            ActionsForm.lblAction1.Visible = false;
+            ActionsForm.lblAction2.Visible = false;
+            ActionsForm.lblAction3.Visible = false;
+            ActionsForm.lblAction4.Visible = false;
+            ActionsForm.txtAction1.Visible = false;
+            ActionsForm.txtAction2.Visible = false;
+            ActionsForm.txtAction3.Visible = false;
+            ActionsForm.txtAction4.Visible = false;
+            ActionsForm.cboxAction1.Visible = false;
         }
 
-        private void btnMain_Click(object sender, EventArgs e)
+        public bool IsFormOpen(Type formType)
         {
-            switch (btnMain.Text)
-            {
-                case ButtonCaption.Start:
-                    if (!AreControlsValidForSecrets())
-                        return;
-
-                    IsStarted = false;
-                    Secrets = new Secrets(txtSecrets.Text.Split(':')[0], txtSecrets.Text.Split(':')[1]);
-                    Start();
-                    break;
-                case ButtonCaption.Pair:
-                    if (!AreControlsValid(true))
-                        return;
-
-                    PosId = txtPosId.Text;
-                    EftposAddress = txtAddress.Text;
-                    Start();
-
-                    if (!SpiClient.Pair())
-                        errorProvider.SetError(btnMain, "Pairing failed, please check Spi logs");
-                    break;
-                case ButtonCaption.UnPair:
-                    SpiClient.Unpair();
-                    break;
-                default:
-                    break;
-            }
+            foreach (Form form in Application.OpenForms)
+                if (form.GetType().Name == form.Name)
+                    return true;
+            return false;
         }
+        #endregion
 
+        #region Secrets
         private static T ReadFromBinaryFile<T>(string filePath)
         {
             using (Stream stream = File.Open(filePath, FileMode.Open))
@@ -182,6 +258,11 @@ namespace RamenPos
                 var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
                 binaryFormatter.Serialize(stream, objectToWrite);
             }
+        }
+
+        private static void DestroyBinaryFile(string filePath)
+        {
+            File.Delete(filePath);
         }
 
         public void SaveSecrets()
@@ -222,6 +303,24 @@ namespace RamenPos
                 secretsDict.Add("AutoAddressEnabled", AutoAddressEnabled.ToString());
             }
 
+            if (secretsDict.ContainsKey("TenantCode"))
+            {
+                secretsDict["TenantCode"] = TenantCode;
+            }
+            else
+            {
+                secretsDict.Add("TenantCode", TenantCode);
+            }
+
+            if (secretsDict.ContainsKey("TenantName"))
+            {
+                secretsDict["TenantName"] = TenantName;
+            }
+            else
+            {
+                secretsDict.Add("TenantName", TenantName);
+            }
+
             if (secretsDict.ContainsKey("Secrets"))
             {
                 secretsDict["Secrets"] = Secrets.EncKey + ":" + Secrets.HmacKey;
@@ -231,7 +330,7 @@ namespace RamenPos
                 secretsDict.Add("Secrets", Secrets.EncKey + ":" + Secrets.HmacKey);
             }
 
-            if (secretsDict.ContainsKey("Secrets"))
+            if (secretsDict.ContainsKey("TestMode"))
             {
                 secretsDict["TestMode"] = chkTestMode.Checked.ToString();
             }
@@ -240,16 +339,20 @@ namespace RamenPos
                 secretsDict.Add("TestMode", chkTestMode.Checked.ToString());
             }
 
-            WriteToBinaryFile("Secrets.bin", secretsDict, false);
+            WriteToBinaryFile(secretFileName, secretsDict, false);
         }
 
+        private static string GetKey(IReadOnlyDictionary<string, string> dictValues, string keyValue)
+        {
+            return dictValues.ContainsKey(keyValue) ? dictValues[keyValue] : "";
+        }
         #endregion
 
         #region SPI Client
         internal void Start()
         {
             SpiClient = new Spi(PosId, EftposAddress, Secrets);
-            SpiClient.SetPosInfo("Sample_PoS", "2.7");
+            SpiClient.SetPosInfo(PosVendorId, PosVersionInfo);
             Options = new TransactionOptions();
 
             SpiClient.DeviceAddressChanged += OnDeviceAddressChanged;
@@ -264,7 +367,7 @@ namespace RamenPos
             SpiClient.BatteryLevelChanged = HandleBatteryLevelChanged;
             SpiClient.TransactionUpdateMessage = HandleTransactionUpdate;
 
-            SpiClient.SetAcquirerCode(AcquirerCode);
+            SpiClient.SetAcquirerCode(TenantCode);
             SpiClient.SetDeviceApiKey(ApiKey);
             SpiClient.SetTestMode(chkTestMode.Checked);
 
@@ -503,6 +606,7 @@ namespace RamenPos
                             transactionsToolStripMenuItem.Visible = false;
                             GetUnvisibleActionComponents();
                             TransactionForm.lblStatus.BackColor = Color.Red;
+
                             secretsDict["Secrets"] = "";
                             break;
 
@@ -1144,42 +1248,6 @@ namespace RamenPos
             Invoke(new Action(() => lblPairingStatus.Text = SpiClient.CurrentStatus.ToString()));
         }
 
-        public void GetOKActionComponents()
-        {
-            ActionsForm.btnAction1.Enabled = true;
-            ActionsForm.btnAction1.Visible = true;
-            ActionsForm.btnAction1.Text = ButtonCaption.OK;
-            ActionsForm.btnAction2.Visible = false;
-            ActionsForm.btnAction3.Visible = false;
-            GetUnvisibleActionComponents();
-        }
-
-        private void GetUnvisibleActionComponents()
-        {
-            ActionsForm.lblAction1.Visible = false;
-            ActionsForm.lblAction2.Visible = false;
-            ActionsForm.lblAction3.Visible = false;
-            ActionsForm.lblAction4.Visible = false;
-            ActionsForm.txtAction1.Visible = false;
-            ActionsForm.txtAction2.Visible = false;
-            ActionsForm.txtAction3.Visible = false;
-            ActionsForm.txtAction4.Visible = false;
-            ActionsForm.cboxAction1.Visible = false;
-        }
-
-        public bool IsFormOpen(Type formType)
-        {
-            foreach (Form form in Application.OpenForms)
-                if (form.GetType().Name == form.Name)
-                    return true;
-            return false;
-        }
-
         #endregion
-
-        private void MainForm_Activated(object sender, EventArgs e)
-        {
-            this.Enabled = true;
-        }
     }
 }

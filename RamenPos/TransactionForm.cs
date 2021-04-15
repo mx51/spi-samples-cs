@@ -129,9 +129,9 @@ namespace RamenPos
         {
             MainForm.transactionsToolStripMenuItem.Visible = true;
             MainForm.grpSecrets.Enabled = false;
-            //MainForm.grpAutoAddressResolution.Enabled = false;
             MainForm.grpSettings.Enabled = false;
             MainForm.btnMain.Enabled = true;
+            MainForm.btnPaymentProvider.Enabled = false;
             Hide();
             MainForm.Show();
         }
