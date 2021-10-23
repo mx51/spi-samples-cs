@@ -1,0 +1,102 @@
+# Pipeline will be triggered based if the following are satisfied:
+# - Any commits on any branch excluding 'prototype'
+# - Tags on any branch
+# - All pull requests
+
+pool:
+  vmImage: 'windows-latest'
+
+pr:
+  branches:
+    include:
+    - '*'
+
+trigger:
+  branches:
+    include:
+      - '*'
+    exclude:
+      - 'prototype/*'
+  tags:
+    include: 
+       - '*'
+
+variables:
+  - name: SOLUTION
+    value: '**/*.sln'
+  - name: ARTIFACT_NAME
+    value: SPISamples
+  - name: BUILD_VERSION_VS
+    value: 16.0
+  - name: BUILD_PLATFORM
+    value: Any CPU
+  - name: BUILD_CONFIGURATION
+    value: Debug
+  - name: BRANCH_NAME
+    value: $[variables['Build.SourceBranch']]
+  - name: TARGET_PROJECT
+    value: RamenPos
+
+stages:
+- stage: build
+  displayName: Build
+  jobs:
+  - job: build
+    displayName: Building SPIClient
+    steps:
+        # restore nuget packages from solution
+        - task: NuGetCommand@2
+          displayName: Restore nuget solution
+          inputs:
+            restoreSolution: '$(SOLUTION)'
+        
+        # download new build from SPIClient pipeline
+        - task: DownloadPipelineArtifact@2
+          displayName: Download SPI library
+          inputs:
+            source: specific
+            project: 4fb3dd62-1591-419c-9be2-97638a709c36
+            pipeline: 268
+            artifact: SPICLient
+            patterns: '**/*.nupkg'
+            path: $(Pipeline.Workspace)
+
+        # install new lib version
+        - task: NuGetCommand@2
+          displayName: Install libray SPIClient
+          inputs:
+            command: custom
+            arguments: 'install SPIClient -Source $(Pipeline.Workspace) -DependencyVersion Ignore -OutputDirectory packages'
+
+        # update csproj
+        - task: NuGetCommand@2
+          displayName: Update the project deps.
+          inputs:
+            command: custom
+            arguments: 'update **/$(TARGET_PROJECT)/*.csproj'
+
+        # build solution
+        - task: VSBuild@1
+          displayName: Build SPIClient
+          inputs:
+            solution: '$(SOLUTION)'
+            vsVersion: '$(BUILD_VERSION_VS)'
+            platform: '$(BUILD_PLATFORM)'
+            configuration: '$(BUILD_CONFIGURATION)'
+
+        - task: CopyFiles@2
+          displayName: 'Copy Files to:  $(Build.ArtifactStagingDirectory)'
+          condition: succeededOrFailed()
+          inputs:
+            sourceFolder: '**/$(TARGET_PROJECT)/bin/$(BUILD_CONFIGURATION)/'
+            contents: '*'
+            targetFolder: $(Build.ArtifactStagingDirectory)
+            OverWrite: true
+            flattenFolders: true
+
+        # publish samples artifacts
+        - task: PublishBuildArtifacts@1
+          displayName: Publishing artifact
+          inputs:
+            pathToPublish: $(Build.ArtifactStagingDirectory)
+            artifactName: $(TARGET_PROJECT)
