@@ -68,6 +68,13 @@ stages:
             command: custom
             arguments: 'install SPIClient -Source $(Pipeline.Workspace) -DependencyVersion Ignore -OutputDirectory packages'
 
+        # add nuget local source
+        - task: NuGetCommand@2
+          displayName: Adding local source to nuget.
+          inputs:
+            command: custom
+            arguments: 'sources add -Source $(Pipeline.Workspace)'
+
         # update csproj
         - task: NuGetCommand@2
           displayName: Update the project deps.
