@@ -95,7 +95,7 @@ stages:
           displayName: 'Copy Files to:  $(Build.ArtifactStagingDirectory)'
           condition: succeededOrFailed()
           inputs:
-            sourceFolder: '**/$(TARGET_PROJECT)/bin/$(BUILD_CONFIGURATION)/'
+            sourceFolder: '/$(TARGET_PROJECT)/bin/$(BUILD_CONFIGURATION)/'
             contents: '*'
             targetFolder: $(Build.ArtifactStagingDirectory)
             OverWrite: true
