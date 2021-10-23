@@ -73,7 +73,7 @@ stages:
           displayName: Update the project deps.
           inputs:
             command: custom
-            arguments: 'update ./$(TARGET_PROJECT)/$(TARGET_PROJECT).csproj'
+            arguments: 'update ./$(TARGET_PROJECT)/$(TARGET_PROJECT).csproj -Id SPIClient'
 
         # build solution
         - task: VSBuild@1
