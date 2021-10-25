@@ -40,6 +40,7 @@ namespace RamenPos
                     txtSecrets.Text = GetKey(secretsDict, "Secrets");
                     txtAddress.Text = GetKey(secretsDict, "EftposAddress");
                     txtPosId.Text = GetKey(secretsDict, "PosId");
+                    txtSerialNumber.Text = GetKey(secretsDict, "SerialNumber");
                     TenantCode = GetKey(secretsDict, "TenantCode");
                     TenantName = GetKey(secretsDict, "TenantName");
                     DisplayTenant();
@@ -84,6 +85,7 @@ namespace RamenPos
 
                     PosId = txtPosId.Text;
                     EftposAddress = txtAddress.Text;
+                    SerialNumber = txtSerialNumber.Text;
                     Start();
 
                     if (!SpiClient.Pair())
@@ -181,10 +183,17 @@ namespace RamenPos
 
             PosId = txtPosId.Text;
             EftposAddress = txtAddress.Text;
+            SerialNumber = txtSerialNumber.Text;
 
             if (string.IsNullOrWhiteSpace(EftposAddress))
             {
                 errorProvider.SetError(txtAddress, "Please provide a Eftpos address");
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(SerialNumber))
+            {
+                errorProvider.SetError(txtSerialNumber, "Please provide a Serial Number");
                 return false;
             }
 
@@ -367,10 +376,10 @@ namespace RamenPos
             SpiClient.BatteryLevelChanged = HandleBatteryLevelChanged;
             SpiClient.TransactionUpdateMessage = HandleTransactionUpdate;
 
+            SpiClient.SetSerialNumber(SerialNumber);
+            SpiClient.SetTestMode(chkTestMode.Checked);
             SpiClient.SetTenantCode(TenantCode);
             SpiClient.SetDeviceApiKey(ApiKey);
-            SpiClient.SetTestMode(chkTestMode.Checked);
-
             try
             {
                 SpiClient.Start();
