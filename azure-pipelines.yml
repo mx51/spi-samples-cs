@@ -22,6 +22,10 @@ trigger:
        - '*'
 
 variables:
+  - name: PIPELINE_PROJECT
+    value: 4fb3dd62-1591-419c-9be2-97638a709c36
+  - name: DEPENDEE_PIPELINE
+    value: 268
   - name: SOLUTION
     value: '**/*.sln'
   - name: ARTIFACT_NAME
@@ -42,7 +46,7 @@ stages:
   displayName: Build
   jobs:
   - job: build
-    displayName: Building SPIClient
+    displayName: Building SPISamples
     steps:
         # restore nuget packages from solution
         - task: NuGetCommand@2
@@ -55,8 +59,8 @@ stages:
           displayName: Download SPI library
           inputs:
             source: specific
-            project: 4fb3dd62-1591-419c-9be2-97638a709c36
-            pipeline: 268
+            project: $(PIPELINE_PROJECT)
+            pipeline: $(DEPENDEE_PIPELINE)
             artifact: SPICLient
             patterns: '**/*.nupkg'
             path: $(Pipeline.Workspace)
