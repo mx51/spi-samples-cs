@@ -377,10 +377,9 @@ namespace RamenPos
             SpiClient.TransactionUpdateMessage = HandleTransactionUpdate;
 
             SpiClient.SetSerialNumber(SerialNumber);
-            SpiClient.SetDeviceApiKey(ApiKey);
             SpiClient.SetTestMode(chkTestMode.Checked);
             SpiClient.SetTenantCode(TenantCode);
-
+            SpiClient.SetDeviceApiKey(ApiKey);
             try
             {
                 SpiClient.Start();
