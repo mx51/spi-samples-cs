@@ -160,11 +160,18 @@ namespace RamenPos
 
             PosId = txtPosId.Text;
             EftposAddress = txtAddress.Text;
+            SerialNumber = txtSerialNumber.Text;
             errorProvider.Clear();
 
             if (isPairing && string.IsNullOrWhiteSpace(EftposAddress))
             {
                 errorProvider.SetError(txtAddress, "Please enable auto address resolution or enter a device address");
+                valid = false;
+            }
+
+            if (isPairing && string.IsNullOrWhiteSpace(SerialNumber))
+            {
+                errorProvider.SetError(txtSerialNumber, "Please provide Serial Number");
                 valid = false;
             }
 
