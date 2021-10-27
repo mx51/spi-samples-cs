@@ -25,7 +25,7 @@ variables:
   - name: PIPELINE_PROJECT
     value: 4fb3dd62-1591-419c-9be2-97638a709c36
   - name: DEPENDEE_PIPELINE
-    value: 268
+    value: 98
   - name: SOLUTION
     value: '**/*.sln'
   - name: ARTIFACT_NAME
