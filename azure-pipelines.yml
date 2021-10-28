@@ -102,7 +102,7 @@ stages:
         - task: ArchiveFiles@2
           inputs:
             rootFolderOrFile: '$(Build.Repository.LocalPath)/$(TARGET_PROJECT)/bin/$(BUILD_CONFIGURATION)/'
-            includeRootFolder: false
+            includeRootFolder: falsev
             archiveType: 'zip'
             archiveFile: $(Build.ArtifactStagingDirectory)/$(TARGET_PROJECT).zip
             verbose: true
@@ -114,13 +114,24 @@ stages:
             pathToPublish: $(Build.ArtifactStagingDirectory)
             artifactName: $(TARGET_PROJECT)
 
-        # release to github
-        - task: GitHubRelease@0
-          displayName: GitHub release (create)
-          condition: contains(variables['BRANCH_NAME'], 'refs/tags/')
-          inputs:
-            gitHubConnection: a4dec19b-3365-43b0-853f-45ac7cb062ea
-            action: 'create'
-            assets: $(Build.ArtifactStagingDirectory)/**/*.zip
-            tagSource: 'auto'
-            addChangeLog: false
+- stage: deploy
+  condition: and(succeeded(), contains(variables['BRANCH_NAME'], 'refs/tags/'))      
+  displayName: Deploy
+  dependsOn: build
+  jobs:
+  - deployment: SPISamples
+    displayName: Release to Github
+    environment: production
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          # release to github
+          - task: GitHubRelease@0
+            displayName: GitHub release (create)
+            inputs:
+              gitHubConnection: a4dec19b-3365-43b0-853f-45ac7cb062ea
+              action: 'create'
+              assets: $(Build.ArtifactStagingDirectory)/**/*.zip
+              tagSource: 'auto'
+              addChangeLog: false
