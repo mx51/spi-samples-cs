@@ -68,6 +68,7 @@ stages:
         # install new lib version
         - task: NuGetCommand@2
           displayName: Install libray SPIClient
+          condition: not(contains(variables['BRANCH_NAME'], 'refs/tags/'))
           inputs:
             command: custom
             arguments: 'install SPIClient -Source $(Pipeline.Workspace) -DependencyVersion Ignore -OutputDirectory packages'
@@ -75,6 +76,7 @@ stages:
         # add nuget local source
         - task: NuGetCommand@2
           displayName: Adding local source to nuget.
+          condition: not(contains(variables['BRANCH_NAME'], 'refs/tags/'))
           inputs:
             command: custom
             arguments: 'sources add -Source $(Pipeline.Workspace)'
@@ -82,6 +84,7 @@ stages:
         # update csproj
         - task: NuGetCommand@2
           displayName: Update the project deps.
+          condition: not(contains(variables['BRANCH_NAME'], 'refs/tags/'))
           inputs:
             command: custom
             arguments: 'update ./$(TARGET_PROJECT)/$(TARGET_PROJECT).csproj -Id SPIClient'
