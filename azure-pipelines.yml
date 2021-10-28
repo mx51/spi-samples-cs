@@ -102,6 +102,7 @@ stages:
         - task: ArchiveFiles@2
           inputs:
             rootFolderOrFile: '$(Build.Repository.LocalPath)/$(TARGET_PROJECT)/bin/$(BUILD_CONFIGURATION)/'
+            includeRootFolder: false
             archiveType: 'zip'
             archiveFile: $(Build.ArtifactStagingDirectory)/$(TARGET_PROJECT).zip
             verbose: true
