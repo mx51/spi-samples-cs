@@ -95,15 +95,13 @@ stages:
             platform: '$(BUILD_PLATFORM)'
             configuration: '$(BUILD_CONFIGURATION)'
 
-        - task: CopyFiles@2
-          displayName: 'Copy Files to:  $(Build.ArtifactStagingDirectory)'
-          condition: succeededOrFailed()
+         # zip the build output
+        - task: ArchiveFiles@2
           inputs:
-            sourceFolder: '$(Build.Repository.LocalPath)/$(TARGET_PROJECT)/bin/$(BUILD_CONFIGURATION)/'
-            contents: '*'
-            targetFolder: $(Build.ArtifactStagingDirectory)
-            OverWrite: true
-            flattenFolders: true
+            rootFolderOrFile: '$(Build.Repository.LocalPath)/$(TARGET_PROJECT)/bin/$(BUILD_CONFIGURATION)/'
+            archiveType: 'zip'
+            archiveFile: $(Build.ArtifactStagingDirectory)/$(TARGET_PROJECT).zip
+            verbose: true
 
         # publish samples artifacts
         - task: PublishBuildArtifacts@1
@@ -111,3 +109,14 @@ stages:
           inputs:
             pathToPublish: $(Build.ArtifactStagingDirectory)
             artifactName: $(TARGET_PROJECT)
+
+        # release to github
+        - task: GitHubRelease@0
+          displayName: GitHub release (create)
+          condition: contains(variables['BRANCH_NAME'], 'refs/tags/')
+          inputs:
+            gitHubConnection: a4dec19b-3365-43b0-853f-45ac7cb062ea
+            action: 'create'
+            assets: $(Build.ArtifactStagingDirectory)/**/*.zip
+            tagSource: 'auto'
+            addChangeLog: false
