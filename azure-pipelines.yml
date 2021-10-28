@@ -115,7 +115,7 @@ stages:
           displayName: GitHub release (create)
           condition: contains(variables['BRANCH_NAME'], 'refs/tags/')
           inputs:
-            gitHubConnection: 36274700-c2c2-4c7f-bf75-9a7b7532feef
+            gitHubConnection: 672b7505-ba14-40bb-81cd-8ada2dfb5b95
             action: 'create'
             assets: $(Build.ArtifactStagingDirectory)/**/*.zip
             tagSource: 'auto'
