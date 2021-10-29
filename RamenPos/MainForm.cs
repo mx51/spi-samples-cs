@@ -40,6 +40,7 @@ namespace RamenPos
                     txtSecrets.Text = GetKey(secretsDict, "Secrets");
                     txtAddress.Text = GetKey(secretsDict, "EftposAddress");
                     txtPosId.Text = GetKey(secretsDict, "PosId");
+                    txtSerialNumber.Text = GetKey(secretsDict, "SerialNumber");
                     TenantCode = GetKey(secretsDict, "TenantCode");
                     TenantName = GetKey(secretsDict, "TenantName");
                     DisplayTenant();
@@ -84,6 +85,7 @@ namespace RamenPos
 
                     PosId = txtPosId.Text;
                     EftposAddress = txtAddress.Text;
+                    SerialNumber = txtSerialNumber.Text;
                     Start();
 
                     if (!SpiClient.Pair())
@@ -158,11 +160,18 @@ namespace RamenPos
 
             PosId = txtPosId.Text;
             EftposAddress = txtAddress.Text;
+            SerialNumber = txtSerialNumber.Text;
             errorProvider.Clear();
 
             if (isPairing && string.IsNullOrWhiteSpace(EftposAddress))
             {
                 errorProvider.SetError(txtAddress, "Please enable auto address resolution or enter a device address");
+                valid = false;
+            }
+
+            if (isPairing && string.IsNullOrWhiteSpace(SerialNumber))
+            {
+                errorProvider.SetError(txtSerialNumber, "Please provide Serial Number");
                 valid = false;
             }
 
@@ -181,10 +190,17 @@ namespace RamenPos
 
             PosId = txtPosId.Text;
             EftposAddress = txtAddress.Text;
+            SerialNumber = txtSerialNumber.Text;
 
             if (string.IsNullOrWhiteSpace(EftposAddress))
             {
                 errorProvider.SetError(txtAddress, "Please provide a Eftpos address");
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(SerialNumber))
+            {
+                errorProvider.SetError(txtSerialNumber, "Please provide a Serial Number");
                 return false;
             }
 
@@ -367,10 +383,10 @@ namespace RamenPos
             SpiClient.BatteryLevelChanged = HandleBatteryLevelChanged;
             SpiClient.TransactionUpdateMessage = HandleTransactionUpdate;
 
-            SpiClient.SetAcquirerCode(TenantCode);
-            SpiClient.SetDeviceApiKey(ApiKey);
+            SpiClient.SetSerialNumber(SerialNumber);
             SpiClient.SetTestMode(chkTestMode.Checked);
-
+            SpiClient.SetTenantCode(TenantCode);
+            SpiClient.SetDeviceApiKey(ApiKey);
             try
             {
                 SpiClient.Start();
@@ -402,6 +418,7 @@ namespace RamenPos
                     {
                         case DeviceAddressResponseCode.SUCCESS:
                             txtAddress.Text = e.Address;
+                            EftposAddress = txtAddress.Text;
                             btnMain.Enabled = true;
                             MessageBox.Show($@"Address has been updated to {e.Address}", "Address updated");
                             break;

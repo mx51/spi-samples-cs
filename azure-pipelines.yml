@@ -1,0 +1,136 @@
+# Pipeline will be triggered based if the following are satisfied:
+# - Any commits on any branch excluding 'prototype'
+# - Tags on any branch
+# - All pull requests
+
+pool:
+  vmImage: 'windows-latest'
+
+pr:
+  branches:
+    include:
+    - '*'
+
+trigger:
+  branches:
+    include:
+      - '*'
+    exclude:
+      - 'prototype/*'
+  tags:
+    include: 
+       - '*'
+
+variables:
+  - name: PIPELINE_PROJECT
+    value: 4fb3dd62-1591-419c-9be2-97638a709c36
+  - name: DEPENDEE_PIPELINE
+    value: 98
+  - name: SOLUTION
+    value: '**/*.sln'
+  - name: ARTIFACT_NAME
+    value: SPISamples
+  - name: BUILD_VERSION_VS
+    value: 16.0
+  - name: BUILD_PLATFORM
+    value: Any CPU
+  - name: BUILD_CONFIGURATION
+    value: Debug
+  - name: BRANCH_NAME
+    value: $[variables['Build.SourceBranch']]
+  - name: TARGET_PROJECT
+    value: RamenPos
+  - name: GITHUB_CONNECTION
+    value: a4dec19b-3365-43b0-853f-45ac7cb062ea
+
+stages:
+- stage: build
+  displayName: Build
+  jobs:
+  - job: build
+    displayName: Building SPISamples
+    steps:
+        # restore nuget packages from solution
+        - task: NuGetCommand@2
+          displayName: Restore nuget solution
+          inputs:
+            restoreSolution: '$(SOLUTION)'
+        
+        # download new build from SPIClient pipeline
+        - task: DownloadPipelineArtifact@2
+          displayName: Download SPI library
+          inputs:
+            source: specific
+            project: $(PIPELINE_PROJECT)
+            pipeline: $(DEPENDEE_PIPELINE)
+            artifact: SPICLient
+            patterns: '**/*.nupkg'
+            path: $(Pipeline.Workspace)
+
+        # install new lib version
+        - task: NuGetCommand@2
+          displayName: Install libray SPIClient
+          inputs:
+            command: custom
+            arguments: 'install SPIClient -Source $(Pipeline.Workspace) -DependencyVersion Ignore -OutputDirectory packages'
+
+        # add nuget local source
+        - task: NuGetCommand@2
+          displayName: Adding local source to nuget.
+          inputs:
+            command: custom
+            arguments: 'sources add -Source $(Pipeline.Workspace)'
+
+        # update csproj
+        - task: NuGetCommand@2
+          displayName: Update the project deps.
+          inputs:
+            command: custom
+            arguments: 'update ./$(TARGET_PROJECT)/$(TARGET_PROJECT).csproj -Id SPIClient'
+
+        # build solution
+        - task: VSBuild@1
+          displayName: Build $(TARGET_PROJECT)
+          inputs:
+            solution: '$(SOLUTION)'
+            vsVersion: '$(BUILD_VERSION_VS)'
+            platform: '$(BUILD_PLATFORM)'
+            configuration: '$(BUILD_CONFIGURATION)'
+
+         # zip the build output
+        - task: ArchiveFiles@2
+          inputs:
+            rootFolderOrFile: '$(Build.Repository.LocalPath)/$(TARGET_PROJECT)/bin/$(BUILD_CONFIGURATION)/'
+            includeRootFolder: false
+            archiveType: 'zip'
+            archiveFile: $(Build.ArtifactStagingDirectory)/$(TARGET_PROJECT).zip
+            verbose: true
+
+        # publish samples artifacts
+        - task: PublishBuildArtifacts@1
+          displayName: Publishing artifact
+          inputs:
+            pathToPublish: $(Build.ArtifactStagingDirectory)
+            artifactName: $(TARGET_PROJECT)
+
+- stage: deploy
+  condition: and(succeeded(), contains(variables['BRANCH_NAME'], 'refs/tags/'))      
+  displayName: Deploy
+  dependsOn: build
+  jobs:
+  - deployment: SPISamples
+    displayName: Release to Github
+    environment: production
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          # release to github
+          - task: GitHubRelease@0
+            displayName: GitHub release (create)
+            inputs:
+              gitHubConnection: $(GITHUB_CONNECTION)
+              action: 'create'
+              assets: $(Build.ArtifactStagingDirectory)/**/*.zip
+              tagSource: 'auto'
+              addChangeLog: false

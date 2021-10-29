@@ -1,4 +1,4 @@
-# SPI Samples C#
+# SPI Samples C# [![Build Status](https://dev.azure.com/mx51/SPIClient-Libraries/_apis/build/status/mx51.spi-samples-cs?branchName=master)](https://dev.azure.com/mx51/SPIClient-Libraries/_build/latest?definitionId=269&branchName=master)
 
 This is a set of SPI client samples for C#.
 
