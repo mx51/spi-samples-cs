@@ -362,6 +362,7 @@
         internal System.Windows.Forms.GroupBox grpPaymentProvider;
         internal System.Windows.Forms.Button btnPaymentProvider;
         private System.Windows.Forms.Label lblPaymentProviderSelected;
+
         internal System.Windows.Forms.Label lblSerialNumber;
         internal System.Windows.Forms.TextBox txtSerialNumber;
     }
