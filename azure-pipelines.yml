@@ -40,6 +40,8 @@ variables:
     value: $[variables['Build.SourceBranch']]
   - name: TARGET_PROJECT
     value: RamenPos
+  - name: GITHUB_CONNECTION
+    value: a4dec19b-3365-43b0-853f-45ac7cb062ea
 
 stages:
 - stage: build
@@ -127,7 +129,7 @@ stages:
           - task: GitHubRelease@0
             displayName: GitHub release (create)
             inputs:
-              gitHubConnection: a4dec19b-3365-43b0-853f-45ac7cb062ea
+              gitHubConnection: $(GITHUB_CONNECTION)
               action: 'create'
               assets: $(Build.ArtifactStagingDirectory)/**/*.zip
               tagSource: 'auto'
