@@ -418,6 +418,7 @@ namespace RamenPos
                     {
                         case DeviceAddressResponseCode.SUCCESS:
                             txtAddress.Text = e.Address;
+                            EftposAddress = txtAddress.Text;
                             btnMain.Enabled = true;
                             MessageBox.Show($@"Address has been updated to {e.Address}", "Address updated");
                             break;
